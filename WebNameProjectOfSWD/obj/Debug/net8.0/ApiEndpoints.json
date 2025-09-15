@@ -1,0 +1,38 @@
+[
+  {
+    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
+    "Method": "GetAllUser",
+    "RelativePath": "api/User/get_all_user",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.List\u00601[[DAL.DTO.GetUserRespone, DAL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
+    "Method": "GetUserById",
+    "RelativePath": "api/User/get_user_by_id/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

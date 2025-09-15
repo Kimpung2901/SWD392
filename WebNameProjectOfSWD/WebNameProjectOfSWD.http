@@ -1,0 +1,6 @@
+@WebNameProjectOfSWD_HostAddress = http://localhost:5122
+
+GET {{WebNameProjectOfSWD_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

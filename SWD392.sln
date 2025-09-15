@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebNameProjectOfSWD", "WebNameProjectOfSWD\WebNameProjectOfSWD.csproj", "{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{BF3745DC-AEAE-4E35-9EED-C808805019E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF3745DC-AEAE-4E35-9EED-C808805019E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF3745DC-AEAE-4E35-9EED-C808805019E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF3745DC-AEAE-4E35-9EED-C808805019E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF3745DC-AEAE-4E35-9EED-C808805019E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E514F3F2-4DA9-481F-A960-349AB2DBD614}
+	EndGlobalSection
+EndGlobal
