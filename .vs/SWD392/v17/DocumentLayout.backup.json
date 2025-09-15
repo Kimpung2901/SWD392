@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "D:\\Documents\\SWD392\\SWD392\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -29,10 +33,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\helper\\mapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -106,30 +106,6 @@
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\repositories\\userrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|d:\\documents\\swd392\\swd392\\commmon.library\\commmon.library.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|solutionrelative:commmon.library\\commmon.library.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|d:\\documents\\swd392\\swd392\\commmon.library\\emotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|solutionrelative:commmon.library\\emotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|d:\\documents\\swd392\\swd392\\commmon.library\\constants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|solutionrelative:commmon.library\\constants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|d:\\documents\\swd392\\swd392\\commmon.library\\validator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|solutionrelative:commmon.library\\validator.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|d:\\documents\\swd392\\swd392\\commmon.library\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|solutionrelative:commmon.library\\extensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|d:\\documents\\swd392\\swd392\\commmon.library\\exceptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{20CDF6AB-471B-41D0-8EEF-18295B021A5C}|Commmon.Library\\Commmon.Library.csproj|solutionrelative:commmon.library\\exceptions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|d:\\documents\\swd392\\swd392\\bll\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|solutionrelative:bll\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -148,7 +124,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 204,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -156,7 +132,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "GetUserById.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\GetUserById.cs",
               "RelativeDocumentMoniker": "DAL\\DTO\\GetUserById.cs",
@@ -169,7 +145,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "UpdateUserRequest.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\UpdateUserRequest.cs",
               "RelativeDocumentMoniker": "DAL\\DTO\\UpdateUserRequest.cs",
@@ -195,20 +171,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 0,
               "Title": "WebNameProjectOfSWD.csproj",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
               "RelativeDocumentMoniker": "WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
               "ToolTip": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
               "RelativeToolTip": "WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
               "WhenOpened": "2025-09-05T06:56:10.652Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "GetUserRespone.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\GetUserRespone.cs",
               "RelativeDocumentMoniker": "DAL\\DTO\\GetUserRespone.cs",
@@ -221,7 +197,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "User.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\User.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\User.cs",
@@ -234,20 +210,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "UserController.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "WebNameProjectOfSWD\\Controllers\\UserController.cs",
               "ToolTip": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\Controllers\\UserController.cs",
               "RelativeToolTip": "WebNameProjectOfSWD\\Controllers\\UserController.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAAWwCsAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwBwAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-15T06:05:09.12Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "UserService.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\BLL\\Services\\UsersService\\UserService.cs",
               "RelativeDocumentMoniker": "BLL\\Services\\UsersService\\UserService.cs",
@@ -260,7 +236,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Program.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\Program.cs",
               "RelativeDocumentMoniker": "WebNameProjectOfSWD\\Program.cs",
@@ -493,71 +469,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 26,
-              "Title": "Commmon.Library.csproj",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Commmon.Library.csproj",
-              "RelativeDocumentMoniker": "Commmon.Library\\Commmon.Library.csproj",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Commmon.Library.csproj",
-              "RelativeToolTip": "Commmon.Library\\Commmon.Library.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-09-14T09:11:41.756Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "Emotion.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Emotion.cs",
-              "RelativeDocumentMoniker": "Commmon.Library\\Emotion.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Emotion.cs",
-              "RelativeToolTip": "Commmon.Library\\Emotion.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-14T07:39:39.628Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
-              "Title": "Constants.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Constants.cs",
-              "RelativeDocumentMoniker": "Commmon.Library\\Constants.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Constants.cs",
-              "RelativeToolTip": "Commmon.Library\\Constants.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T15:29:51.423Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "Exceptions.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Exceptions.cs",
-              "RelativeDocumentMoniker": "Commmon.Library\\Exceptions.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Exceptions.cs",
-              "RelativeToolTip": "Commmon.Library\\Exceptions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T15:29:22.955Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 30,
-              "Title": "Extensions.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Extensions.cs",
-              "RelativeDocumentMoniker": "Commmon.Library\\Extensions.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Extensions.cs",
-              "RelativeToolTip": "Commmon.Library\\Extensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T15:28:33.243Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 32,
               "Title": "Class1.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\BLL\\Class1.cs",
               "RelativeDocumentMoniker": "BLL\\Class1.cs",
@@ -570,20 +481,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "Validator.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Validator.cs",
-              "RelativeDocumentMoniker": "Commmon.Library\\Validator.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\Commmon.Library\\Validator.cs",
-              "RelativeToolTip": "Commmon.Library\\Validator.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-05T06:41:53.266Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 33,
+              "DocumentIndex": 27,
               "Title": "Class1.cs",
               "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Class1.cs",
               "RelativeDocumentMoniker": "DAL\\Class1.cs",
