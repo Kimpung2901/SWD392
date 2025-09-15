@@ -121,11 +121,15 @@
       "DocumentGroups": [
         {
           "DockedWidth": 204,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{0174dea2-fdbe-4ef1-8f99-c0beae78880f}"
             },
             {
               "$type": "Document",
@@ -135,7 +139,7 @@
               "RelativeDocumentMoniker": "DAL\\DTO\\GetUserById.cs",
               "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\GetUserById.cs",
               "RelativeToolTip": "DAL\\DTO\\GetUserById.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAxwBMAAAAqAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-15T08:08:55.66Z",
               "EditorCaption": ""
@@ -174,8 +178,7 @@
               "RelativeToolTip": "WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-09-05T06:56:10.652Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-05T06:56:10.652Z"
             },
             {
               "$type": "Document",
@@ -211,8 +214,7 @@
               "RelativeToolTip": "WebNameProjectOfSWD\\Controllers\\UserController.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAAwBoAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-15T06:05:09.12Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-15T06:05:09.12Z"
             },
             {
               "$type": "Document",
@@ -416,8 +418,7 @@
               "RelativeToolTip": "BLL\\BLL.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-09-14T10:01:24.479Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-09-14T10:01:24.479Z"
             },
             {
               "$type": "Document",
