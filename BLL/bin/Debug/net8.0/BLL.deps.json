@@ -9,7 +9,6 @@
       "BLL/1.0.0": {
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
-          "Commmon.Library": "1.0.0",
           "DAL": "1.0.0",
           "Microsoft.EntityFrameworkCore.Design": "9.0.9",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.9",
@@ -1064,18 +1063,6 @@
           }
         }
       },
-      "Commmon.Library/1.0.0": {
-        "dependencies": {
-          "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
-          "Microsoft.EntityFrameworkCore.SqlServer": "9.0.9"
-        },
-        "runtime": {
-          "Commmon.Library.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "DAL/1.0.0": {
         "dependencies": {
           "AutoMapper.Extensions.Microsoft.DependencyInjection": "11.0.0",
@@ -1662,11 +1649,6 @@
       "sha512": "sha512-IXoJOXIqc39AIe+CIR7koBtRGMiCt/LPM3lI+PELtDIy9XdyeSrwXFdWV9dzJ2Awl0paLWUaknLxFQ5HpHZUog==",
       "path": "system.windows.extensions/6.0.0",
       "hashPath": "system.windows.extensions.6.0.0.nupkg.sha512"
-    },
-    "Commmon.Library/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
     },
     "DAL/1.0.0": {
       "type": "project",
