@@ -22,6 +22,7 @@ namespace DAL.Models
         public string Role { get; set; }
         public string Status { get; set; }
         public bool IsDelete { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();

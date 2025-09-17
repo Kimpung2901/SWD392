@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DAL.DTO;
+using DAL.DTO.UserDto;
 using DAL.Models;
 
 namespace DAL.Helper
@@ -10,6 +10,8 @@ namespace DAL.Helper
         {
             CreateMap<User, GetUserRespone>();
             CreateMap<GetUserRespone, User>();
+            CreateMap<AddUser, User>();
+
         }
     }
 }

@@ -1,6 +1,22 @@
 [
   {
     "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
+    "Method": "AddUser",
+    "RelativePath": "api/User/add_ user",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "rq",
+        "Type": "DAL.DTO.UserDto.AddUser",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
     "Method": "GetAllUser",
     "RelativePath": "api/User/get_all_user",
     "HttpMethod": "GET",
@@ -9,7 +25,7 @@
     "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[DAL.DTO.GetUserRespone, DAL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "System.Collections.Generic.List\u00601[[DAL.DTO.UserDto.GetUserRespone, DAL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -30,6 +46,43 @@
       {
         "Name": "id",
         "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
+    "Method": "SoftDeleteUser",
+    "RelativePath": "api/User/soft_delete_user/{id}",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
+    "Method": "updateUser",
+    "RelativePath": "api/User/update_user/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "rq",
+        "Type": "DAL.DTO.UserDto.UpdateUser",
         "IsRequired": true
       }
     ],
