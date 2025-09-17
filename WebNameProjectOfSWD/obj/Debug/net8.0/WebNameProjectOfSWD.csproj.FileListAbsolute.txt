@@ -355,3 +355,4 @@ D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\obj\Debug\net8.0\refint\We
 D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.pdb
 D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.genruntimeconfig.cache
 D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\obj\Debug\net8.0\ref\WebNameProjectOfSWD.dll
+D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\bin\Debug\net8.0\BCrypt.Net-Next.dll

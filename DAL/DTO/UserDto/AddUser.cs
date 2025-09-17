@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DAL.DTO
+namespace DAL.DTO.UserDto
 {
-    public class UpdateUserRequest
+    public class AddUser
     {
+        //public int UserId { get; set; }
         public string UserName { get; set; }
+        public string Avatar { get; set; }
         public string Password { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Gmail { get; set; }
@@ -18,6 +20,6 @@ namespace DAL.DTO
         public DateTime CreateAt { get; set; }
         public string Role { get; set; }
         public string Status { get; set; }
-        public bool IsDelete { get; set; }
+        //public bool IsDelete { get; set; }
     }
 }

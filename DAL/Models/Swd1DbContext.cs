@@ -377,6 +377,8 @@ public partial class Swd1DbContext : DbContext
             entity.Property(e => e.Avatar)
                 .HasMaxLength(500)    
                 .HasColumnName("avatar");
+
+            entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
         });
 
 
