@@ -182,9 +182,9 @@ public partial class Swd1DbContext : DbContext
                 .HasColumnName("base_price");
             entity.Property(e => e.CreateAt).HasColumnName("create_at");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Image)
+            entity.Property(e => e.Avatar)
                 .HasMaxLength(500)
-                .HasColumnName("image");
+                .HasColumnName("avatar");
             entity.Property(e => e.IsDeleted).HasColumnName("isDeleted");
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
@@ -332,32 +332,53 @@ public partial class Swd1DbContext : DbContext
             entity.ToTable("user");
 
             entity.Property(e => e.UserId).HasColumnName("userId");
-            entity.Property(e => e.Address)
-                .HasMaxLength(500)
-                .HasColumnName("address");
-            entity.Property(e => e.CreateAt).HasColumnName("create_at");
-            entity.Property(e => e.DateOfBirth).HasColumnName("date_of_birth");
-            entity.Property(e => e.Gender)
-                .HasMaxLength(50)
-                .HasColumnName("gender");
-            entity.Property(e => e.Gmail)
-                .HasMaxLength(255)
-                .HasColumnName("gmail");
-            entity.Property(e => e.IsDelete).HasColumnName("is_delete");
-            entity.Property(e => e.Password)
-                .HasMaxLength(255)
-                .HasColumnName("password");
-            entity.Property(e => e.PhoneNumber).HasColumnName("phone_number");
-            entity.Property(e => e.Role)
-                .HasMaxLength(50)
-                .HasColumnName("role");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .HasColumnName("status");
+
             entity.Property(e => e.UserName)
                 .HasMaxLength(255)
                 .HasColumnName("userName");
+
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .HasColumnName("password");
+
+            entity.Property(e => e.Gmail)
+                .HasMaxLength(255)
+                .HasColumnName("gmail");
+
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(255)   // trong DB phone_number là NVARCHAR(255)
+                .HasColumnName("phone_number");
+
+            entity.Property(e => e.DateOfBirth)
+                .HasColumnName("date_of_birth");
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(500)
+                .HasColumnName("address");
+
+            entity.Property(e => e.Gender)
+                .HasMaxLength(50)
+                .HasColumnName("gender");
+
+            entity.Property(e => e.CreateAt)
+                .HasColumnName("create_at");
+
+            entity.Property(e => e.IsDelete)
+                .HasColumnName("is_delete");
+
+            entity.Property(e => e.Role)
+                .HasMaxLength(50)
+                .HasColumnName("role");
+
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasColumnName("status");
+
+            entity.Property(e => e.Avatar)
+                .HasMaxLength(500)    
+                .HasColumnName("avatar");
         });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

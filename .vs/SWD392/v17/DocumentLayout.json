@@ -1,116 +1,116 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Documents\\SWD392\\SWD392\\",
+  "WorkspaceRootPath": "D:\\Documents\\SWD392\\DollAIProject\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\dto\\getuserbyid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\dto\\getuserbyid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\dto\\getuserbyid.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|d:\\documents\\swd392\\swd392\\bll\\services\\usersservice\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|solutionrelative:bll\\services\\usersservice\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\dto\\getuserrespone.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\dto\\getuserrespone.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\dto\\getuserrespone.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\dto\\updateuserrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\dto\\updateuserrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\helper\\mapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\helper\\mapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\swd392\\webnameprojectofswd\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\swd1dbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\swd1dbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\swd1dbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\size.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\size.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\paymentmethod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\paymentmethod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\booking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\booking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\feedback.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\feedback.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\emotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\emotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\dollvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\dollvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\doll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\doll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\doll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\color.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\dollaiproject\\webnameprojectofswd\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\dollaiproject\\webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\webnameprojectofswd.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|d:\\documents\\swd392\\dollaiproject\\bll\\services\\usersservice\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|solutionrelative:bll\\services\\usersservice\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\dto\\updateuserrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\dto\\updateuserrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\dollaiproject\\webnameprojectofswd\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\helper\\mapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\helper\\mapping.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|d:\\documents\\swd392\\dollaiproject\\webnameprojectofswd\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{0B01B018-AFC4-423E-A5C2-AF9AF91AEFA5}|WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj|solutionrelative:webnameprojectofswd\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\size.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\size.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\paymentmethod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\paymentmethod.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\payment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\feedback.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\feedback.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\emotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\emotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\dollvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\dollvariant.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\color.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\color.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\bookingtracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\bookingtracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\bookingtracking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\bookingemotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\bookingemotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\bookingemotion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\bookingdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\models\\bookingdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\bookingdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\models\\booking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\models\\booking.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Documents\\SQLQuery1.sql||{CC5D8DF0-88F4-4BB2-9DBB-B48CEE65C30A}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|d:\\documents\\swd392\\swd392\\bll\\bll.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "AbsoluteMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|d:\\documents\\swd392\\dollaiproject\\bll\\bll.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
       "RelativeMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|solutionrelative:bll\\bll.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\repositories\\userrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\repositories\\userrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\repositories\\userrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|d:\\documents\\swd392\\swd392\\bll\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|d:\\documents\\swd392\\dollaiproject\\bll\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{BF3745DC-AEAE-4E35-9EED-C808805019E7}|BLL\\BLL.csproj|solutionrelative:bll\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\swd392\\dal\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|d:\\documents\\swd392\\dollaiproject\\dal\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{412A8C9D-5A86-4BCC-BB0C-6BCF5FA471AF}|DAL\\DAL.csproj|solutionrelative:dal\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -121,7 +121,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 204,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 9,
           "Children": [
             {
               "$type": "Bookmark",
@@ -133,84 +133,37 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "GetUserById.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\GetUserById.cs",
-              "RelativeDocumentMoniker": "DAL\\DTO\\GetUserById.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\GetUserById.cs",
-              "RelativeToolTip": "DAL\\DTO\\GetUserById.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAxAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "GetUserRespone.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DTO\\GetUserRespone.cs",
+              "RelativeDocumentMoniker": "DAL\\DTO\\GetUserRespone.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DTO\\GetUserRespone.cs",
+              "RelativeToolTip": "DAL\\DTO\\GetUserRespone.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAwAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-15T08:08:55.66Z",
+              "WhenOpened": "2025-09-14T17:45:41.774Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "UpdateUserRequest.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\UpdateUserRequest.cs",
-              "RelativeDocumentMoniker": "DAL\\DTO\\UpdateUserRequest.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\UpdateUserRequest.cs",
-              "RelativeToolTip": "DAL\\DTO\\UpdateUserRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAqAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\User.cs",
+              "RelativeDocumentMoniker": "DAL\\Models\\User.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\User.cs",
+              "RelativeToolTip": "DAL\\Models\\User.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAuwBcAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-15T07:28:56.531Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Mapping.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Helper\\Mapping.cs",
-              "RelativeDocumentMoniker": "DAL\\Helper\\Mapping.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Helper\\Mapping.cs",
-              "RelativeToolTip": "DAL\\Helper\\Mapping.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-15T05:59:35.014Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "WebNameProjectOfSWD.csproj",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
-              "RelativeDocumentMoniker": "WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
-              "RelativeToolTip": "WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2025-09-05T06:56:10.652Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "GetUserRespone.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\GetUserRespone.cs",
-              "RelativeDocumentMoniker": "DAL\\DTO\\GetUserRespone.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\DTO\\GetUserRespone.cs",
-              "RelativeToolTip": "DAL\\DTO\\GetUserRespone.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABAAAAArAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-14T17:45:41.774Z"
+              "WhenOpened": "2025-09-14T09:17:57.941Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "User.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\User.cs",
-              "RelativeDocumentMoniker": "DAL\\Models\\User.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\User.cs",
-              "RelativeToolTip": "DAL\\Models\\User.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAuwBYAAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-14T09:17:57.941Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
               "Title": "UserController.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\Controllers\\UserController.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\Controllers\\UserController.cs",
               "RelativeDocumentMoniker": "WebNameProjectOfSWD\\Controllers\\UserController.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\Controllers\\UserController.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\Controllers\\UserController.cs",
               "RelativeToolTip": "WebNameProjectOfSWD\\Controllers\\UserController.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAAwBoAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -218,11 +171,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 8,
               "Title": "UserService.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\BLL\\Services\\UsersService\\UserService.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\BLL\\Services\\UsersService\\UserService.cs",
               "RelativeDocumentMoniker": "BLL\\Services\\UsersService\\UserService.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\BLL\\Services\\UsersService\\UserService.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\BLL\\Services\\UsersService\\UserService.cs",
               "RelativeToolTip": "BLL\\Services\\UsersService\\UserService.cs",
               "ViewState": "AgIAAA8AAAAAAAAAAAAAACcAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -230,11 +183,99 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Doll.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Doll.cs",
+              "RelativeDocumentMoniker": "DAL\\Models\\Doll.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Doll.cs",
+              "RelativeToolTip": "DAL\\Models\\Doll.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-14T09:17:21.42Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Swd1DbContext.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Swd1DbContext.cs",
+              "RelativeDocumentMoniker": "DAL\\Models\\Swd1DbContext.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Swd1DbContext.cs",
+              "RelativeToolTip": "DAL\\Models\\Swd1DbContext.cs",
+              "ViewState": "AgIAAPoAAAAAAAAAAAAmwG4BAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-14T09:11:12.37Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Booking.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Booking.cs",
+              "RelativeDocumentMoniker": "DAL\\Models\\Booking.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Booking.cs",
+              "RelativeToolTip": "DAL\\Models\\Booking.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-14T09:16:08.306Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GetUserById.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DTO\\GetUserById.cs",
+              "RelativeDocumentMoniker": "DAL\\DTO\\GetUserById.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DTO\\GetUserById.cs",
+              "RelativeToolTip": "DAL\\DTO\\GetUserById.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-15T08:08:55.66Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 7,
+              "Title": "WebNameProjectOfSWD.csproj",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+              "RelativeDocumentMoniker": "WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+              "RelativeToolTip": "WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-09-05T06:56:10.652Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Mapping.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Helper\\Mapping.cs",
+              "RelativeDocumentMoniker": "DAL\\Helper\\Mapping.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Helper\\Mapping.cs",
+              "RelativeToolTip": "DAL\\Helper\\Mapping.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-15T05:59:35.014Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "UpdateUserRequest.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DTO\\UpdateUserRequest.cs",
+              "RelativeDocumentMoniker": "DAL\\DTO\\UpdateUserRequest.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DTO\\UpdateUserRequest.cs",
+              "RelativeToolTip": "DAL\\DTO\\UpdateUserRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-15T07:28:56.531Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
               "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\Program.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\Program.cs",
               "RelativeDocumentMoniker": "WebNameProjectOfSWD\\Program.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\Program.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\Program.cs",
               "RelativeToolTip": "WebNameProjectOfSWD\\Program.cs",
               "ViewState": "AgIAAAkAAAAAAAAAAAAcwB4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -242,11 +283,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 15,
               "Title": "Payment.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Payment.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Payment.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\Payment.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Payment.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Payment.cs",
               "RelativeToolTip": "DAL\\Models\\Payment.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -254,11 +295,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 14,
               "Title": "PaymentMethod.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\PaymentMethod.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\PaymentMethod.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\PaymentMethod.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\PaymentMethod.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\PaymentMethod.cs",
               "RelativeToolTip": "DAL\\Models\\PaymentMethod.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -266,11 +307,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 21,
               "Title": "BookingEmotion.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\BookingEmotion.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\BookingEmotion.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\BookingEmotion.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\BookingEmotion.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\BookingEmotion.cs",
               "RelativeToolTip": "DAL\\Models\\BookingEmotion.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -278,11 +319,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 20,
               "Title": "BookingTracking.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\BookingTracking.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\BookingTracking.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\BookingTracking.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\BookingTracking.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\BookingTracking.cs",
               "RelativeToolTip": "DAL\\Models\\BookingTracking.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -290,11 +331,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
+              "DocumentIndex": 18,
               "Title": "DollVariant.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\DollVariant.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\DollVariant.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\DollVariant.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\DollVariant.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\DollVariant.cs",
               "RelativeToolTip": "DAL\\Models\\DollVariant.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -302,11 +343,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 12,
               "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\appsettings.json",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\appsettings.json",
               "RelativeDocumentMoniker": "WebNameProjectOfSWD\\appsettings.json",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\WebNameProjectOfSWD\\appsettings.json",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\WebNameProjectOfSWD\\appsettings.json",
               "RelativeToolTip": "WebNameProjectOfSWD\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAVAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
@@ -314,11 +355,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
+              "DocumentIndex": 19,
               "Title": "Color.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Color.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Color.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\Color.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Color.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Color.cs",
               "RelativeToolTip": "DAL\\Models\\Color.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAASAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -327,22 +368,10 @@
             {
               "$type": "Document",
               "DocumentIndex": 17,
-              "Title": "Doll.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Doll.cs",
-              "RelativeDocumentMoniker": "DAL\\Models\\Doll.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Doll.cs",
-              "RelativeToolTip": "DAL\\Models\\Doll.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-14T09:17:21.42Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
               "Title": "Emotion.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Emotion.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Emotion.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\Emotion.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Emotion.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Emotion.cs",
               "RelativeToolTip": "DAL\\Models\\Emotion.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -350,23 +379,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "Swd1DbContext.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Swd1DbContext.cs",
-              "RelativeDocumentMoniker": "DAL\\Models\\Swd1DbContext.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Swd1DbContext.cs",
-              "RelativeToolTip": "DAL\\Models\\Swd1DbContext.cs",
-              "ViewState": "AgIAADAAAAAAAAAAAIAxwC8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-14T09:11:12.37Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 13,
               "Title": "Size.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Size.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Size.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\Size.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Size.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Size.cs",
               "RelativeToolTip": "DAL\\Models\\Size.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -374,11 +391,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 16,
               "Title": "Feedback.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Feedback.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Feedback.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\Feedback.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Feedback.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\Feedback.cs",
               "RelativeToolTip": "DAL\\Models\\Feedback.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -386,11 +403,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 21,
+              "DocumentIndex": 22,
               "Title": "BookingDetail.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\BookingDetail.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\BookingDetail.cs",
               "RelativeDocumentMoniker": "DAL\\Models\\BookingDetail.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\BookingDetail.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Models\\BookingDetail.cs",
               "RelativeToolTip": "DAL\\Models\\BookingDetail.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAWAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -398,23 +415,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "Booking.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Booking.cs",
-              "RelativeDocumentMoniker": "DAL\\Models\\Booking.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Models\\Booking.cs",
-              "RelativeToolTip": "DAL\\Models\\Booking.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-14T09:16:08.306Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 24,
               "Title": "BLL.csproj",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\BLL\\BLL.csproj",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\BLL\\BLL.csproj",
               "RelativeDocumentMoniker": "BLL\\BLL.csproj",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\BLL\\BLL.csproj",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\BLL\\BLL.csproj",
               "RelativeToolTip": "BLL\\BLL.csproj",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
@@ -435,9 +440,9 @@
               "$type": "Document",
               "DocumentIndex": 25,
               "Title": "UserRepo.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Repositories\\UserRepo.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Repositories\\UserRepo.cs",
               "RelativeDocumentMoniker": "DAL\\Repositories\\UserRepo.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Repositories\\UserRepo.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Repositories\\UserRepo.cs",
               "RelativeToolTip": "DAL\\Repositories\\UserRepo.cs",
               "ViewState": "AgIAABUAAAAAAAAAAAAYwCgAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -447,9 +452,9 @@
               "$type": "Document",
               "DocumentIndex": 26,
               "Title": "Class1.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\BLL\\Class1.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\BLL\\Class1.cs",
               "RelativeDocumentMoniker": "BLL\\Class1.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\BLL\\Class1.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\BLL\\Class1.cs",
               "RelativeToolTip": "BLL\\Class1.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -459,9 +464,9 @@
               "$type": "Document",
               "DocumentIndex": 27,
               "Title": "Class1.cs",
-              "DocumentMoniker": "D:\\Documents\\SWD392\\SWD392\\DAL\\Class1.cs",
+              "DocumentMoniker": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Class1.cs",
               "RelativeDocumentMoniker": "DAL\\Class1.cs",
-              "ToolTip": "D:\\Documents\\SWD392\\SWD392\\DAL\\Class1.cs",
+              "ToolTip": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\Class1.cs",
               "RelativeToolTip": "DAL\\Class1.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
