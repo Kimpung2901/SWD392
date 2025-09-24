@@ -357,3 +357,15 @@ D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\obj\Debug\net8.0\WebNamePr
 D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\obj\Debug\net8.0\ref\WebNameProjectOfSWD.dll
 D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\bin\Debug\net8.0\BCrypt.Net-Next.dll
 D:\Documents\SWD392\DollAIProject\WebNameProjectOfSWD\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.csproj.AssemblyReference.cache
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\rpswa.dswa.cache.json
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.GeneratedMSBuildEditorConfig.editorconfig
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.AssemblyInfoInputs.cache
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.AssemblyInfo.cs
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.csproj.CoreCompileInputs.cache
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.MvcApplicationPartsAssemblyInfo.cs
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.MvcApplicationPartsAssemblyInfo.cache
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.sourcelink.json
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.dll
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\refint\WebNameProjectOfSWD.dll
+D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.pdb
