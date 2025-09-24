@@ -1,9 +1,13 @@
-﻿using BLL.Services.User;
+﻿using System.Security.Claims;
+using System.Text;
+using BLL.Services;
+using BLL.Services.Jwt;
+using DAL;
 using DAL.Models;
-using DAL.Helper;
-using DAL.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 namespace WebNameProjectOfSWD
 {
@@ -13,28 +17,98 @@ namespace WebNameProjectOfSWD
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var connectionString = builder.Configuration.GetConnectionString("MyConnection");
-            builder.Services.AddDbContext<Swd1DbContext>(options => options.UseSqlServer(connectionString));
+            // ===== DbContext =====
+            builder.Services.AddDbContext<DollDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Add services to the container.
-
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddScoped<UserRepo>();
+            // ===== DI =====
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<JwtTokenService>();
+            // nếu UserService cần repo, đăng ký ở đây (ví dụ):
+            // builder.Services.AddScoped<UserRepository>();
 
-            //Automapper
-            builder.Services.AddAutoMapper(typeof(Mapping));
+            // ===== Controllers =====
+            builder.Services.AddControllers();
 
+            // ===== Swagger (Bearer button) =====
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebNameProjectOfSWD API", Version = "v1" });
 
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Nhập: Bearer {token}"
+                });
 
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
+
+                // Nếu lỡ có 2 action trùng route, chọn cái đầu để Swagger không crash
+                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+            });
+
+            // ===== JWT AuthN/AuthZ =====
+            var jwt = builder.Configuration.GetSection("Jwt")
+                      ?? throw new Exception("Missing 'Jwt' section in appsettings.json");
+            var key = Encoding.UTF8.GetBytes(jwt["Key"] ?? throw new Exception("Missing 'Jwt:Key'"));
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt =>
+                {
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwt["Issuer"],
+                        ValidAudience = jwt["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ClockSkew = TimeSpan.Zero,
+
+                        // Rất quan trọng để [Authorize] map đúng Name/Role từ claims bạn phát
+                        NameClaimType = ClaimTypes.Name,
+                        RoleClaimType = ClaimTypes.Role
+                    };
+
+                    opt.Events = new JwtBearerEvents
+                    {
+                        OnAuthenticationFailed = ctx =>
+                        {
+                            Console.WriteLine("[JWT] AuthFailed: " + ctx.Exception.Message);
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = ctx =>
+                        {
+                            Console.WriteLine("[JWT] Challenge: " + ctx.Error + " / " + ctx.ErrorDescription);
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
+
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // ===== Pipeline =====
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -43,14 +117,12 @@ namespace WebNameProjectOfSWD
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();   // phải trước UseAuthorization
             app.UseAuthorization();
-
 
             app.MapControllers();
 
             app.Run();
         }
-      
-
     }
 }

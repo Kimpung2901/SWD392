@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.Models;
+
+public partial class Size
 {
-    public class Size
-    {
-        public int SizeId { get; set; }
-        public string Name { get; set; }
+    public int SizeID { get; set; }
 
-        public virtual ICollection<DollVariant> DollVariants { get; set; } = new List<DollVariant>();
-    }
+    public string Name { get; set; } = null!;
 }

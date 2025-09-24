@@ -3,3 +3,8 @@ bin/
 obj/
 *.user
 *.suo
+BLL/obj/Debug/net8.0/BLL.csproj.AssemblyReference.cache
+DAL/DTO/UserDto/AddUser.cs
+*.cache
+*.cache
+BLL/obj/Debug/net8.0/BLL.csproj.AssemblyReference.cache

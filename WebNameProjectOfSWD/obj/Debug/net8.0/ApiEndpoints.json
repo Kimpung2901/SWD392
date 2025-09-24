@@ -1,31 +1,21 @@
 [
   {
-    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
-    "Method": "AddUser",
-    "RelativePath": "api/User/add_ user",
+    "ContainingType": "WebNameProjectOfSWD.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "rq",
-        "Type": "DAL.DTO.UserDto.AddUser",
+        "Name": "req",
+        "Type": "BLL.DTO.LoginRequest",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
-    "Method": "GetAllUser",
-    "RelativePath": "api/User/get_all_user",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
     "ReturnTypes": [
       {
-        "Type": "System.Collections.Generic.List\u00601[[DAL.DTO.UserDto.GetUserRespone, DAL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "Type": "BLL.DTO.AuthResponse",
         "MediaTypes": [
           "text/plain",
           "application/json",
@@ -36,56 +26,13 @@
     ]
   },
   {
-    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
-    "Method": "GetUserById",
-    "RelativePath": "api/User/get_user_by_id/{id}",
+    "ContainingType": "WebNameProjectOfSWD.Controllers.AuthController",
+    "Method": "Me",
+    "RelativePath": "api/Auth/me",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
-    "Method": "SoftDeleteUser",
-    "RelativePath": "api/User/soft_delete_user/{id}",
-    "HttpMethod": "PATCH",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "WebNameProjectOfSWD.Controllers.UserController",
-    "Method": "updateUser",
-    "RelativePath": "api/User/update_user/{id}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
-      },
-      {
-        "Name": "rq",
-        "Type": "DAL.DTO.UserDto.UpdateUser",
-        "IsRequired": true
-      }
-    ],
+    "Parameters": [],
     "ReturnTypes": []
   }
 ]
