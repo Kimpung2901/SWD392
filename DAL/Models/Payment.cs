@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.Models;
+
+public partial class Payment
 {
-    public class Payment
-    {
-        public int PaymentId { get; set; }
-        public int BookingId { get; set; }
-        public int PaymentMethodId { get; set; }
-        public decimal TotalPrice { get; set; }
-        public string TransactionId { get; set; }
-        public DateTime PaymentDate { get; set; }
-        public string Status { get; set; }
-        public string Currency {  get; set; }
-        public bool IsDeleted { get; set; }
+    public int PaymentID { get; set; }
 
-        public virtual Booking Booking { get; set; } = null!;
-        public virtual PaymentMethod PaymentMethod { get; set; } = null!;
-    }
+    public int CharacterOrderID { get; set; }
+
+    public string Provider { get; set; } = null!;
+
+    public string Method { get; set; } = null!;
+
+    public decimal Amount { get; set; }
+
+    public int Currency { get; set; }
+
+    public string Status { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; }
+
+    public string target_type { get; set; } = null!;
+
+    public int target_id { get; set; }
 }

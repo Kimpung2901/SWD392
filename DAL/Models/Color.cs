@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DAL.Models
+namespace DAL.Models;
+
+public partial class Color
 {
-    public class Color
-    {
-        public int ColorId { get; set; }
-        public string Name { get; set; }
+    public int ColorID { get; set; }
 
-        public virtual ICollection<DollVariant> DollVariants { get; set; } = new List<DollVariant>();
-    }
+    public string Name { get; set; } = null!;
 }
