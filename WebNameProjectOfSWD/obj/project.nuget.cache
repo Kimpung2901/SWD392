@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hpRek3+u7Kg=",
+  "dgSpecHash": "CkaPxO8CeWs=",
   "success": true,
-  "projectFilePath": "D:\\Documents\\SWD392\\Doll\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+  "projectFilePath": "D:\\Documents\\SWD392\\DOLLAI\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\My ASUS\\.nuget\\packages\\automapper\\11.0.0\\automapper.11.0.0.nupkg.sha512",
     "C:\\Users\\My ASUS\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",
