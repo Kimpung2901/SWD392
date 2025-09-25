@@ -11,3 +11,13 @@ obj/
 *.user
 *.userosscache
 *.sln.docstates
+
+# Visual Studio build artifacts
+bin/
+obj/
+.vs/
+*.dll
+*.pdb
+*.cache
+project.assets.json
+*.nuget.dgspec.json
