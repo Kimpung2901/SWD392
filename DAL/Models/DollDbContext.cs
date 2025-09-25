@@ -40,6 +40,8 @@ public partial class DollDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserCharacter> UserCharacters { get; set; }
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -239,6 +241,25 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.StartAt).HasColumnType("datetime");
             entity.Property(e => e.Status).HasMaxLength(255);
         });
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("RefreshTokens");
+            entity.HasKey(e => e.RefreshTokenID).HasName("PK_RefreshTokens");
+
+            entity.Property(e => e.RefreshTokenID).HasColumnName("RefreshTokenID");
+            entity.Property(e => e.UserID).HasColumnName("UserID");
+            entity.Property(e => e.Token).HasMaxLength(200);
+            entity.Property(e => e.CreatedByIp).HasMaxLength(50);
+            entity.Property(e => e.Created).HasColumnType("datetime");
+            entity.Property(e => e.Expires).HasColumnType("datetime");
+            entity.Property(e => e.Revoked).HasColumnType("datetime");
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.RefreshTokens)
+                .HasForeignKey(e => e.UserID)
+                .HasConstraintName("FK_RefreshTokens_User");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

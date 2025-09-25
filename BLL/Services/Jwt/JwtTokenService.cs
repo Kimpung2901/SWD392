@@ -20,11 +20,10 @@ namespace BLL.Services.Jwt
 
             var claims = new List<Claim>
             {
-                // sub + nameid
+
                 new(JwtRegisteredClaimNames.Sub, user.UserID.ToString()),
                 new(ClaimTypes.NameIdentifier, user.UserID.ToString()),
 
-                // Name/Role: khớp với Program.cs (NameClaimType/RoleClaimType)
                 new(ClaimTypes.Name, user.UserName),
                 new(ClaimTypes.Role, user.Role ?? "User"),
 

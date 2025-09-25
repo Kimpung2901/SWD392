@@ -20,4 +20,5 @@ public partial class User
     public DateTime CreatedAt { get; set; }
 
     public string Role { get; set; } = null!;
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
 }
