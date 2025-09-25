@@ -13,7 +13,7 @@ public partial class CharacterPackage
 
     public int DurationDays { get; set; }
 
-    public string billing_cycle { get; set; } = null!;
+    public string Billing_Cycle { get; set; } = null!;
 
     public decimal Price { get; set; }
 

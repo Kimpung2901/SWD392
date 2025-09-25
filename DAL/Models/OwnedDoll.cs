@@ -15,7 +15,7 @@ public partial class OwnedDoll
 
     public string Status { get; set; } = null!;
 
-    public DateTime acquired_at { get; set; }
+    public DateTime Acquired_at { get; set; }
 
-    public DateTime expired_at { get; set; }
+    public DateTime Expired_at { get; set; }
 }

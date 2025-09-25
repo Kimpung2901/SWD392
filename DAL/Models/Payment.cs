@@ -7,6 +7,7 @@ public partial class Payment
 {
     public int PaymentID { get; set; }
 
+    public int OrderID { get; set; }
     public int CharacterOrderID { get; set; }
 
     public string Provider { get; set; } = null!;
@@ -21,7 +22,7 @@ public partial class Payment
 
     public DateTime CreatedAt { get; set; }
 
-    public string target_type { get; set; } = null!;
+    public string Target_Type { get; set; } = null!;
 
     public int target_id { get; set; }
 }
