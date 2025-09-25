@@ -24,6 +24,9 @@ namespace WebNameProjectOfSWD
             // ===== DI =====
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<JwtTokenService>();
+            builder.Services.AddScoped<SmtpEmailSender>();
+
+
             // nếu UserService cần repo, đăng ký ở đây (ví dụ):
             // builder.Services.AddScoped<UserRepository>();
 
@@ -103,6 +106,8 @@ namespace WebNameProjectOfSWD
                         }
                     };
                 });
+            // ===== Email (SMTP) =====
+            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Smtp"));
 
             builder.Services.AddAuthorization();
 

@@ -17,9 +17,9 @@ public partial class CharacterOrder
 
     public decimal UnitPrice { get; set; }
 
-    public DateTime start_date { get; set; }
+    public DateTime Start_Date { get; set; }
 
-    public DateTime end_date { get; set; }
+    public DateTime End_Date { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

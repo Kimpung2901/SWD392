@@ -11,7 +11,7 @@ public partial class DollType
 
     public string Description { get; set; } = null!;
 
-    public decimal Create_at { get; set; }
+    public DateTime Create_at { get; set; }
 
     public string Image { get; set; } = null!;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DAL.Models;
 
-public partial class DollAvariant
+public partial class DollVariant
 {
     public int DollVariantID { get; set; }
 
@@ -12,6 +12,8 @@ public partial class DollAvariant
     public string Name { get; set; } = null!;
 
     public decimal Price { get; set; }
+    public string Color { get; set; } = null!;
+    public string Size { get; set; } = null!;
 
     public int SizeID { get; set; }
 

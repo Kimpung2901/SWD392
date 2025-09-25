@@ -13,7 +13,7 @@ public partial class DollCharacterLink
 
     public DateTime BoundAt { get; set; }
 
-    public DateTime UnBoundAtbigint { get; set; }
+    public DateTime UnBoundAt { get; set; }
 
     public bool IsActive { get; set; }
 
