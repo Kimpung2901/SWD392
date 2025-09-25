@@ -8,9 +8,9 @@ namespace BLL.Helper
     {
         public Mapping() 
         {
-            CreateMap<User, GetUserRespone>();
-            CreateMap<GetUserRespone, User>();
-            CreateMap<AddUser, User>();
+            //CreateMap<User, GetUserRespone>();
+            //CreateMap<GetUserRespone, User>();
+            //CreateMap<AddUser, User>();
 
         }
     }

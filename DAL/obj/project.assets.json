@@ -5070,11 +5070,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DAL.csproj",
+      "projectUniqueName": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj",
       "projectName": "DAL",
-      "projectPath": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\DAL.csproj",
+      "projectPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj",
       "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
-      "outputPath": "D:\\Documents\\SWD392\\DollAIProject\\DAL\\obj\\",
+      "outputPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
