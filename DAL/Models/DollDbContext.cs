@@ -19,6 +19,9 @@ public partial class DollDbContext : DbContext
     public virtual DbSet<DollCharacterLink> DollCharacterLinks { get; set; }
     public virtual DbSet<CharacterOrder> CharacterOrders { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+    public virtual DbSet<PasswordReset> PasswordResets { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -73,10 +76,15 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.Phones).HasMaxLength(255);
             entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.Password).HasMaxLength(255);
-            entity.Property(e => e.Status).HasMaxLength(50);
-            entity.Property(e => e.Role).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasDefaultValue("Active");
+            entity.Property(e => e.Role).HasDefaultValue("user");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.Property(u => u.Status)
+                     .HasMaxLength(255)
+                     .IsRequired()
+                     .HasDefaultValue("Active");
         });
+
 
         // Order
         modelBuilder.Entity<Order>(entity =>
@@ -252,6 +260,28 @@ public partial class DollDbContext : DbContext
                 .HasForeignKey(e => e.OrderID)
                 .HasConstraintName("FK_Payment_Order");
         });
+        modelBuilder.Entity<PasswordReset>(e =>
+        {
+            e.ToTable("PasswordResets");
+            e.HasKey(x => x.PasswordResetsID);
+            e.Property(x => x.UserID).HasColumnName("UserID");
+            e.Property(x => x.Code).HasMaxLength(10);
+            e.Property(x => x.CreatedByIp).HasMaxLength(50);
+            e.Property(x => x.Created).HasColumnType("datetime");
+            e.Property(x => x.Expires).HasColumnType("datetime");
+
+            e.HasOne(x => x.User)
+             .WithMany(u => u.PasswordResets)   // nhớ thêm ICollection<PasswordReset> trong User
+             .HasForeignKey(x => x.UserID)
+             .HasConstraintName("FK_PasswordResets_User");
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasIndex(u => u.UserName).IsUnique();
+            entity.HasIndex(u => u.Email).IsUnique();
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }
