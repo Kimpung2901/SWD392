@@ -197,7 +197,7 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Invalid input" });
 
         var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == req.Email);
-        if (user == null) return BadRequest(new { message = "OTP không hợp lệ" });
+        if (user == null) return BadRequest(new { message = "Invalid OTP" });
 
         var rec = await _db.PasswordResets
             .Where(x => x.UserID == user.UserID && !x.Used)
@@ -205,7 +205,7 @@ public class AuthController : ControllerBase
             .FirstOrDefaultAsync();
 
         if (rec == null || rec.Code != req.Otp || rec.Expires <= DateTime.UtcNow)
-            return BadRequest(new { message = "OTP không hợp lệ hoặc đã hết hạn" });
+            return BadRequest(new { message = "OTP is invalid or expired" });
 
         // Hash mật khẩu mới (BCrypt)
         var hash = BCrypt.Net.BCrypt.HashPassword(req.NewPassword);
@@ -215,7 +215,7 @@ public class AuthController : ControllerBase
         rec.Used = true;
         await _db.SaveChangesAsync();
 
-        return Ok(new { message = "Đặt lại mật khẩu thành công" });
+        return Ok(new { message = "Password reset successful" });
     }
 
     [HttpPost("register")]
