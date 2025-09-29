@@ -547,10 +547,10 @@ D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\staticwebassets.
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\staticwebassets.build.json.cache
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\staticwebassets.development.json
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameP.FA39A7E7.Up2Date
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.dll
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\refint\WebNameProjectOfSWD.dll
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.pdb
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.genruntimeconfig.cache
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\ref\WebNameProjectOfSWD.dll
+D:\Documents\SWD392\DollAi\WebNameProjectOfSWD\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
