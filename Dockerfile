@@ -1,24 +1,34 @@
-﻿# ---------- Build ----------
+﻿# ---------- Build stage ----------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY *.csproj ./
-RUN dotnet restore
+# 1) Chỉ copy file *.csproj để restore nhanh (đúng đường dẫn thư mục)
+COPY WebNameProjectOfSWD/WebNameProjectOfSWD.csproj WebNameProjectOfSWD/
+COPY BLL/BLL.csproj BLL/
+COPY DAL/DAL.csproj DAL/
+# (nếu có .sln, bạn có thể COPY thêm)
+# COPY SWD392.sln ./
 
-COPY . ./
-RUN dotnet publish -c Release -o /app
+# 2) Restore dựa trên project chính (hoặc .sln nếu bạn dùng)
+RUN dotnet restore WebNameProjectOfSWD/WebNameProjectOfSWD.csproj
 
-# ---------- Run ----------
+# 3) Copy toàn bộ mã nguồn sau khi restore thành công
+COPY . .
+
+# 4) Publish (không cần AppHost để image gọn)
+RUN dotnet publish WebNameProjectOfSWD/WebNameProjectOfSWD.csproj -c Release -o /app /p:UseAppHost=false
+
+# ---------- Runtime stage ----------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app .
 
-# BẮT app listen đúng cổng Render (PORT)
+# Render cấp biến PORT -> ép Kestrel listen đúng PORT
 ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
 ENV URLS=http://0.0.0.0:${PORT}
 
-# (tuỳ chọn) bật swagger prod qua env var
+# Bật swagger ở Production nếu muốn (có thể xoá)
 ENV Swagger__Enabled=true
 
-# KHÔNG EXPOSE 5122, KHÔNG dùng --urls cứng 5122
+# KHÔNG hardcode --urls 5122 hay EXPOSE 5122
 ENTRYPOINT ["dotnet", "WebNameProjectOfSWD.dll"]
