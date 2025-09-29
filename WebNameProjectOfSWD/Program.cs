@@ -26,7 +26,6 @@ namespace WebNameProjectOfSWD
             builder.Services.AddScoped<JwtTokenService>();
             builder.Services.AddScoped<SmtpEmailSender>();
 
-
             // nếu UserService cần repo, đăng ký ở đây (ví dụ):
             // builder.Services.AddScoped<UserRepository>();
 
@@ -106,10 +105,23 @@ namespace WebNameProjectOfSWD
                         }
                     };
                 });
+
             // ===== Email (SMTP) =====
             builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Smtp"));
 
             builder.Services.AddAuthorization();
+
+            // ===== CORS =====
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend", policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000") // đổi port nếu frontend chạy khác
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials();
+                });
+            });
 
             var app = builder.Build();
 
@@ -121,6 +133,8 @@ namespace WebNameProjectOfSWD
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowFrontend"); // 👈 thêm vào pipeline
 
             app.UseAuthentication();   // phải trước UseAuthorization
             app.UseAuthorization();
