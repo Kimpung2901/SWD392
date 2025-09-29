@@ -1,34 +1,24 @@
-﻿# ===========================
-# STAGE 1: Restore + Build
-# ===========================
+﻿# ---------- Build ----------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy file csproj
-COPY ["WebNameProjectOfSWD/WebNameProjectOfSWD.csproj", "WebNameProjectOfSWD/"]
+COPY *.csproj ./
+RUN dotnet restore
 
-# Restore packages
-RUN dotnet restore "WebNameProjectOfSWD/WebNameProjectOfSWD.csproj"
+COPY . ./
+RUN dotnet publish -c Release -o /app
 
-# Copy toàn bộ source
-COPY . .
-
-WORKDIR "/src/WebNameProjectOfSWD"
-
-# Build project
-RUN dotnet build "WebNameProjectOfSWD.csproj" -c Release -o /app/build
-
-# ===========================
-# STAGE 2: Publish
-# ===========================
-FROM build AS publish
-RUN dotnet publish "WebNameProjectOfSWD.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-# ===========================
-# STAGE 3: Runtime
-# ===========================
+# ---------- Run ----------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-EXPOSE 5122
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WebNameProjectOfSWD.dll", "--urls", "http://0.0.0.0:5122"]
+COPY --from=build /app .
+
+# BẮT app listen đúng cổng Render (PORT)
+ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
+ENV URLS=http://0.0.0.0:${PORT}
+
+# (tuỳ chọn) bật swagger prod qua env var
+ENV Swagger__Enabled=true
+
+# KHÔNG EXPOSE 5122, KHÔNG dùng --urls cứng 5122
+ENTRYPOINT ["dotnet", "WebNameProjectOfSWD.dll"]

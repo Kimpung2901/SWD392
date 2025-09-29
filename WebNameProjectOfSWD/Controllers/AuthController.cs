@@ -37,6 +37,8 @@ public class AuthController : ControllerBase
         [Required] public string Password { get; set; } = null!;
     }
 
+
+
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequest req)

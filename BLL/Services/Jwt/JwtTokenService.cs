@@ -40,5 +40,19 @@ namespace BLL.Services.Jwt
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+        public static TokenValidationParameters GetValidationParameters(IConfiguration cfg)
+        {
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = cfg["Jwt:Issuer"],
+                ValidAudience = cfg["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(cfg["Jwt:Key"]!)),
+                ClockSkew = TimeSpan.Zero
+            };
+        }
     }
 }
