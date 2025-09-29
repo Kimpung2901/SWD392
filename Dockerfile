@@ -29,6 +29,6 @@ RUN dotnet publish "WebNameProjectOfSWD.csproj" -c Release -o /app/publish /p:Us
 # ===========================
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 5122
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WebNameProjectOfSWD.dll"]
+ENTRYPOINT ["dotnet", "WebNameProjectOfSWD.dll", "--urls", "http://0.0.0.0:5122"]

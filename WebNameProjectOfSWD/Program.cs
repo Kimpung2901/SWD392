@@ -123,6 +123,13 @@ namespace WebNameProjectOfSWD
                 });
             });
 
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                options.ListenAnyIP(5122); // chỉ HTTP
+                                           // Nếu cần HTTPS thì uncomment:
+                                           // options.ListenAnyIP(7122, listenOptions => listenOptions.UseHttps());
+            });
+
             var app = builder.Build();
 
             // ===== Pipeline =====
