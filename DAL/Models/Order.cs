@@ -17,7 +17,7 @@ public partial class Order
 
     public string Currency { get; set; } = null!;
 
-    public decimal ShippingAddress { get; set; }
+    public string ShippingAddress { get; set; } = null!;
 
     public string Status { get; set; } = null!;
 }

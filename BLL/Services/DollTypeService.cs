@@ -1,33 +1,24 @@
-﻿// BLL/Services/DollTypeService.cs
+﻿using BLL.DTO.DollTypeDTO;
+using DAL.IRepo;
 using DAL.Models;
-using BLL.DTO.DollTypeDTO;
-using DAL.Repositories;
 
 namespace BLL.Services
 {
     public class DollTypeService : IDollTypeService
     {
-        private readonly DollTypeRepository _repo;
-        public DollTypeService(DollTypeRepository repo) => _repo = repo;
+        private readonly IDollTypeRepository _repo;
+        public DollTypeService(IDollTypeRepository repo) => _repo = repo;
 
-        private static DollTypeDto Map(DollType x) => new()
+        public async Task<List<DollTypeDto>> GetAllAsync()
         {
-            DollTypeID = x.DollTypeID,
-            Name = x.Name,
-            Description = x.Description,
-            Create_at = x.Create_at,
-            Image = x.Image,
-            IsActive = x.IsActive,
-            IsDeleted = x.IsDeleted
-        };
+            var list = await _repo.GetAllAsync();
+            return list.Select(Map).ToList();
+        }
 
-        public async Task<List<DollTypeDto>> GetAllAsync(bool includeDeleted = false) =>
-            (await _repo.GetAllAsync(includeDeleted)).Select(Map).ToList();
-
-        public async Task<DollTypeDto?> GetByIdAsync(int id, bool includeDeleted = false)
+        public async Task<DollTypeDto?> GetByIdAsync(int id)
         {
-            var x = await _repo.GetByIdAsync(id, includeDeleted);
-            return x is null ? null : Map(x);
+            var entity = await _repo.GetByIdAsync(id);
+            return entity == null ? null : Map(entity);
         }
 
         public async Task<DollTypeDto> CreateAsync(CreateDollTypeDto dto)
@@ -37,47 +28,58 @@ namespace BLL.Services
                 Name = dto.Name,
                 Description = dto.Description,
                 Image = dto.Image,
-                Create_at = DateTime.UtcNow,
                 IsActive = true,
-                IsDeleted = false
+                IsDeleted = false,
+                Create_at = DateTime.UtcNow
             };
             await _repo.AddAsync(entity);
             return Map(entity);
         }
 
-        public async Task<DollTypeDto?> UpdateAsync(int id, string name, string description, string image, bool isActive)
+        public async Task<DollTypeDto?> UpdateAsync(int id, UpdateDollTypeDto dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-            entity.Name = name;
-            entity.Description = description;
-            entity.Image = image;
-            entity.IsActive = isActive;
+            // Chỉ update field có gửi
+            if (dto.Name != null) entity.Name = dto.Name.Trim();
+            if (dto.Description != null) entity.Description = dto.Description.Trim();
+            if (dto.Image != null) entity.Image = dto.Image;
+            if (dto.IsActive) entity.IsActive = dto.IsActive;
+
+            // Chặn DateTime overflow về SQL Server
+            if (entity.Create_at < new DateTime(1753, 1, 1))
+                entity.Create_at = DateTime.UtcNow;
 
             await _repo.UpdateAsync(entity);
-            return Map(entity);
+
+            // Map trả về DTO
+            return new DollTypeDto
+            {
+                DollTypeID = entity.DollTypeID,
+                Name = entity.Name,
+                Description = entity.Description,
+                Create_at = entity.Create_at,
+                Image = entity.Image,
+                IsDeleted = entity.IsDeleted,
+                IsActive = entity.IsActive
+            };
         }
 
-        // Soft delete
-        public async Task<DollTypeDto?> DeleteSoftAsync(int id)
-        {
-            var entity = await _repo.SoftDeleteAsync(id);
-            return entity is null ? null : Map(entity);
-        }
+        public Task<bool> SoftDeleteAsync(int id) => _repo.SoftDeleteAsync(id);
+        public Task<bool> HardDeleteAsync(int id) => _repo.HardDeleteAsync(id);
 
-        // Restore
-        public async Task<DollTypeDto?> RestoreAsync(int id)
+        private static DollTypeDto Map(DollType e) => new()
         {
-            var entity = await _repo.RestoreAsync(id);
-            return entity is null ? null : Map(entity);
-        }
+            DollTypeID = e.DollTypeID,
+            Name = e.Name,
+            Description = e.Description,
+            Image = e.Image,
+            Create_at = e.Create_at,
+            IsActive = e.IsActive,
+            IsDeleted = e.IsDeleted
+        };
 
-        // Hard delete
-        public async Task<DollTypeDto?> DeleteHardAsync(int id)
-        {
-            var entity = await _repo.HardDeleteAsync(id);
-            return entity is null ? null : Map(entity);
-        }
+       
     }
 }

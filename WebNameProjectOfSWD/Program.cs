@@ -1,7 +1,11 @@
-using BLL.Services.UsersService;
+﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
+using BLL.IService;
+using BLL.Services;
 using BLL.Services.Jwt;
 using BLL.Services.MailService;
 using DAL;
+using DAL.IRepo;
 using DAL.Models;
 using DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +17,13 @@ var builder = WebApplication.CreateBuilder(args);
 // ===== Controllers & Swagger =====
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(opt =>
+    {
+        opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 // Gộp còn 1 lần AddSwaggerGen, kèm JWT Bearer
 builder.Services.AddSwaggerGen(c =>
@@ -44,11 +55,15 @@ builder.Services.AddDbContext<DollDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ===== DI services (giữ nguyên của bạn) =====
-builder.Services.AddScoped<UserService>();
+
+
 builder.Services.AddScoped<JwtTokenService>();
 
-builder.Services.AddScoped<DollTypeRepository>();
-builder.Services.AddScoped<DollTypeService>();
+builder.Services.AddScoped<IDollTypeRepository, DollTypeRepository>();
+builder.Services.AddScoped<IDollTypeService, DollTypeService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddSingleton<SmtpEmailSender>();

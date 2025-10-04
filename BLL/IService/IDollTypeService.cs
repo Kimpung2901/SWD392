@@ -1,14 +1,16 @@
 ﻿using BLL.DTO.DollTypeDTO;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface IDollTypeService
+namespace BLL.Services
 {
-    Task<List<DollTypeDto>> GetAllAsync(bool includeDeleted = false);
-    Task<DollTypeDto?> GetByIdAsync(int id, bool includeDeleted = false);
-    Task<DollTypeDto> CreateAsync(CreateDollTypeDto dto);
-    Task<DollTypeDto?> UpdateAsync(int id, string name, string description, string image, bool isActive);
-
-    // Soft Delete / Restore / Hard Delete
-    Task<DollTypeDto?> DeleteSoftAsync(int id);
-    Task<DollTypeDto?> RestoreAsync(int id);
-    Task<DollTypeDto?> DeleteHardAsync(int id);
+    public interface IDollTypeService
+    {
+        Task<List<DollTypeDto>> GetAllAsync();
+        Task<DollTypeDto?> GetByIdAsync(int id);
+        Task<DollTypeDto> CreateAsync(CreateDollTypeDto dto);
+        Task<DollTypeDto?> UpdateAsync(int id, UpdateDollTypeDto dto);
+        Task<bool> SoftDeleteAsync(int id);
+        Task<bool> HardDeleteAsync(int id);
+    }
 }

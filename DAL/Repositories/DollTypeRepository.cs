@@ -1,27 +1,24 @@
-﻿// DAL/Repositories/DollTypeRepository.cs
+﻿using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
 {
-    public class DollTypeRepository: IDollTypeRepository
+    public class DollTypeRepository : IDollTypeRepository
     {
         private readonly DollDbContext _db;
         public DollTypeRepository(DollDbContext db) => _db = db;
 
-        public async Task<List<DollType>> GetAllAsync(bool includeDeleted = false)
-        {
-            var q = _db.DollTypes.AsQueryable();
-            if (!includeDeleted) q = q.Where(x => !x.IsDeleted);
-            return await q.ToListAsync();
-        }
+        public async Task<List<DollType>> GetAllAsync()
+            => await _db.DollTypes
+                        .Where(x => !x.IsDeleted)
+                        .AsNoTracking()
+                        .ToListAsync();
 
-        public async Task<DollType?> GetByIdAsync(int id, bool includeDeleted = false)
-        {
-            var q = _db.DollTypes.AsQueryable();
-            if (!includeDeleted) q = q.Where(x => !x.IsDeleted);
-            return await q.FirstOrDefaultAsync(x => x.DollTypeID == id);
-        }
+        public async Task<DollType?> GetByIdAsync(int id)
+            => await _db.DollTypes
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(x => x.DollTypeID == id && !x.IsDeleted);
 
         public async Task AddAsync(DollType entity)
         {
@@ -29,41 +26,34 @@ namespace DAL.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(DollType entity)
+        public async Task<DollType?> UpdateAsync(DollType entity)
         {
-            _db.DollTypes.Update(entity);
+            var existing = await _db.DollTypes.FindAsync(entity.DollTypeID);
+            if (existing == null || existing.IsDeleted)
+                return null;
+
+            _db.Entry(existing).CurrentValues.SetValues(entity);
             await _db.SaveChangesAsync();
+            return existing;
         }
 
-        /// Soft delete
-        public async Task<DollType?> SoftDeleteAsync(int id)
+
+        public async Task<bool> SoftDeleteAsync(int id)
         {
-            var entity = await GetByIdAsync(id);
-            if (entity == null) return null;
+            var entity = await _db.DollTypes.FindAsync(id);
+            if (entity == null) return false;
             entity.IsDeleted = true;
             await _db.SaveChangesAsync();
-            return entity;
+            return true;
         }
 
-        /// Restore a soft-deleted record
-        public async Task<DollType?> RestoreAsync(int id)
+        public async Task<bool> HardDeleteAsync(int id)
         {
-            var entity = await GetByIdAsync(id, includeDeleted: true);
-            if (entity == null || !entity.IsDeleted) return null;
-            entity.IsDeleted = false;
-            await _db.SaveChangesAsync();
-            return entity;
-        }
-
-        /// Hard delete (remove row from DB)
-        public async Task<DollType?> HardDeleteAsync(int id)
-        {
-            var entity = await GetByIdAsync(id, includeDeleted: true);
-            if (entity == null) return null;
-
+            var entity = await _db.DollTypes.FindAsync(id);
+            if (entity == null) return false;
             _db.DollTypes.Remove(entity);
             await _db.SaveChangesAsync();
-            return entity;
+            return true;
         }
     }
 }

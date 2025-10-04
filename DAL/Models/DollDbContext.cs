@@ -94,7 +94,7 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.OrderDate).HasColumnType("datetime");
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Currency).HasMaxLength(10);
-            entity.Property(e => e.ShippingAddress).HasMaxLength(500);
+            entity.Property(e => e.ShippingAddress).HasMaxLength(500).IsRequired(); ;
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.HasOne<User>()
                 .WithMany()

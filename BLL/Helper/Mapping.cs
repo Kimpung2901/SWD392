@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using BLL.DTO.UserDto;
-using DAL.Models;
+
 
 namespace BLL.Helper
 {

@@ -1,14 +1,16 @@
 ﻿using DAL.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public interface IDollTypeRepository
+namespace DAL.IRepo
 {
-    Task<List<DollType>> GetAllAsync(bool includeDeleted = false);
-    Task<DollType?> GetByIdAsync(int id, bool includeDeleted = false);
-    Task AddAsync(DollType entity);
-    Task UpdateAsync(DollType entity);
-
-    // Soft Delete / Restore / Hard Delete
-    Task<DollType?> SoftDeleteAsync(int id);
-    Task<DollType?> RestoreAsync(int id);
-    Task<DollType?> HardDeleteAsync(int id);
+    public interface IDollTypeRepository
+    {
+        Task<List<DollType>> GetAllAsync();
+        Task<DollType?> GetByIdAsync(int id);
+        Task AddAsync(DollType entity);
+        Task<DollType?> UpdateAsync(DollType entity);
+        Task<bool> SoftDeleteAsync(int id);
+        Task<bool> HardDeleteAsync(int id);
+    }
 }
