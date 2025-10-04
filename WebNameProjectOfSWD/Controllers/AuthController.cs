@@ -37,6 +37,8 @@ public class AuthController : ControllerBase
         [Required] public string Password { get; set; } = null!;
     }
 
+
+
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequest req)
@@ -77,14 +79,14 @@ public class AuthController : ControllerBase
 
     [HttpPost("refresh")]
     [AllowAnonymous]
-    public async Task<IActionResult> Refresh([FromBody] string refreshToken)
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest req)
     {
-        if (string.IsNullOrWhiteSpace(refreshToken))
+        if (string.IsNullOrWhiteSpace(req.RefreshToken))
             return BadRequest(new { message = "refreshToken missing" });
 
         var token = await _db.RefreshTokens
             .Include(rt => rt.User)
-            .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+            .FirstOrDefaultAsync(rt => rt.Token == req.RefreshToken);
 
         if (token == null || token.Revoked != null || token.Expires <= DateTime.UtcNow)
             return Unauthorized(new { message = "Refresh token is invalid or expired" });
@@ -97,12 +99,12 @@ public class AuthController : ControllerBase
 
     [HttpPost("logout")]
     [Authorize]
-    public async Task<IActionResult> Logout([FromBody] string refreshToken)
+    public async Task<IActionResult> Logout([FromBody] RefreshTokenRequest req)
     {
-        if (string.IsNullOrWhiteSpace(refreshToken))
+        if (string.IsNullOrWhiteSpace(req.RefreshToken))
             return BadRequest(new { message = "refreshToken missing!!" });
 
-        var token = await _db.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == refreshToken);
+        var token = await _db.RefreshTokens.FirstOrDefaultAsync(rt => rt.Token == req.RefreshToken);
         if (token == null) return NotFound(new { message = "Refresh token is not exist!" });
 
         token.Revoked = DateTime.UtcNow;
@@ -110,18 +112,6 @@ public class AuthController : ControllerBase
         return Ok(new { message = "revoked refresh token" });
     }
 
-    [HttpGet("me")]
-    [Authorize]
-    public IActionResult Me()
-    {
-        var id = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
-              ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value;
-        var username = User.Identity?.Name;
-        var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value
-               ?? User.FindFirst("Role")?.Value;
-
-        return Ok(new { id, username, role });
-    }
     [HttpPost("change_password")]
     [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req)
@@ -267,7 +257,7 @@ public class AuthController : ControllerBase
         catch (DbUpdateException ex) when (ex.InnerException is Microsoft.Data.SqlClient.SqlException sql)
         {
             if (sql.Message.Contains("CHECK constraint") && sql.Message.Contains("Role"))
-                return BadRequest(new { message = "Role value violates CHECK constraint (allowed: admin/staff/user)" });
+                return BadRequest(new { message = "Role value violates CHECK constraint (allowed: admin/manager/Customer)" });
 
             if (sql.Message.Contains("IX_") || sql.Message.Contains("UNIQUE"))
                 return BadRequest(new { message = "Username/Email already exists (unique constraint)" });
