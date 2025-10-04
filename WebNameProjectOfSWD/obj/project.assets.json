@@ -5321,9 +5321,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Documents\\SWD392\\DollAi\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+      "projectUniqueName": "D:\\Documents\\SWD392\\DOLLAI\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
       "projectName": "WebNameProjectOfSWD",
-      "projectPath": "D:\\Documents\\SWD392\\DollAi\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+      "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
       "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
       "outputPath": "D:\\Documents\\SWD392\\DollAi\\WebNameProjectOfSWD\\obj\\",
       "projectStyle": "PackageReference",
@@ -5346,11 +5346,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj": {
-              "projectPath": "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj"
+            "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj": {
+              "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj"
             },
-            "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj": {
-              "projectPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj"
+            "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj": {
+              "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj"
             }
           }
         }
