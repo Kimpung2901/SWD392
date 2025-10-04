@@ -370,8 +370,8 @@ D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSW
 D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\refint\WebNameProjectOfSWD.dll
 D:\Documents\SWD392\Doll\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.pdb
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\bin\Debug\net8.0\appsettings.Development.json
-D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\bin\Debug\net8.0\appsettings.json
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\bin\Debug\net8.0\WebNameProjectOfSWD.staticwebassets.endpoints.json
+D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\bin\Debug\net8.0\appsettings.json
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\bin\Debug\net8.0\WebNameProjectOfSWD.exe
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\bin\Debug\net8.0\WebNameProjectOfSWD.deps.json
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\bin\Debug\net8.0\WebNameProjectOfSWD.runtimeconfig.json

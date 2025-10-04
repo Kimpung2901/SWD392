@@ -1,0 +1,33 @@
+﻿version: "3.9"
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: swd-sql
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Phung29012004@"    # nhớ đổi
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    restart: always
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: swd-api
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:8080"
+      # KHỚP với Program.cs: GetConnectionString("DefaultConnection")
+      ConnectionStrings__DefaultConnection: "Server=db,1433;Database=DollStoreDB;User ID=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;"
+    ports:
+      - "8080:8080"
+    restart: always
+
+volumes:
+  mssql_data:
