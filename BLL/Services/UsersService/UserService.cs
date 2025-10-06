@@ -1,10 +1,8 @@
-﻿using BLL.Helper;
-using DAL;
+using BLL.Helper;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services;
-
 
 public class UserService
 {
@@ -20,31 +18,29 @@ public class UserService
 
         var stored = user.Password;
 
-
         if (PasswordHelper.LooksLikeBCrypt(stored))
         {
             return BCrypt.Net.BCrypt.Verify(password, stored) ? user : null;
         }
 
-
         if (stored == password)
         {
             var newHash = BCrypt.Net.BCrypt.HashPassword(password);
-            user.Password = newHash;   
-            await _context.SaveChangesAsync(); 
+            user.Password = newHash;
+            await _context.SaveChangesAsync();
             return user;
         }
 
-      
         return null;
     }
+
     public async Task<User> RegisterAsync(string username, string rawPassword, string role = "User")
     {
         var hash = BCrypt.Net.BCrypt.HashPassword(rawPassword);
         var user = new User
         {
             UserName = username,
-            Password = hash, 
+            Password = hash,
             Role = role
         };
         _context.Users.Add(user);
@@ -66,5 +62,3 @@ public class UserService
     }
 
 }
-
-

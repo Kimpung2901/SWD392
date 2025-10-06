@@ -1,18 +1,18 @@
-﻿// Services/MailSettings.cs
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
 
+namespace BLL.Services.MailService;
+
 public class MailSettings
 {
-    public string Host { get; set; } = "";
+    public string Host { get; set; } = string.Empty;
     public int Port { get; set; } = 587;
-    public string UserName { get; set; } = "";
-    public string Password { get; set; } = "";
-    public string? From { get; set; }           // có thể null/empty
+    public string UserName { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+    public string? From { get; set; }
     public bool EnableSsl { get; set; } = true;
 }
-
 
 public class SmtpEmailSender
 {
@@ -41,8 +41,8 @@ public class SmtpEmailSender
         using var msg = new MailMessage()
         {
             From = from,
-            Subject = subject ?? "",
-            Body = htmlBody ?? "",
+            Subject = subject ?? string.Empty,
+            Body = htmlBody ?? string.Empty,
             IsBodyHtml = true
         };
         msg.To.Add(to);
