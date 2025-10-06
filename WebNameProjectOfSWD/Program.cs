@@ -1,5 +1,6 @@
-﻿using BLL.Services;
+using BLL.Services.UsersService;
 using BLL.Services.Jwt;
+using BLL.Services.MailService;
 using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
