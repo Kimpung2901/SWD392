@@ -2,7 +2,7 @@ using BLL.Helper;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BLL.Services;
+namespace BLL.Services.UsersService;
 
 public class UserService
 {

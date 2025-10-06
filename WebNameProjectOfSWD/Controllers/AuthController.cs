@@ -1,8 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Mail;
 using BLL.DTO;
 using BLL.DTO.UserDto;
-using BLL.Services;
+using BLL.Services.UsersService;
 using BLL.Services.Jwt;
 using BLL.Services.MailService;
 using DAL;
