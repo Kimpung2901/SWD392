@@ -23,10 +23,10 @@ public class DollTypeController : ControllerBase
     public async Task<IActionResult> Create([FromBody] CreateDollTypeDto dto)
         => Ok(await _service.CreateAsync(dto));
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateDollTypeDto dto)
+    [HttpPatch("{id}")]
+    public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateDollTypeDto dto)
     {
-        var result = await _service.UpdateAsync(id, dto);
+        var result = await _service.UpdatePartialAsync(id, dto);
         return result == null ? NotFound() : Ok(result);
     }
 

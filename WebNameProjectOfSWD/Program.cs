@@ -1,16 +1,15 @@
-﻿using System.Text.Json.Serialization;
-using System.Text.Json.Serialization;
-using BLL.IService;
+﻿using BLL.IService;
 using BLL.Services;
 using BLL.Services.Jwt;
 using BLL.Services.MailService;
-using DAL;
 using DAL.IRepo;
 using DAL.Models;
+using DAL.Repo;
 using DAL.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +27,7 @@ builder.Services
 // Gộp còn 1 lần AddSwaggerGen, kèm JWT Bearer
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DollAI Store API", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
@@ -56,6 +55,7 @@ builder.Services.AddDbContext<DollDbContext>(opt =>
 
 // ===== DI services (giữ nguyên của bạn) =====
 
+builder.Services.AddMemoryCache();
 
 builder.Services.AddScoped<JwtTokenService>();
 
@@ -64,9 +64,18 @@ builder.Services.AddScoped<IDollTypeService, DollTypeService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IDollModelRepository, DollModelRepository>();
+builder.Services.AddScoped<IDollModelService, DollModelService>();
+builder.Services.AddScoped<IDollVariantRepository, DollVariantRepository>();
+builder.Services.AddScoped<IDollVariantService, DollVariantService>();
+builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+builder.Services.AddScoped<ICharacterService, CharacterService>();
 
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Smtp"));
-builder.Services.AddSingleton<SmtpEmailSender>();
+// Email sender
+builder.Services.AddScoped<BLL.IService.IEmailSender, SmtpEmailSender>();
+builder.Services.AddScoped<IOtpService, OtpService>();
+
 
 // ===== AuthN / AuthZ =====
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -86,8 +95,6 @@ builder.Services.AddAuthorization(o =>
 
 var app = builder.Build();
 
-// ===== Swagger: bật khi Development HOẶC có env var =====
-// Hỗ trợ cả "Swagger:Enabled" (appsettings) lẫn "Swagger__Enabled" (env Render)
 var swaggerEnabled =
     app.Environment.IsDevelopment()
     || builder.Configuration.GetValue<bool>("Swagger:Enabled")

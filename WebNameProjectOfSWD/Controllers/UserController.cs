@@ -20,12 +20,41 @@ public class UserController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public async Task<IActionResult> GetAll() => Ok(await _svc.GetAllAsync());
 
+    [HttpGet("{id}")]
+    //[Authorize(Roles = "admin")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var user = await _svc.GetByIdAsync(id);
+        return user == null ? NotFound(new { message = $"Không tìm thấy user #{id}" }) : Ok(user);
+    }
+
+    [HttpPost]
+    //[Authorize(Roles = "admin")]
+    public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        try
+        {
+            var created = await _svc.CreateAsync(dto);
+            return CreatedAtAction(
+                nameof(GetById), 
+                new { id = created.UserID }, 
+                new { message = "Tạo user thành công", data = created }
+            );
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
     [HttpPatch("{id}")]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
     {
 
@@ -52,7 +81,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("soft/{id}")]
-   [Authorize(Roles = "admin")]
+   //[Authorize(Roles = "admin")]
     public async Task<IActionResult> SoftDelete(int id)
     {
         await _svc.SoftDeleteAsync(id);
@@ -60,7 +89,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("hard/{id}")]
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     public async Task<IActionResult> HardDelete(int id)
     {
         await _svc.HardDeleteAsync(id);

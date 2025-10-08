@@ -357,9 +357,10 @@ namespace DAL.Migrations
                     b.Property<int>("PaymentID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("ShippingAddress")
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -581,7 +582,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("DAL.Models.User", b =>
@@ -742,12 +743,14 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.DollModel", b =>
                 {
-                    b.HasOne("DAL.Models.DollType", null)
-                        .WithMany()
+                    b.HasOne("DAL.Models.DollType", "DollType")
+                        .WithMany("DollModels")
                         .HasForeignKey("DollTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_DollModel_DollType");
+
+                    b.Navigation("DollType");
                 });
 
             modelBuilder.Entity("DAL.Models.DollVariant", b =>
@@ -873,6 +876,11 @@ namespace DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_UserCharacter_User");
+                });
+
+            modelBuilder.Entity("DAL.Models.DollType", b =>
+                {
+                    b.Navigation("DollModels");
                 });
 
             modelBuilder.Entity("DAL.Models.User", b =>

@@ -9,7 +9,7 @@ public partial class User
 
     public string UserName { get; set; }
 
-    public string Phones { get; set; }
+    public string? Phones { get; set; }
 
     public string Email { get; set; }
 
@@ -20,9 +20,9 @@ public partial class User
     public DateTime CreatedAt { get; set; }
 
     public string Role { get; set; }
+    
     public bool IsDeleted { get; set; }
 
-
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new HashSet<RefreshToken>();
-    virtual public ICollection<PasswordReset> PasswordResets { get; set; } = new HashSet<PasswordReset>();
+    
 }

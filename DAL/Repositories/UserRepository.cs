@@ -21,7 +21,24 @@ namespace DAL.Repositories
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.UserID == id && !u.IsDeleted);
         }
+        public async Task<User?> GetUserByUsernameAsync(string username)
+        {
+            return await _db.Users
+                .FirstOrDefaultAsync(u => u.UserName == username && !u.IsDeleted);
+        }
 
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await _db.Users
+                .FirstOrDefaultAsync(u => u.Email == email && !u.IsDeleted);
+        }
+
+
+        public async Task<bool> CheckUserExistsAsync(string username, string email)
+        {
+            return await _db.Users.AnyAsync(u =>
+                (u.UserName == username || u.Email == email) && !u.IsDeleted);
+        }
         public async Task AddAsync(User user)
         {
             _db.Users.Add(user);
@@ -32,6 +49,10 @@ namespace DAL.Repositories
         {
             _db.Users.Update(user);
             await _db.SaveChangesAsync();
+        }
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _db.SaveChangesAsync() > 0;
         }
 
         public async Task SoftDeleteAsync(int id)

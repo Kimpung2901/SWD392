@@ -18,4 +18,6 @@ public partial class DollType
     public bool IsDeleted { get; set; }
 
     public bool IsActive { get; set; }
+
+    public ICollection<DollModel> DollModels { get; set; } = new List<DollModel>();
 }

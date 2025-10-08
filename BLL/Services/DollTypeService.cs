@@ -1,4 +1,5 @@
 ﻿using BLL.DTO.DollTypeDTO;
+using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
 
@@ -36,34 +37,30 @@ namespace BLL.Services
             return Map(entity);
         }
 
-        public async Task<DollTypeDto?> UpdateAsync(int id, UpdateDollTypeDto dto)
+      
+        public async Task<DollTypeDto?> UpdatePartialAsync(int id, UpdateDollTypeDto dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-            // Chỉ update field có gửi
-            if (dto.Name != null) entity.Name = dto.Name.Trim();
-            if (dto.Description != null) entity.Description = dto.Description.Trim();
-            if (dto.Image != null) entity.Image = dto.Image;
-            if (dto.IsActive) entity.IsActive = dto.IsActive;
+           
+            if (!string.IsNullOrWhiteSpace(dto.Name)) 
+                entity.Name = dto.Name.Trim();
+            
+            if (!string.IsNullOrWhiteSpace(dto.Description)) 
+                entity.Description = dto.Description.Trim();
+            
+            if (!string.IsNullOrWhiteSpace(dto.Image)) 
+                entity.Image = dto.Image.Trim();
+     
+            if (dto.IsActive.HasValue) 
+                entity.IsActive = dto.IsActive.Value;
 
-            // Chặn DateTime overflow về SQL Server
             if (entity.Create_at < new DateTime(1753, 1, 1))
                 entity.Create_at = DateTime.UtcNow;
 
             await _repo.UpdateAsync(entity);
-
-            // Map trả về DTO
-            return new DollTypeDto
-            {
-                DollTypeID = entity.DollTypeID,
-                Name = entity.Name,
-                Description = entity.Description,
-                Create_at = entity.Create_at,
-                Image = entity.Image,
-                IsDeleted = entity.IsDeleted,
-                IsActive = entity.IsActive
-            };
+            return Map(entity);
         }
 
         public Task<bool> SoftDeleteAsync(int id) => _repo.SoftDeleteAsync(id);
@@ -79,7 +76,5 @@ namespace BLL.Services
             IsActive = e.IsActive,
             IsDeleted = e.IsDeleted
         };
-
-       
     }
 }
