@@ -20,7 +20,6 @@ public partial class DollDbContext : DbContext
     public virtual DbSet<CharacterOrder> CharacterOrders { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
-    public virtual DbSet<PasswordReset> PasswordResets { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,28 +39,38 @@ public partial class DollDbContext : DbContext
         modelBuilder.Entity<DollModel>(entity =>
         {
             entity.HasKey(e => e.DollModelID);
+            
+            entity.Property(e => e.DollModelID)
+                .ValueGeneratedOnAdd(); // Auto-increment
+            
             entity.ToTable("DollModel");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.Image).HasMaxLength(255);
             entity.Property(e => e.Create_at).HasColumnType("datetime");
-            entity.HasOne<DollType>()
-                .WithMany()
-                .HasForeignKey(e => e.DollTypeID)
-                .HasConstraintName("FK_DollModel_DollType");
+            entity.HasOne(e => e.DollType)
+                    .WithMany(t => t.DollModels)
+                     .HasForeignKey(e => e.DollTypeID)
+                     .OnDelete(DeleteBehavior.Cascade)
+                     .HasConstraintName("FK_DollModel_DollType");
+
         });
 
         // DollVariant
         modelBuilder.Entity<DollVariant>(entity =>
         {
             entity.HasKey(e => e.DollVariantID);
+            
+            entity.Property(e => e.DollVariantID)
+                .ValueGeneratedOnAdd();
+            
             entity.ToTable("DollVariant");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Image).HasMaxLength(255);
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Color).HasMaxLength(20);
             entity.Property(e => e.Size).HasMaxLength(5);
-            entity.HasOne<DollModel>()
+            entity.HasOne(e => e.DollModel)
                 .WithMany()
                 .HasForeignKey(e => e.DollModelID)
                 .HasConstraintName("FK_DollVariant_DollModel");
@@ -73,7 +82,12 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.UserID);
             entity.ToTable("User");
             entity.Property(e => e.UserName).HasMaxLength(255);
-            entity.Property(e => e.Phones).HasMaxLength(255);
+            entity.Property(e => e.Phones)
+              .HasColumnName("Phones")          // or "Phone" / "PhoneNumber" if that’s your actual column
+              .HasMaxLength(10)                 // pick a size you want
+              .IsUnicode(false)                 // often phone is stored ASCII
+              .IsRequired(false);
+
             entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.Password).HasMaxLength(255);
             entity.Property(e => e.Status).HasDefaultValue("Active");
@@ -94,7 +108,7 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.OrderDate).HasColumnType("datetime");
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Currency).HasMaxLength(10);
-            entity.Property(e => e.ShippingAddress).HasMaxLength(500);
+            entity.Property(e => e.ShippingAddress).HasMaxLength(500).IsRequired(); ;
             entity.Property(e => e.Status).HasMaxLength(50);
             entity.HasOne<User>()
                 .WithMany()
@@ -259,21 +273,6 @@ public partial class DollDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.OrderID)
                 .HasConstraintName("FK_Payment_Order");
-        });
-        modelBuilder.Entity<PasswordReset>(e =>
-        {
-            e.ToTable("PasswordResets");
-            e.HasKey(x => x.PasswordResetsID);
-            e.Property(x => x.UserID).HasColumnName("UserID");
-            e.Property(x => x.Code).HasMaxLength(10);
-            e.Property(x => x.CreatedByIp).HasMaxLength(50);
-            e.Property(x => x.Created).HasColumnType("datetime");
-            e.Property(x => x.Expires).HasColumnType("datetime");
-
-            e.HasOne(x => x.User)
-             .WithMany(u => u.PasswordResets)   // nhớ thêm ICollection<PasswordReset> trong User
-             .HasForeignKey(x => x.UserID)
-             .HasConstraintName("FK_PasswordResets_User");
         });
 
         modelBuilder.Entity<User>(entity =>

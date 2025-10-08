@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.DTO
+namespace BLL.DTO.DollTypeDTO
 {
-    public class ForgotPasswordRequest
+    internal class UserDto
     {
-        public string Email { get; set; } = "";
     }
 }

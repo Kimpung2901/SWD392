@@ -6,59 +6,98 @@ namespace BLL.Services.UsersService;
 
 public class UserService
 {
-    private readonly DollDbContext _context;
-    public UserService(DollDbContext db) => _context = db;
-
-    public async Task<User?> AuthenticateAsync(string username, string password)
+    public class UserService : IUserService
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.UserName == username /* && (u.IsDeleted == false || u.IsDeleted == null) */);
+        private readonly IUserRepository _repo;
+        private readonly DollDbContext _context;
 
-        if (user is null) return null;
-
-        var stored = user.Password;
-
-        if (PasswordHelper.LooksLikeBCrypt(stored))
+        public UserService(IUserRepository repo, DollDbContext db)
         {
-            return BCrypt.Net.BCrypt.Verify(password, stored) ? user : null;
+            _repo = repo;
+            _context = db;
         }
 
-        if (stored == password)
+        public async Task<List<UserDto>> GetAllAsync()
         {
-            var newHash = BCrypt.Net.BCrypt.HashPassword(password);
-            user.Password = newHash;
-            await _context.SaveChangesAsync();
-            return user;
+            var users = await _repo.GetAllAsync();
+            return users.Select(u => new UserDto
+            {
+                UserID = u.UserID,
+                UserName = u.UserName,
+                Phones = u.Phones,
+                Email = u.Email,
+                Status = u.Status,
+                Role = u.Role,
+                IsDeleted = u.IsDeleted,
+                CreatedAt = u.CreatedAt
+            }).ToList();
         }
 
-        return null;
-    }
-
-    public async Task<User> RegisterAsync(string username, string rawPassword, string role = "User")
-    {
-        var hash = BCrypt.Net.BCrypt.HashPassword(rawPassword);
-        var user = new User
+        public async Task<UserDto?> GetByIdAsync(int id)
         {
-            UserName = username,
-            Password = hash,
-            Role = role
-        };
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-        return user;
+            var user = await _repo.GetByIdAsync(id);
+            if (user == null) return null;
+
+            return new UserDto
+            {
+                UserID = user.UserID,
+                UserName = user.UserName,
+                Phones = user.Phones,
+                Email = user.Email,
+                Status = user.Status,
+                Role = user.Role,
+                IsDeleted = user.IsDeleted,
+                CreatedAt = user.CreatedAt
+            };
+        }
+
+        public async Task<UserDto> CreateAsync(CreateUserDto dto)
+        {
+            var entity = new User
+            {
+                UserName = dto.UserName,
+                Phones = dto.Phones,
+                Email = dto.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Status = "Active",
+                Role = dto.Role,
+                CreatedAt = DateTime.UtcNow,
+                IsDeleted = false
+            };
+
+            await _repo.AddAsync(entity);
+            return await GetByIdAsync(entity.UserID) ?? throw new Exception("Create failed");
+        }
+
+        public async Task<UserDto?> UpdatePartialAsync(int id, UpdateUserDto dto)
+        {
+            var entity = await _repo.GetByIdAsync(id);
+            if (entity == null) return null;
+
+            if (dto.UserName != null) entity.UserName = dto.UserName;
+            if (dto.Phones != null) entity.Phones = dto.Phones;
+            if (dto.Email != null) entity.Email = dto.Email;
+            if (dto.Password != null) entity.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            if (dto.Status != null) entity.Status = dto.Status;
+            if (dto.Role != null) entity.Role = dto.Role;
+            if (dto.IsDeleted.HasValue) entity.IsDeleted = dto.IsDeleted.Value;
+
+            await _repo.UpdateAsync(entity);
+            return await GetByIdAsync(entity.UserID);
+        }
+
+        public async Task<bool> SoftDeleteAsync(int id)
+        {
+            await _repo.SoftDeleteAsync(id);
+            return true;
+        }
+
+        public async Task<bool> HardDeleteAsync(int id)
+        {
+            await _repo.HardDeleteAsync(id);
+            return true;
+        }
+
+        
     }
-    public async Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword)
-    {
-        var user = await _context.Users.FindAsync(userId);
-        if (user is null) return false;
-
-        if (!PasswordHelper.LooksLikeBCrypt(user.Password) ||
-            !BCrypt.Net.BCrypt.Verify(oldPassword, user.Password))
-            return false;
-
-        user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
-        await _context.SaveChangesAsync();
-        return true;
-    }
-
 }

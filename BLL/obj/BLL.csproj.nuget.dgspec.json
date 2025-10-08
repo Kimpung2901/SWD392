@@ -11,7 +11,7 @@
         "projectName": "BLL",
         "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj",
         "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
-        "outputPath": "D:\\Documents\\SWD392\\DollAi\\BLL\\obj\\",
+        "outputPath": "D:\\Documents\\SWD392\\DOLLAI\\BLL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -66,10 +66,6 @@
               "target": "Package",
               "version": "[4.13.0, )"
             },
-            "Microsoft.AspNetCore.Authentication.JwtBearer": {
-              "target": "Package",
-              "version": "[8.0.20, )"
-            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -86,9 +82,9 @@
               "target": "Package",
               "version": "[9.0.9, )"
             },
-            "Swashbuckle.AspNetCore": {
+            "Microsoft.Extensions.Configuration.Binder": {
               "target": "Package",
-              "version": "[6.9.0, )"
+              "version": "[8.0.2, )"
             }
           },
           "imports": [
@@ -118,7 +114,7 @@
         "projectName": "DAL",
         "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj",
         "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
-        "outputPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\obj\\",
+        "outputPath": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -169,10 +165,6 @@
               "target": "Package",
               "version": "[4.13.0, )"
             },
-            "Microsoft.AspNetCore.Authentication.JwtBearer": {
-              "target": "Package",
-              "version": "[8.0.20, )"
-            },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -188,10 +180,6 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[8.0.8, )"
-            },
-            "Swashbuckle.AspNetCore": {
-              "target": "Package",
-              "version": "[6.9.0, )"
             }
           },
           "imports": [

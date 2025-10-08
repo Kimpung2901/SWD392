@@ -19,16 +19,16 @@ namespace BLL.Services.Jwt
             var keyBytes = Encoding.UTF8.GetBytes(_config["Jwt:Key"] ?? throw new Exception("Missing Jwt:Key"));
 
             var claims = new List<Claim>
-            {
+    {
 
-                new(JwtRegisteredClaimNames.Sub, user.UserID.ToString()),
-                new(ClaimTypes.NameIdentifier, user.UserID.ToString()),
+        new(JwtRegisteredClaimNames.Sub, user.UserID.ToString()),                 // "sub"
+        new(ClaimTypes.NameIdentifier, user.UserID.ToString()),                   // nameidentifier
+        new("UserID", user.UserID.ToString()),                                    // custom cho code cũ
 
-                new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.Role, user.Role ?? "User"),
-
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
+        new(ClaimTypes.Name, user.UserName),
+        new(ClaimTypes.Role, string.IsNullOrWhiteSpace(user.Role) ? "user" : user.Role),
+        new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
 
             var creds = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(

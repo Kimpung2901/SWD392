@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models;
 
@@ -9,16 +10,14 @@ public partial class DollVariant
 
     public int DollModelID { get; set; }
 
+    [ForeignKey(nameof(DollModelID))]
+    public DollModel? DollModel { get; set; }
+
     public string Name { get; set; } = null!;
 
     public decimal Price { get; set; }
     public string Color { get; set; } = null!;
     public string Size { get; set; } = null!;
-
-    public int SizeID { get; set; }
-
-    public int ColorID { get; set; }
-
     public string Image { get; set; } = null!;
 
     public bool IsActive { get; set; }
