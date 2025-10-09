@@ -3,10 +3,10 @@ using BLL.DTO;
 using BLL.IService;
 using BLL.Services.Jwt;
 using DAL.Models;
+using FirebaseAdmin;
+using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.IRepo;
 
 namespace WebNameProjectOfSWD.Controllers;
 
@@ -15,29 +15,23 @@ namespace WebNameProjectOfSWD.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _auth;
+    private readonly IUserService _userService;
     private readonly JwtTokenService _jwt;
-    private readonly DollDbContext _db;
     private readonly IConfiguration _cfg;
-    private readonly IEmailSender _email;
     private readonly IOtpService _otp;
-    private readonly IUserRepository _users; 
 
     public AuthController(
-        IAuthService auth, 
-        JwtTokenService jwt, 
-        DollDbContext db,
-        IConfiguration cfg, 
-        IEmailSender email, 
-        IOtpService otp,
-        IUserRepository users) 
+        IAuthService auth,
+        IUserService userService,
+        JwtTokenService jwt,
+        IConfiguration cfg,
+        IOtpService otp)
     {
         _auth = auth;
+        _userService = userService;
         _jwt = jwt;
-        _db = db;
         _cfg = cfg;
-        _email = email;
-        _otp = otp; 
-        _users = users;
+        _otp = otp;
     }
 
     public class LoginRequest
@@ -55,36 +49,22 @@ public class AuthController : ControllerBase
 
         var user = await _auth.AuthenticateAsync(req.Username, req.Password);
         if (user == null)
-        {
-            #if DEBUG
-            var userExists = await _db.Users.AnyAsync(u => 
-                (u.UserName == req.Username || u.Email == req.Username) && !u.IsDeleted);
-            if (userExists)
-                return Unauthorized(new { message = "Invalid password" });
-            #endif
-
             return Unauthorized(new { message = "Invalid username or password" });
-        }
 
         var minutes = int.TryParse(_cfg["Jwt:AccessTokenMinutes"], out var m) ? m : 60;
         var accessToken = _jwt.CreateAccessToken(user, TimeSpan.FromMinutes(minutes));
 
-        var refresh = new RefreshToken
-        {
-            UserID = user.UserID,
-            Token = Guid.NewGuid().ToString("N"),
-            Expires = DateTime.UtcNow.AddDays(7),
-            Created = DateTime.UtcNow,
-            CreatedByIp = HttpContext.Connection.RemoteIpAddress?.ToString()
-        };
-        _db.RefreshTokens.Add(refresh);
-        await _db.SaveChangesAsync();
+        // ✅ Tạo refresh token qua service
+        var refreshToken = await _userService.CreateRefreshTokenAsync(
+            user.UserID,
+            HttpContext.Connection.RemoteIpAddress?.ToString()
+        );
 
         return Ok(new
         {
             accessToken,
             expiresAt = DateTime.UtcNow.AddMinutes(minutes),
-            refreshToken = refresh.Token,
+            refreshToken = refreshToken.Token,
             username = user.UserName,
             role = user.Role
         });
@@ -97,11 +77,9 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        if (await _db.Users.AnyAsync(u => u.UserName == req.Username))
-            return BadRequest(new { message = "Username already exists" });
-
-        if (await _db.Users.AnyAsync(u => u.Email == req.Email))
-            return BadRequest(new { message = "Email already registered" });
+        // ✅ Check qua service
+        if (await _userService.CheckUserExistsAsync(req.Username, req.Email))
+            return BadRequest(new { message = "Username or email already exists" });
 
         var user = await _auth.RegisterAsync(req.Username, req.Password, "customer", req.Email, req.Phones);
 
@@ -128,11 +106,13 @@ public class AuthController : ControllerBase
         return ok ? Ok(new { message = "Password changed successfully" })
                   : BadRequest(new { message = "Invalid current password" });
     }
+
     [HttpPost("forgot-password-otp")]
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPasswordOtp([FromBody] ForgotPasswordOtpRequest req)
     {
-        var user = await _users.GetUserByEmailAsync(req.Email.Trim());
+        // ✅ Query qua service
+        var user = await _userService.GetUserByEmailAsync(req.Email.Trim());
         if (user != null && !user.IsDeleted && user.Status.Equals("active", StringComparison.OrdinalIgnoreCase))
         {
             await _otp.SendOtpAsync(req.Email.Trim());
@@ -148,22 +128,96 @@ public class AuthController : ControllerBase
         var ok = await _otp.VerifyOtpAsync(req.Email.Trim(), req.Otp);
         if (!ok) return BadRequest(new { message = "Invalid or expired OTP" });
 
-        // đổi mật khẩu
-        var user = await _users.GetUserByEmailAsync(req.Email.Trim());
-        if (user == null || user.IsDeleted) return BadRequest(new { message = "Invalid user" });
+        // ✅ Reset password qua service
+        var result = await _userService.ResetPasswordAsync(req.Email.Trim(), req.NewPassword);
+        if (!result)
+            return BadRequest(new { message = "Failed to reset password" });
 
-        user.Password = BCrypt.Net.BCrypt.HashPassword(req.NewPassword);
+        return Ok(new { message = "Password reset successful" });
+    }
+
+    [HttpPost("google-login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest req)
+    {
         try
         {
-            await _users.UpdateAsync(user);
-            return Ok(new { message = "Password reset successful" });
+            // Kiểm tra Firebase có được khởi tạo không
+            if (FirebaseApp.DefaultInstance == null)
+            {
+                return StatusCode(503, new { message = "Google Login is not configured. Please contact administrator." });
+            }
+
+            // Xác minh token từ Firebase
+            FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(req.IdToken);
+            string uid = decodedToken.Uid;
+            string email = decodedToken.Claims.TryGetValue("email", out var emailObj) ? emailObj?.ToString() : null;
+            string name = decodedToken.Claims.TryGetValue("name", out var nameObj) ? nameObj?.ToString() : null;
+
+            if (string.IsNullOrEmpty(email))
+                return BadRequest(new { message = "Email not found in Google token" });
+
+            // ✅ Check và tạo user qua service
+            var user = await _userService.GetUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                // Tạo user mới qua RegisterAsync
+                user = await _auth.RegisterAsync(
+                    username: name ?? email.Split('@')[0],
+                    rawPassword: Guid.NewGuid().ToString(), // Password ngẫu nhiên cho Google login
+                    role: "customer",
+                    email: email,
+                    phone: null
+                );
+            }
+            else if (user.IsDeleted || !user.Status.Equals("active", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new { message = "Account is inactive or deleted" });
+            }
+
+            // Phát hành JWT
+            var minutes = int.TryParse(_cfg["Jwt:AccessTokenMinutes"], out var m) ? m : 60;
+            var jwt = _jwt.CreateAccessToken(user, TimeSpan.FromMinutes(minutes));
+
+            // ✅ Tạo refresh token qua service
+            var refreshToken = await _userService.CreateRefreshTokenAsync(
+                user.UserID,
+                HttpContext.Connection.RemoteIpAddress?.ToString()
+            );
+
+            return Ok(new
+            {
+                message = "Login success",
+                accessToken = jwt,
+                expiresAt = DateTime.UtcNow.AddMinutes(minutes),
+                refreshToken = refreshToken.Token,
+                user = new
+                {
+                    id = user.UserID,
+                    username = user.UserName,
+                    email = user.Email,
+                    role = user.Role
+                }
+            });
+        }
+        catch (FirebaseAuthException ex)
+        {
+            return Unauthorized(new { message = "Invalid Google token", error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return StatusCode(503, new { message = "Firebase service not available", error = ex.Message });
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = ex.Message, stack = ex.StackTrace });
+            return StatusCode(500, new { message = "Server error", error = ex.Message });
         }
     }
+}
 
-
-
+public class GoogleLoginRequest
+{
+    [Required]
+    public string IdToken { get; set; } = string.Empty;
 }

@@ -15,7 +15,6 @@ namespace DAL.Models
         public DateTime? Revoked { get; set; }
         public DateTime Created { get; set; }
         public string? CreatedByIp { get; set; }
-
         public virtual User User { get; set; } = null!;
     }
 

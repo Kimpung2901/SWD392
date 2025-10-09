@@ -1,17 +1,46 @@
-﻿using BLL.IService;
+﻿using BLL.Helper;
+using BLL.IService;
 using BLL.Services;
 using BLL.Services.Jwt;
 using BLL.Services.MailService;
+using BLL.Services.UsersService;
 using DAL.IRepo;
 using DAL.Models;
 using DAL.Repo;
 using DAL.Repositories;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
-
 var builder = WebApplication.CreateBuilder(args);
+
+// ===== Firebase Initialization =====
+try
+{
+    var firebaseCredPath = builder.Configuration["Firebase:CredentialPath"] ?? "firebase-adminsdk.json";
+    var fullPath = Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
+    
+    if (File.Exists(fullPath))
+    {
+        var firebaseApp = FirebaseApp.Create(new AppOptions()
+        {
+            Credential = GoogleCredential.FromFile(fullPath)
+        });
+        Console.WriteLine("✅ Firebase initialized successfully");
+    }
+    else
+    {
+        Console.WriteLine($"⚠️ Warning: Firebase credential file not found at: {fullPath}");
+        Console.WriteLine("⚠️ Google Login will not work without Firebase credentials");
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"⚠️ Firebase initialization failed: {ex.Message}");
+    Console.WriteLine("⚠️ Google Login will not work");
+}
 
 // ===== Controllers & Swagger =====
 builder.Services.AddControllers();
@@ -24,7 +53,6 @@ builder.Services
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Gộp còn 1 lần AddSwaggerGen, kèm JWT Bearer
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "DollAI Store API", Version = "v1" });
@@ -53,7 +81,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<DollDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ===== DI services (giữ nguyên của bạn) =====
+// ===== DI services =====
 
 builder.Services.AddMemoryCache();
 
@@ -72,10 +100,20 @@ builder.Services.AddScoped<IDollVariantService, DollVariantService>();
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 
+// Payment
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+// Payment Providers
+builder.Services.AddScoped<IPaymentProvider, MoMoProvider>();
+builder.Services.AddScoped<IPaymentProvider, VNPayProvider>();
+
+// Payment Options
+builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payments"));
+
 // Email sender
 builder.Services.AddScoped<BLL.IService.IEmailSender, SmtpEmailSender>();
 builder.Services.AddScoped<IOtpService, OtpService>();
-
 
 // ===== AuthN / AuthZ =====
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -84,7 +122,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         opt.TokenValidationParameters = JwtTokenService.GetValidationParameters(builder.Configuration);
     });
 
-// Policies cho 3 role: admin/manager/customer
+// Policies
 builder.Services.AddAuthorization(o =>
 {
     o.AddPolicy("AdminOnly", p => p.RequireRole("admin"));
@@ -106,7 +144,7 @@ if (swaggerEnabled)
     app.UseSwaggerUI();
 }
 
-// ===== HTTPS redirect: CHỈ Dev (Render đã TLS ở phía ngoài) =====
+// ===== HTTPS redirect: CHỈ Dev =====
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -115,7 +153,7 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ===== Route gốc để test/health =====
+// ===== Route gốc =====
 app.MapGet("/", () => Results.Json(new
 {
     ok = true,

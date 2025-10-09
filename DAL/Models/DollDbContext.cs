@@ -39,10 +39,10 @@ public partial class DollDbContext : DbContext
         modelBuilder.Entity<DollModel>(entity =>
         {
             entity.HasKey(e => e.DollModelID);
-            
+
             entity.Property(e => e.DollModelID)
                 .ValueGeneratedOnAdd(); // Auto-increment
-            
+
             entity.ToTable("DollModel");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Description).HasMaxLength(255);
@@ -60,10 +60,10 @@ public partial class DollDbContext : DbContext
         modelBuilder.Entity<DollVariant>(entity =>
         {
             entity.HasKey(e => e.DollVariantID);
-            
+
             entity.Property(e => e.DollVariantID)
                 .ValueGeneratedOnAdd();
-            
+
             entity.ToTable("DollVariant");
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Image).HasMaxLength(255);
@@ -118,6 +118,11 @@ public partial class DollDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(e => e.PaymentID)
                 .HasConstraintName("FK_Order_Payment");
+            entity.HasOne<Order>()
+                 .WithMany()
+                 .HasForeignKey(e => e.OrderID)
+                 .OnDelete(DeleteBehavior.NoAction) // tránh lỗi cascade
+                 .HasConstraintName("FK_Payment_Order");
         });
 
         // OrderItem
@@ -258,27 +263,28 @@ public partial class DollDbContext : DbContext
         {
             entity.HasKey(e => e.PaymentID);
             entity.ToTable("Payment");
-            entity.Property(e => e.Provider).HasMaxLength(255);
-            entity.Property(e => e.Method).HasMaxLength(255);
+
+            entity.Property(e => e.Provider).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Method).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.Currency).HasMaxLength(10);
-            entity.Property(e => e.Status).HasMaxLength(50);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.Target_Type).HasMaxLength(50);
+            entity.Property(e => e.Currency).HasMaxLength(10).IsRequired();
+            entity.Property(e => e.Status).HasMaxLength(50).HasDefaultValue("Pending");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime").HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.Property(e => e.Target_Type).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Target_Id).IsRequired();
+            entity.Property(e => e.TransactionId).HasMaxLength(100);
+            entity.Property(e => e.PayUrl).HasMaxLength(1000);
+            entity.Property(e => e.RawResponse);
+
             entity.HasOne<CharacterOrder>()
                 .WithMany()
                 .HasForeignKey(e => e.CharacterOrderID)
                 .HasConstraintName("FK_Payment_CharacterOrder");
+
             entity.HasOne<Order>()
                 .WithMany()
                 .HasForeignKey(e => e.OrderID)
                 .HasConstraintName("FK_Payment_Order");
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasIndex(u => u.UserName).IsUnique();
-            entity.HasIndex(u => u.Email).IsUnique();
         });
 
 

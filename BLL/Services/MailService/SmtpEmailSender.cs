@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Mail;
 using Microsoft.Extensions.Options;
+using BLL.IService;
 
 namespace BLL.Services.MailService;
 
@@ -14,15 +15,15 @@ public class MailSettings
     public bool EnableSsl { get; set; } = true;
 }
 
-public class SmtpEmailSender
+public class SmtpEmailSender : IEmailSender
 {
     private readonly MailSettings _cfg;
     public SmtpEmailSender(IOptions<MailSettings> cfg) => _cfg = cfg.Value;
 
-    public async Task SendAsync(string to, string subject, string htmlBody, string? displayName = null)
+    public async Task SendEmailAsync(string email, string subject, string htmlMessage, string? displayName = null)
     {
-        if (string.IsNullOrWhiteSpace(to))
-            throw new ArgumentException("Recipient (to) is required.", nameof(to));
+        if (string.IsNullOrWhiteSpace(email))
+            throw new ArgumentException("Recipient (email) is required.", nameof(email));
 
         var fromAddress = string.IsNullOrWhiteSpace(_cfg.From) ? _cfg.UserName : _cfg.From;
         if (string.IsNullOrWhiteSpace(fromAddress))
@@ -42,10 +43,10 @@ public class SmtpEmailSender
         {
             From = from,
             Subject = subject ?? string.Empty,
-            Body = htmlBody ?? string.Empty,
+            Body = htmlMessage ?? string.Empty,
             IsBodyHtml = true
         };
-        msg.To.Add(to);
+        msg.To.Add(email);
 
         await client.SendMailAsync(msg);
     }
