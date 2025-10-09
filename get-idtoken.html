@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Get Firebase ID Token</title>
+</head>
+<body>
+  <h2>Đăng nhập Google để lấy Firebase ID Token</h2>
+  <button id="login">Đăng nhập với Google</button>
+  <pre id="out" style="white-space: pre-wrap; background:#111; color:#0f0; padding:10px; border-radius:6px;"></pre>
+
+  <!-- Firebase CDN (Compat API - dễ dùng hơn) -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+
+  <script>
+    // ⚙️ Cấu hình Firebase của bạn
+    const firebaseConfig = {
+      apiKey: "AIzaSyAHHczqc89YPWZzixLSguDXtHbrFGEDzJQ",
+      authDomain: "dollstoreauth-a038b.firebaseapp.com",
+      projectId: "dollstoreauth-a038b",
+      storageBucket: "dollstoreauth-a038b.firebasestorage.app",
+      messagingSenderId: "117505181305",
+      appId: "1:117505181305:web:84e59fde99c18db72b36a8",
+      measurementId: "G-QMPBZVC6GQ"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    // 🔑 Khi nhấn nút đăng nhập
+    document.getElementById('login').onclick = async () => {
+      try {
+        const result = await auth.signInWithPopup(provider);
+        const token = await result.user.getIdToken(true);
+        console.log("✅ ID Token:", token);
+        document.getElementById('out').textContent = token;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('out').textContent = "❌ Lỗi: " + err.message;
+      }
+    };
+  </script>
+</body>
+</html>

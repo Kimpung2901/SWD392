@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj": {}
+    "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj": {}
   },
   "projects": {
-    "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj": {
+    "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj",
+        "projectUniqueName": "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj",
         "projectName": "BLL",
-        "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj",
+        "projectPath": "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj",
         "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
         "outputPath": "D:\\Documents\\SWD392\\DOLLAI\\BLL\\obj\\",
         "projectStyle": "PackageReference",
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj": {
-                "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj"
+              "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj": {
+                "projectPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj"
               }
             }
           }
@@ -61,6 +61,14 @@
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"
+            },
+            "FirebaseAdmin": {
+              "target": "Package",
+              "version": "[3.4.0, )"
+            },
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.72.0, )"
             },
             "MailKit": {
               "target": "Package",
@@ -107,12 +115,12 @@
         }
       }
     },
-    "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj": {
+    "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj",
+        "projectUniqueName": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj",
         "projectName": "DAL",
-        "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj",
+        "projectPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj",
         "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
         "outputPath": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\obj\\",
         "projectStyle": "PackageReference",
@@ -160,6 +168,14 @@
             "BCrypt.Net-Next": {
               "target": "Package",
               "version": "[4.0.3, )"
+            },
+            "FirebaseAdmin": {
+              "target": "Package",
+              "version": "[3.4.0, )"
+            },
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.72.0, )"
             },
             "MailKit": {
               "target": "Package",

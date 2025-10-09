@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace DAL.Models;
 
@@ -7,22 +6,23 @@ public partial class Payment
 {
     public int PaymentID { get; set; }
 
-    public int OrderID { get; set; }
-    public int CharacterOrderID { get; set; }
+    // chỉ một trong hai có giá trị, tùy Target_Type
+    public int? OrderID { get; set; }
+    public int? CharacterOrderID { get; set; }
 
-    public string Provider { get; set; } = null!;
-
-    public string Method { get; set; } = null!;
+    public string Provider { get; set; } = "Unknown";   // "MoMo" | "VNPay"
+    public string Method { get; set; } = "Redirect";     // "QR" | "ATM" | "Wallet"...
 
     public decimal Amount { get; set; }
+    public string Currency { get; set; } = "VND";     
 
-    public int Currency { get; set; }
+    public string Status { get; set; } = "Pending";      // Pending | Success | Failed | Canceled
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public string Status { get; set; } = null!;
+    public string Target_Type { get; set; } = "Order";   // "Order" | "CharacterOrder"
+    public int Target_Id { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
-    public string Target_Type { get; set; } = null!;
-
-    public int target_id { get; set; }
+    public string? TransactionId { get; set; }           // MoMo: orderId/requestId ; VNPay: vnp_TxnRef
+    public string? PayUrl { get; set; }                  // URL để redirect người dùng
+    public string? RawResponse { get; set; }             // log payload trả về
 }
