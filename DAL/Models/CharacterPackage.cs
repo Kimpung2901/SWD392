@@ -11,8 +11,6 @@ public partial class CharacterPackage
 
     public string Name { get; set; } = null!;
 
-    public int DurationDays { get; set; }
-
     public string Billing_Cycle { get; set; } = null!;
 
     public decimal Price { get; set; }

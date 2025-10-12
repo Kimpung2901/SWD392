@@ -13,8 +13,6 @@ public partial class CharacterOrder
 
     public int UserCharacterID { get; set; }
 
-    public int QuantityMonths { get; set; }
-
     public decimal UnitPrice { get; set; }
 
     public DateTime Start_Date { get; set; }

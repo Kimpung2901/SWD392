@@ -99,6 +99,12 @@ builder.Services.AddScoped<IDollVariantRepository, DollVariantRepository>();
 builder.Services.AddScoped<IDollVariantService, DollVariantService>();
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
+builder.Services.AddScoped<ICharacterOrderRepository, CharacterOrderRepository>();
+builder.Services.AddScoped<ICharacterOrderService, CharacterOrderService>();
+
+// CharacterPackage - THÊM 2 DÒNG NÀY
+builder.Services.AddScoped<ICharacterPackageRepository, CharacterPackageRepository>();
+builder.Services.AddScoped<ICharacterPackageService, CharacterPackageService>();
 
 // Payment
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
