@@ -1,5 +1,6 @@
 ﻿using BLL.Helper;
 using BLL.IService;
+using BLL.Options;
 using BLL.Services;
 using BLL.Services.Jwt;
 using BLL.Services.MailService;
@@ -32,26 +33,23 @@ try
     }
     else
     {
-        Console.WriteLine($"⚠️ Warning: Firebase credential file not found at: {fullPath}");
-        Console.WriteLine("⚠️ Google Login will not work without Firebase credentials");
+        Console.WriteLine($"⚠️ Warning: Firebase credential file not found");
     }
 }
 catch (Exception ex)
 {
     Console.WriteLine($"⚠️ Firebase initialization failed: {ex.Message}");
-    Console.WriteLine("⚠️ Google Login will not work");
 }
 
 // ===== Controllers & Swagger =====
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services
-    .AddControllers()
+builder.Services.AddControllers()
     .AddJsonOptions(opt =>
     {
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
+
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -82,34 +80,47 @@ builder.Services.AddDbContext<DollDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ===== DI services =====
-
 builder.Services.AddMemoryCache();
-
 builder.Services.AddScoped<JwtTokenService>();
 
+
+
+
+// Doll services
 builder.Services.AddScoped<IDollTypeRepository, DollTypeRepository>();
 builder.Services.AddScoped<IDollTypeService, DollTypeService>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<IDollModelRepository, DollModelRepository>();
 builder.Services.AddScoped<IDollModelService, DollModelService>();
 builder.Services.AddScoped<IDollVariantRepository, DollVariantRepository>();
 builder.Services.AddScoped<IDollVariantService, DollVariantService>();
+
+// User & Auth services
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+
+// Character services
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
+// Character Package
+builder.Services.AddScoped<ICharacterPackageRepository, CharacterPackageRepository>();
+builder.Services.AddScoped<ICharacterPackageService, CharacterPackageService>();
 
-// Payment
+
+// ✅ MoMo Payment Services
+//builder.Services.AddScoped<IPaymentProvider, FakeMoMoProvider>(); // ✅ Dùng fake provider
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+//builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payments"));
 
-// Payment Providers
-builder.Services.AddScoped<IPaymentProvider, MoMoProvider>();
-builder.Services.AddScoped<IPaymentProvider, VNPayProvider>();
+//Console.WriteLine("✅ Payment services registered (Using FakeMoMoProvider)");
 
-// Payment Options
-builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payments"));
+// Options
+builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payment"));
+
+builder.Services.AddHttpClient<IPaymentProvider, MoMoProvider>();
+
 
 // Email sender
 builder.Services.AddScoped<BLL.IService.IEmailSender, SmtpEmailSender>();
@@ -122,7 +133,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         opt.TokenValidationParameters = JwtTokenService.GetValidationParameters(builder.Configuration);
     });
 
-// Policies
 builder.Services.AddAuthorization(o =>
 {
     o.AddPolicy("AdminOnly", p => p.RequireRole("admin"));
@@ -133,10 +143,8 @@ builder.Services.AddAuthorization(o =>
 
 var app = builder.Build();
 
-var swaggerEnabled =
-    app.Environment.IsDevelopment()
-    || builder.Configuration.GetValue<bool>("Swagger:Enabled")
-    || builder.Configuration.GetValue<bool>("Swagger__Enabled");
+var swaggerEnabled = app.Environment.IsDevelopment() 
+    || builder.Configuration.GetValue<bool>("Swagger:Enabled");
 
 if (swaggerEnabled)
 {
@@ -144,7 +152,6 @@ if (swaggerEnabled)
     app.UseSwaggerUI();
 }
 
-// ===== HTTPS redirect: CHỈ Dev =====
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -153,15 +160,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ===== Route gốc =====
-app.MapGet("/", () => Results.Json(new
-{
-    ok = true,
-    message = "API running",
-    env = app.Environment.EnvironmentName,
-    swagger = swaggerEnabled
-}));
-
-app.MapControllers();
+app.MapControllers(); // ✅ Phải có dòng này
 
 app.Run();

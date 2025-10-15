@@ -1,9 +1,12 @@
 ﻿using System.Net.Http.Json;
-using System.Text;
+using System.Text.Json;
+using BLL.DTO;
 using BLL.Helper;
 using BLL.IService;
+using BLL.Options;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace BLL.Services;
@@ -12,96 +15,131 @@ public class MoMoProvider : IPaymentProvider
 {
     public string Name => "MoMo";
     private readonly PaymentRootOptions _opt;
-    private readonly HttpClient _http = new();
+    private readonly HttpClient _http;
+    private readonly ILogger<MoMoProvider> _logger;
 
-    public MoMoProvider(IOptions<PaymentRootOptions> opt) => _opt = opt.Value;
-
-    public async Task<Payment> CreatePaymentAsync(DollDbContext db, Payment p, CancellationToken ct = default)
+    public MoMoProvider(HttpClient http, IOptions<PaymentRootOptions> opt, ILogger<MoMoProvider> logger)
     {
-        var momo = _opt.MoMo;
-        var orderId = $"M{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{p.PaymentID}";
-        var requestId = orderId;
+        _http = http; _opt = opt.Value; _logger = logger;
+    }
 
-        var body = new Dictionary<string, string>
-        {
-            ["partnerCode"] = momo.PartnerCode,
-            ["accessKey"] = momo.AccessKey,
-            ["requestId"] = requestId,
-            ["amount"] = ((long)p.Amount).ToString(),
-            ["orderId"] = orderId,
-            ["orderInfo"] = $"{p.Target_Type}:{p.Target_Id}",
-            ["returnUrl"] = _opt.ReturnBaseUrl.TrimEnd('/') + momo.ReturnPath,
-            ["notifyUrl"] = _opt.ReturnBaseUrl.TrimEnd('/') + momo.IpnPath,
-            ["requestType"] = "captureWallet",
-            ["extraData"] = ""
-        };
+    public async Task<Payment> CreatePaymentAsync(DollDbContext db, Payment payment, CancellationToken ct = default)
+    {
+        var m = _opt.MoMo;
+        var total = (long)Math.Round(payment.Amount, MidpointRounding.AwayFromZero);
 
-        var raw = $"accessKey={body["accessKey"]}&amount={body["amount"]}&extraData={body["extraData"]}&" +
-                  $"orderId={body["orderId"]}&orderInfo={body["orderInfo"]}&partnerCode={body["partnerCode"]}&" +
-                  $"redirectUrl={body["returnUrl"]}&ipnUrl={body["notifyUrl"]}&requestId={body["requestId"]}&requestType={body["requestType"]}";
-        var signature = CryptoHelper.HmacSha512(raw, momo.SecretKey);
+        var orderId = $"MOMO{DateTime.UtcNow:yyyyMMddHHmmss}{payment.Target_Id:D4}";
+        var requestId = Guid.NewGuid().ToString("N");
+
+        var returnUrl = _opt.ReturnBaseUrl.TrimEnd('/') + m.ReturnPath; // FE quay về sau khi user thao tác
+        var ipnUrl = _opt.ReturnBaseUrl.TrimEnd('/') + m.IpnPath;    // server-to-server
+        var extraData = "";
+        var orderInfo = payment.OrderInfo ?? $"Thanh toan {payment.Target_Type}:{payment.Target_Id}";
+
+        // ký HMAC
+        var raw = MoMoSign.BuildRawToSign(m.AccessKey, total, extraData, ipnUrl, orderId, orderInfo,
+                                          m.PartnerCode, returnUrl, requestId, "captureWallet");
+        var signature = MoMoSign.HmacSha256Lower(raw, m.SecretKey);
 
         var payload = new
         {
-            partnerCode = momo.PartnerCode,
-            accessKey = momo.AccessKey,
+            partnerCode = m.PartnerCode,
+            accessKey = m.AccessKey,
             requestId,
-            amount = body["amount"],
+            amount = total.ToString(),
             orderId,
-            orderInfo = body["orderInfo"],
-            redirectUrl = body["returnUrl"],
-            ipnUrl = body["notifyUrl"],
-            requestType = body["requestType"],
-            extraData = "",
-            signature
+            orderInfo,
+            redirectUrl = returnUrl,
+            ipnUrl,
+            extraData,
+            requestType = "captureWallet",
+            signature,
+            lang = "vi"
         };
 
-        var resp = await _http.PostAsJsonAsync(momo.Endpoint, payload, ct);
-        var json = await resp.Content.ReadAsStringAsync(ct);
-        p.Provider = "MoMo";
-        p.Method = "Wallet";
-        p.TransactionId = orderId;
-        p.PayUrl = TryGet(json, "payUrl") ?? TryGet(json, "deeplink");
-        p.RawResponse = json;
-        await db.SaveChangesAsync(ct);
-        return p;
+        _logger.LogInformation("[MoMo] Create orderId={OrderId}, amount={Amount}", orderId, total);
+        _logger.LogDebug("[MoMo] rawToSign={Raw}", raw);
+        _logger.LogDebug("[MoMo] signature={Sig}", signature);
 
-        static string? TryGet(string json, string key)
+        var res = await _http.PostAsJsonAsync(m.Endpoint, payload, cancellationToken: ct);
+        var json = await res.Content.ReadAsStringAsync(ct);
+        _logger.LogInformation("[MoMo] Status={Status}, Body={Body}", res.StatusCode, json);
+
+        var momo = JsonSerializer.Deserialize<MoMoCreatePaymentResponseModel>(json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+        // cập nhật bản ghi
+        payment.Provider = Name;
+        payment.Method = "Wallet";
+        payment.OrderId = orderId;
+        payment.TransactionId = requestId;
+        payment.RawResponse = json;
+
+        if (momo?.IsSuccess == true && !string.IsNullOrEmpty(momo.PayUrl))
         {
-            // tránh thêm dependency; parse rất đơn giản
-            var tag = $"\"{key}\":\"";
-            var i = json.IndexOf(tag, StringComparison.OrdinalIgnoreCase);
-            if (i < 0) return null;
-            i += tag.Length;
-            var j = json.IndexOf('"', i);
-            return j > i ? json.Substring(i, j - i) : null;
+            payment.PayUrl = momo.PayUrl;   // ← URL trang MoMo (hiển thị QR)
+            payment.Status = "Pending";
         }
+        else
+        {
+            payment.Status = "Failed";
+            payment.OrderInfo = $"MoMo Error [{momo?.ResultCode ?? -1}]: {momo?.Message ?? "Unknown"}";
+        }
+
+        await db.SaveChangesAsync(ct);
+        return payment;
     }
 
-    public async Task<bool> HandleIpnAsync(DollDbContext db, IDictionary<string, string> q, CancellationToken ct = default)
+    public async Task<bool> HandleIpnAsync(DollDbContext db, IDictionary<string, string> form, CancellationToken ct = default)
     {
-        var momo = _opt.MoMo;
-        // verify signature
-        var raw = $"accessKey={momo.AccessKey}&amount={GetValue(q, "amount")}&extraData={GetValue(q, "extraData")}&" +
-                  $"message={GetValue(q, "message")}&orderId={GetValue(q, "orderId")}&orderInfo={GetValue(q, "orderInfo")}&" +
-                  $"orderType={GetValue(q, "orderType")}&partnerCode={GetValue(q, "partnerCode")}&payType={GetValue(q, "payType")}&" +
-                  $"requestId={GetValue(q, "requestId")}&responseTime={GetValue(q, "responseTime")}&resultCode={GetValue(q, "resultCode")}&transId={GetValue(q, "transId")}";
-        var sign = CryptoHelper.HmacSha512(raw, momo.SecretKey);
-        if (!string.Equals(sign, GetValue(q, "signature"), StringComparison.OrdinalIgnoreCase))
+        if (!VerifyIpn(form))
+        {
+            _logger.LogWarning("[MoMo IPN] Signature invalid");
+            return false;
+        }
+
+        if (!form.TryGetValue("orderId", out var orderId))
             return false;
 
-        var orderId = GetValue(q, "orderId");
-        var payment = await db.Payments.FirstOrDefaultAsync(x => x.TransactionId == orderId, ct);
-        if (payment == null) return false;
+        var p = await db.Payments.FirstOrDefaultAsync(x => x.OrderId == orderId, ct);
+        if (p == null) return false;
 
-        payment.Status = GetValue(q, "resultCode") == "0" ? "Success" : "Failed";
-        payment.RawResponse = $"IPN:{CryptoHelper.ToQueryStringSorted(q, false)}";
+        if (p.Status is "Success" or "Failed") return true; // idempotent
+
+        int rc = -1;
+        var hasRc = form.TryGetValue("resultCode", out var rcStr) && int.TryParse(rcStr, out rc);
+        p.Status = (hasRc && rc == 0) ? "Success" : "Failed";
+        if (p.Status == "Success") p.CompletedAt = DateTime.UtcNow;
+
+        p.RawResponse = $"IPN:{string.Join("&", form.Select(kv => $"{kv.Key}={kv.Value}"))}";
         await db.SaveChangesAsync(ct);
         return true;
     }
 
-    private static string GetValue(IDictionary<string, string> dict, string key)
+    private bool VerifyIpn(IDictionary<string, string> f)
     {
-        return dict.TryGetValue(key, out var value) ? value : string.Empty;
+        f.TryGetValue("accessKey", out var accessKey);
+        f.TryGetValue("amount", out var amount);
+        f.TryGetValue("extraData", out var extraData);
+        f.TryGetValue("orderId", out var orderId);
+        f.TryGetValue("orderInfo", out var orderInfo);
+        f.TryGetValue("orderType", out var orderType);
+        f.TryGetValue("partnerCode", out var partnerCode);
+        f.TryGetValue("payType", out var payType);
+        f.TryGetValue("requestId", out var requestId);
+        f.TryGetValue("responseTime", out var responseTime);
+        f.TryGetValue("resultCode", out var resultCode);
+        f.TryGetValue("message", out var message);
+        f.TryGetValue("transId", out var transId);
+        f.TryGetValue("signature", out var sig);
+
+        var raw =
+            $"accessKey={accessKey}&amount={amount}&extraData={extraData}&message={message}" +
+            $"&orderId={orderId}&orderInfo={orderInfo}&orderType={orderType}&partnerCode={partnerCode}" +
+            $"&payType={payType}&requestId={requestId}&responseTime={responseTime}" +
+            $"&resultCode={resultCode}&transId={transId}";
+
+        var calc = MoMoSign.HmacSha256Lower(raw, _opt.MoMo.SecretKey);
+        return string.Equals(calc, sig, StringComparison.OrdinalIgnoreCase);
     }
 }
