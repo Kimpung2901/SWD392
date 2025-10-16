@@ -107,6 +107,12 @@ builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<ICharacterPackageRepository, CharacterPackageRepository>();
 builder.Services.AddScoped<ICharacterPackageService, CharacterPackageService>();
 
+// Order services
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+
 
 // ✅ MoMo Payment Services
 //builder.Services.AddScoped<IPaymentProvider, FakeMoMoProvider>(); // ✅ Dùng fake provider
@@ -140,6 +146,8 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy("CustomerOnly", p => p.RequireRole("customer"));
     o.AddPolicy("AdminOrManager", p => p.RequireRole("admin", "manager"));
 });
+
+
 
 var app = builder.Build();
 

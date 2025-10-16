@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIsDeletedToUser : Migration
+    public partial class FixOrderItemCorrectly : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -56,13 +56,13 @@ namespace DAL.Migrations
                     UserID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserName = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Phones = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Phones = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false, defaultValue: "Active"),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "user"),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -122,30 +122,6 @@ namespace DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PasswordResets",
-                columns: table => new
-                {
-                    PasswordResetsID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<int>(type: "int", nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    Expires = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Used = table.Column<bool>(type: "bit", nullable: false),
-                    Created = table.Column<DateTime>(type: "datetime", nullable: false),
-                    CreatedByIp = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PasswordResets", x => x.PasswordResetsID);
-                    table.ForeignKey(
-                        name: "FK_PasswordResets_User",
-                        column: x => x.UserID,
-                        principalTable: "User",
-                        principalColumn: "UserID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RefreshTokens",
                 columns: table => new
                 {
@@ -156,7 +132,7 @@ namespace DAL.Migrations
                     Expires = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Revoked = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CreatedByIp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    CreatedByIp = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -218,8 +194,6 @@ namespace DAL.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Size = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: false),
-                    SizeID = table.Column<int>(type: "int", nullable: false),
-                    ColorID = table.Column<int>(type: "int", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -263,14 +237,12 @@ namespace DAL.Migrations
                         name: "FK_CharacterOrder_Package",
                         column: x => x.PackageID,
                         principalTable: "CharacterPackage",
-                        principalColumn: "PackageId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "PackageId");
                     table.ForeignKey(
                         name: "FK_CharacterOrder_UserCharacter",
                         column: x => x.UserCharacterID,
                         principalTable: "UserCharacter",
-                        principalColumn: "UserCharacterID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserCharacterID");
                 });
 
             migrationBuilder.CreateTable(
@@ -330,8 +302,7 @@ namespace DAL.Migrations
                         name: "FK_DollCharacterLink_UserCharacter",
                         column: x => x.UserCharacterID,
                         principalTable: "UserCharacter",
-                        principalColumn: "UserCharacterID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "UserCharacterID");
                 });
 
             migrationBuilder.CreateTable(
@@ -340,12 +311,12 @@ namespace DAL.Migrations
                 {
                     OrderID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserID = table.Column<int>(type: "int", nullable: false),
-                    PaymentID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<int>(type: "int", nullable: true),
+                    PaymentID = table.Column<int>(type: "int", nullable: true),
                     OrderDate = table.Column<DateTime>(type: "datetime", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    ShippingAddress = table.Column<decimal>(type: "decimal(18,2)", maxLength: 500, nullable: false),
+                    ShippingAddress = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
                     Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
@@ -370,7 +341,9 @@ namespace DAL.Migrations
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     LineTotal = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OrderID1 = table.Column<int>(type: "int", nullable: true),
+                    DollVariantID1 = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -382,11 +355,21 @@ namespace DAL.Migrations
                         principalColumn: "DollVariantID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_OrderItem_DollVariant_DollVariantID1",
+                        column: x => x.DollVariantID1,
+                        principalTable: "DollVariant",
+                        principalColumn: "DollVariantID");
+                    table.ForeignKey(
                         name: "FK_OrderItem_Order",
                         column: x => x.OrderID,
                         principalTable: "Order",
                         principalColumn: "OrderID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderItem_Order_OrderID1",
+                        column: x => x.OrderID1,
+                        principalTable: "Order",
+                        principalColumn: "OrderID");
                 });
 
             migrationBuilder.CreateTable(
@@ -395,16 +378,22 @@ namespace DAL.Migrations
                 {
                     PaymentID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    OrderID = table.Column<int>(type: "int", nullable: false),
-                    CharacterOrderID = table.Column<int>(type: "int", nullable: false),
-                    Provider = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    Method = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    Provider = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Method = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Currency = table.Column<int>(type: "int", maxLength: 10, nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime", nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false, defaultValue: "Pending"),
+                    TransactionId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MoMoOrderId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PayUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    OrderInfo = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    RawResponse = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Target_Type = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    target_id = table.Column<int>(type: "int", nullable: false)
+                    Target_Id = table.Column<int>(type: "int", nullable: false),
+                    OrderID = table.Column<int>(type: "int", nullable: true),
+                    CharacterOrderID = table.Column<int>(type: "int", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "SYSUTCDATETIME()"),
+                    CompletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -414,13 +403,13 @@ namespace DAL.Migrations
                         column: x => x.CharacterOrderID,
                         principalTable: "CharacterOrder",
                         principalColumn: "CharacterOrderID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_Payment_Order",
                         column: x => x.OrderID,
                         principalTable: "Order",
                         principalColumn: "OrderID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateIndex(
@@ -479,9 +468,19 @@ namespace DAL.Migrations
                 column: "DollVariantID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderItem_DollVariantID1",
+                table: "OrderItem",
+                column: "DollVariantID1");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItem_OrderID",
                 table: "OrderItem",
                 column: "OrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItem_OrderID1",
+                table: "OrderItem",
+                column: "OrderID1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OwnedDoll_DollVariantID",
@@ -491,11 +490,6 @@ namespace DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_OwnedDoll_UserID",
                 table: "OwnedDoll",
-                column: "UserID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PasswordResets_UserID",
-                table: "PasswordResets",
                 column: "UserID");
 
             migrationBuilder.CreateIndex(
@@ -545,8 +539,7 @@ namespace DAL.Migrations
                 table: "Order",
                 column: "PaymentID",
                 principalTable: "Payment",
-                principalColumn: "PaymentID",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "PaymentID");
         }
 
         /// <inheritdoc />
@@ -585,9 +578,6 @@ namespace DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "OrderItem");
-
-            migrationBuilder.DropTable(
-                name: "PasswordResets");
 
             migrationBuilder.DropTable(
                 name: "RefreshTokens");

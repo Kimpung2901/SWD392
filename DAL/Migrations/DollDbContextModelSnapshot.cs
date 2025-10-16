@@ -348,7 +348,7 @@ namespace DAL.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("PaymentID")
+                    b.Property<int?>("PaymentID")
                         .HasColumnType("int");
 
                     b.Property<string>("ShippingAddress")
@@ -364,7 +364,7 @@ namespace DAL.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("UserID")
+                    b.Property<int?>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("OrderID");
@@ -387,10 +387,16 @@ namespace DAL.Migrations
                     b.Property<int>("DollVariantID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DollVariantID1")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("LineTotal")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderID1")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -408,7 +414,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("DollVariantID");
 
+                    b.HasIndex("DollVariantID1");
+
                     b.HasIndex("OrderID");
+
+                    b.HasIndex("OrderID1");
 
                     b.ToTable("OrderItem", (string)null);
                 });
@@ -758,14 +768,12 @@ namespace DAL.Migrations
                         .WithMany()
                         .HasForeignKey("PaymentID")
                         .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired()
                         .HasConstraintName("FK_Order_Payment");
 
                     b.HasOne("DAL.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK_Order_User");
                 });
 
@@ -778,12 +786,24 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_OrderItem_DollVariant");
 
-                    b.HasOne("DAL.Models.Order", null)
+                    b.HasOne("DAL.Models.DollVariant", "DollVariant")
                         .WithMany()
+                        .HasForeignKey("DollVariantID1");
+
+                    b.HasOne("DAL.Models.Order", null)
+                        .WithMany("OrderItems")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_OrderItem_Order");
+
+                    b.HasOne("DAL.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderID1");
+
+                    b.Navigation("DollVariant");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DAL.Models.OwnedDoll", b =>
@@ -856,6 +876,11 @@ namespace DAL.Migrations
             modelBuilder.Entity("DAL.Models.DollType", b =>
                 {
                     b.Navigation("DollModels");
+                });
+
+            modelBuilder.Entity("DAL.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
                 });
 
             modelBuilder.Entity("DAL.Models.User", b =>

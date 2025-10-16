@@ -133,14 +133,15 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.LineTotal).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
             
-            entity.HasOne<Order>()
-                .WithMany()
+            // ✅ Sửa lại relationship - Thêm principal entity
+            entity.HasOne(e => e.Order)  // ✅ Chỉ định navigation property
+                .WithMany(o => o.OrderItems)  // ✅ Chỉ định collection navigation
                 .HasForeignKey(e => e.OrderID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OrderItem_Order");
             
-            entity.HasOne<DollVariant>()
-                .WithMany()
+            entity.HasOne(e => e.DollVariant)  // ✅ Chỉ định navigation property
+                .WithMany()  // ✅ DollVariant không có collection navigation
                 .HasForeignKey(e => e.DollVariantID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OrderItem_DollVariant");
