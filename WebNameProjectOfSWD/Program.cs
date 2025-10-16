@@ -103,10 +103,12 @@ builder.Services.AddScoped<ICharacterOrderRepository, CharacterOrderRepository>(
 builder.Services.AddScoped<ICharacterOrderService, CharacterOrderService>();
 builder.Services.AddScoped<ICharacterPackageRepository, CharacterPackageRepository>();
 builder.Services.AddScoped<ICharacterPackageService, CharacterPackageService>();
-// UserCharacter services
+builder.Services.AddScoped<IDollCharacterLinkRepository, DollCharacterLinkRepository>();
+builder.Services.AddScoped<IDollCharacterLinkService, DollCharacterLinkService>();
+builder.Services.AddScoped<IOwnedDollRepository, OwnedDollRepository>();
+builder.Services.AddScoped<IOwnedDollService, OwnedDollService>();
 builder.Services.AddScoped<IUserCharacterRepository, UserCharacterRepository>();
 builder.Services.AddScoped<IUserCharacterService, UserCharacterService>();
-
 // Payment
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
