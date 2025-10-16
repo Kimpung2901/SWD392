@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj": {}
+    "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj": {}
   },
   "projects": {
-    "D:\\FPT\\DollAIStore\\BLL\\BLL.csproj": {
+    "D:\\FPT\\DollStore\\BLL\\BLL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\FPT\\DollAIStore\\BLL\\BLL.csproj",
+        "projectUniqueName": "D:\\FPT\\DollStore\\BLL\\BLL.csproj",
         "projectName": "BLL",
-        "projectPath": "D:\\FPT\\DollAIStore\\BLL\\BLL.csproj",
+        "projectPath": "D:\\FPT\\DollStore\\BLL\\BLL.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\FPT\\DollAIStore\\BLL\\obj\\",
+        "outputPath": "D:\\FPT\\DollStore\\BLL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -32,8 +32,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\FPT\\DollAIStore\\DAL\\DAL.csproj": {
-                "projectPath": "D:\\FPT\\DollAIStore\\DAL\\DAL.csproj"
+              "D:\\FPT\\DollStore\\DAL\\DAL.csproj": {
+                "projectPath": "D:\\FPT\\DollStore\\DAL\\DAL.csproj"
               }
             }
           }
@@ -115,14 +115,14 @@
         }
       }
     },
-    "D:\\FPT\\DollAIStore\\DAL\\DAL.csproj": {
+    "D:\\FPT\\DollStore\\DAL\\DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\FPT\\DollAIStore\\DAL\\DAL.csproj",
+        "projectUniqueName": "D:\\FPT\\DollStore\\DAL\\DAL.csproj",
         "projectName": "DAL",
-        "projectPath": "D:\\FPT\\DollAIStore\\DAL\\DAL.csproj",
+        "projectPath": "D:\\FPT\\DollStore\\DAL\\DAL.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\FPT\\DollAIStore\\DAL\\obj\\",
+        "outputPath": "D:\\FPT\\DollStore\\DAL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -218,14 +218,14 @@
         }
       }
     },
-    "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj": {
+    "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+        "projectUniqueName": "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
         "projectName": "WebNameProjectOfSWD",
-        "projectPath": "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+        "projectPath": "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
         "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\obj\\",
+        "outputPath": "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -246,8 +246,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\FPT\\DollAIStore\\BLL\\BLL.csproj": {
-                "projectPath": "D:\\FPT\\DollAIStore\\BLL\\BLL.csproj"
+              "D:\\FPT\\DollStore\\BLL\\BLL.csproj": {
+                "projectPath": "D:\\FPT\\DollStore\\BLL\\BLL.csproj"
               }
             }
           }

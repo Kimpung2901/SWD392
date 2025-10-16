@@ -18,49 +18,67 @@ namespace BLL.Services
             _characterRepo = characterRepo;
         }
 
-        public async Task<List<CharacterPackage>> GetAllAsync()
+        public async Task<List<CharacterPackageDto>> GetAllAsync()
         {
-            return await _repo.GetAllAsync();
+            var packages = await _repo.GetAllAsync();
+            var dtos = new List<CharacterPackageDto>();
+
+            foreach (var pkg in packages)
+            {
+                var character = await _characterRepo.GetByIdAsync(pkg.CharacterId);
+                dtos.Add(Map(pkg, character?.Name));
+            }
+
+            return dtos;
         }
 
-        public async Task<CharacterPackage?> GetByIdAsync(int id)
+        public async Task<CharacterPackageDto?> GetByIdAsync(int id)
         {
-            return await _repo.GetByIdAsync(id);
+            var package = await _repo.GetByIdAsync(id);
+            if (package == null) return null;
+
+            var character = await _characterRepo.GetByIdAsync(package.CharacterId);
+            return Map(package, character?.Name);
         }
 
-        public async Task<List<CharacterPackage>> GetByCharacterIdAsync(int characterId)
+        public async Task<List<CharacterPackageDto>> GetByCharacterIdAsync(int characterId)
         {
-            return await _repo.GetByCharacterIdAsync(characterId);
+            var packages = await _repo.GetByCharacterIdAsync(characterId);
+            var character = await _characterRepo.GetByIdAsync(characterId);
+
+            return packages.Select(p => Map(p, character?.Name)).ToList();
         }
 
-        public async Task<CharacterPackage> CreateAsync(CreateCharacterPackageDto dto)
+        public async Task<CharacterPackageDto> CreateAsync(CreateCharacterPackageDto dto)
         {
-            // Validate CharacterId exists
+            // Validate character exists
             var character = await _characterRepo.GetByIdAsync(dto.CharacterId);
             if (character == null)
-                throw new ArgumentException($"Character with ID {dto.CharacterId} does not exist");
+                throw new Exception($"Character với ID {dto.CharacterId} không tồn tại");
 
             var entity = new CharacterPackage
             {
                 CharacterId = dto.CharacterId,
                 Name = dto.Name,
+                DurationDays = dto.DurationDays,
                 Billing_Cycle = dto.Billing_Cycle,
                 Price = dto.Price,
                 Description = dto.Description,
                 IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                Status = dto.Status
+                Status = "Active",
+                CreatedAt = DateTime.UtcNow
             };
 
             await _repo.AddAsync(entity);
-            return entity;
+            return Map(entity, character.Name);
         }
 
-        public async Task<CharacterPackage?> UpdatePartialAsync(int id, UpdateCharacterPackageDto dto)
+        public async Task<CharacterPackageDto?> UpdatePartialAsync(int id, UpdateCharacterPackageDto dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
+            // Clean and update helper function
             static string? Clean(string? s)
             {
                 if (string.IsNullOrWhiteSpace(s)) return null;
@@ -69,39 +87,56 @@ namespace BLL.Services
                 return t;
             }
 
-            // Validate CharacterId if changed
-            if (dto.CharacterId.HasValue)
-            {
-                var character = await _characterRepo.GetByIdAsync(dto.CharacterId.Value);
-                if (character == null)
-                    throw new ArgumentException($"Character with ID {dto.CharacterId.Value} does not exist");
-                entity.CharacterId = dto.CharacterId.Value;
-            }
-
             var name = Clean(dto.Name);
             if (name != null) entity.Name = name;
+
+            if (dto.DurationDays.HasValue && dto.DurationDays.Value > 0)
+                entity.DurationDays = dto.DurationDays.Value;
 
             var billingCycle = Clean(dto.Billing_Cycle);
             if (billingCycle != null) entity.Billing_Cycle = billingCycle;
 
-            if (dto.Price.HasValue) entity.Price = dto.Price.Value;
+            if (dto.Price.HasValue && dto.Price.Value > 0)
+                entity.Price = dto.Price.Value;
 
             var description = Clean(dto.Description);
             if (description != null) entity.Description = description;
 
-            if (dto.IsActive.HasValue) entity.IsActive = dto.IsActive.Value;
+            if (dto.IsActive.HasValue)
+                entity.IsActive = dto.IsActive.Value;
 
             var status = Clean(dto.Status);
             if (status != null) entity.Status = status;
 
             await _repo.UpdateAsync(entity);
-            return entity;
+
+            var character = await _characterRepo.GetByIdAsync(entity.CharacterId);
+            return Map(entity, character?.Name);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> SoftDeleteAsync(int id)
         {
-            await _repo.DeleteAsync(id);
-            return true;
+            return await _repo.SoftDeleteAsync(id);
         }
+
+        public async Task<bool> HardDeleteAsync(int id)
+        {
+            return await _repo.HardDeleteAsync(id);
+        }
+
+        private static CharacterPackageDto Map(CharacterPackage p, string? characterName) => new()
+        {
+            PackageId = p.PackageId,
+            CharacterId = p.CharacterId,
+            CharacterName = characterName,
+            Name = p.Name,
+            DurationDays = p.DurationDays,
+            Billing_Cycle = p.Billing_Cycle,
+            Price = p.Price,
+            Description = p.Description,
+            IsActive = p.IsActive,
+            CreatedAt = p.CreatedAt,
+            Status = p.Status
+        };
     }
 }

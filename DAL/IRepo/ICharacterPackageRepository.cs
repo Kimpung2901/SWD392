@@ -9,7 +9,8 @@ namespace DAL.IRepo
         Task<List<CharacterPackage>> GetByCharacterIdAsync(int characterId);
         Task AddAsync(CharacterPackage entity);
         Task UpdateAsync(CharacterPackage entity);
-        Task DeleteAsync(int id);
+        Task<bool> SoftDeleteAsync(int id);
+        Task<bool> HardDeleteAsync(int id);
         Task<bool> SaveChangesAsync();
     }
 }

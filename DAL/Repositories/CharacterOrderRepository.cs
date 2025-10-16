@@ -13,7 +13,8 @@ namespace DAL.Repositories
         public async Task<List<CharacterOrder>> GetAllAsync()
         {
             return await _db.CharacterOrders
-                .OrderByDescending(o => o.CreatedAt)
+                .Where(co => co.Status != "Deleted")
+                .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -21,34 +22,66 @@ namespace DAL.Repositories
         public async Task<CharacterOrder?> GetByIdAsync(int id)
         {
             return await _db.CharacterOrders
-                .FirstOrDefaultAsync(o => o.CharacterOrderID == id);
+                .FirstOrDefaultAsync(co => co.CharacterOrderID == id && co.Status != "Deleted");
         }
 
-        public async Task<CharacterOrder> CreateAsync(CharacterOrder entity)
+        public async Task<List<CharacterOrder>> GetByCharacterIdAsync(int characterId)
+        {
+            return await _db.CharacterOrders
+                .Where(co => co.CharacterID == characterId && co.Status != "Deleted")
+                .OrderByDescending(co => co.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<CharacterOrder>> GetByPackageIdAsync(int packageId)
+        {
+            return await _db.CharacterOrders
+                .Where(co => co.PackageID == packageId && co.Status != "Deleted")
+                .OrderByDescending(co => co.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task<List<CharacterOrder>> GetByUserCharacterIdAsync(int userCharacterId)
+        {
+            return await _db.CharacterOrders
+                .Where(co => co.UserCharacterID == userCharacterId && co.Status != "Deleted")
+                .OrderByDescending(co => co.CreatedAt)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(CharacterOrder entity)
         {
             _db.CharacterOrders.Add(entity);
             await _db.SaveChangesAsync();
-            return entity;
         }
 
-        public async Task<CharacterOrder?> UpdateAsync(int id, CharacterOrder entity)
+        public async Task UpdateAsync(CharacterOrder entity)
         {
-            var existing = await _db.CharacterOrders.FindAsync(id);
-            if (existing == null) return null;
+            if (_db.Entry(entity).State == EntityState.Detached)
+            {
+                _db.CharacterOrders.Attach(entity);
+            }
 
-            existing.PackageID = entity.PackageID;
-            existing.CharacterID = entity.CharacterID;
-            existing.UserCharacterID = entity.UserCharacterID;
-            existing.UnitPrice = entity.UnitPrice;
-            existing.Start_Date = entity.Start_Date;
-            existing.End_Date = entity.End_Date;
-            existing.Status = entity.Status;
-
+            _db.Entry(entity).State = EntityState.Modified;
             await _db.SaveChangesAsync();
-            return existing;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> SoftDeleteAsync(int id)
+        {
+            var entity = await _db.CharacterOrders.FindAsync(id);
+            if (entity != null)
+            {
+                entity.Status = "Deleted";
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<bool> HardDeleteAsync(int id)
         {
             var entity = await _db.CharacterOrders.FindAsync(id);
             if (entity != null)
@@ -58,6 +91,11 @@ namespace DAL.Repositories
                 return true;
             }
             return false;
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _db.SaveChangesAsync() > 0;
         }
     }
 }

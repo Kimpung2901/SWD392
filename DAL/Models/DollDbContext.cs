@@ -181,6 +181,7 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.PackageId);
             entity.ToTable("CharacterPackage");
             entity.Property(e => e.Name).HasMaxLength(255);
+            entity.Property(e => e.DurationDays).IsRequired(); 
             entity.Property(e => e.Billing_Cycle).HasMaxLength(50);
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Description).HasMaxLength(255);

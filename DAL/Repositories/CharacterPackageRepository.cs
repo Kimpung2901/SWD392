@@ -13,8 +13,8 @@ namespace DAL.Repositories
         public async Task<List<CharacterPackage>> GetAllAsync()
         {
             return await _db.CharacterPackages
-                .Where(cp => cp.IsActive)
-                .OrderByDescending(cp => cp.CreatedAt)
+                .Where(p => p.IsActive)
+                .OrderByDescending(p => p.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -22,14 +22,14 @@ namespace DAL.Repositories
         public async Task<CharacterPackage?> GetByIdAsync(int id)
         {
             return await _db.CharacterPackages
-                .FirstOrDefaultAsync(cp => cp.PackageId == id && cp.IsActive);
+                .FirstOrDefaultAsync(p => p.PackageId == id && p.IsActive);
         }
 
         public async Task<List<CharacterPackage>> GetByCharacterIdAsync(int characterId)
         {
             return await _db.CharacterPackages
-                .Where(cp => cp.CharacterId == characterId && cp.IsActive)
-                .OrderByDescending(cp => cp.CreatedAt)
+                .Where(p => p.CharacterId == characterId && p.IsActive)
+                .OrderBy(p => p.Price)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -51,14 +51,29 @@ namespace DAL.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<bool> SoftDeleteAsync(int id)
         {
             var entity = await _db.CharacterPackages.FindAsync(id);
             if (entity != null)
             {
-                entity.IsActive = false; // Soft delete
+                entity.IsActive = false;
+                entity.Status = "Deleted";
                 await _db.SaveChangesAsync();
+                return true;
             }
+            return false;
+        }
+
+        public async Task<bool> HardDeleteAsync(int id)
+        {
+            var entity = await _db.CharacterPackages.FindAsync(id);
+            if (entity != null)
+            {
+                _db.CharacterPackages.Remove(entity);
+                await _db.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
 
         public async Task<bool> SaveChangesAsync()

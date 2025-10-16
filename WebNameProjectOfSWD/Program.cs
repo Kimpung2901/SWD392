@@ -101,8 +101,6 @@ builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<ICharacterOrderRepository, CharacterOrderRepository>();
 builder.Services.AddScoped<ICharacterOrderService, CharacterOrderService>();
-
-// CharacterPackage - THÊM 2 DÒNG NÀY
 builder.Services.AddScoped<ICharacterPackageRepository, CharacterPackageRepository>();
 builder.Services.AddScoped<ICharacterPackageService, CharacterPackageService>();
 // UserCharacter services

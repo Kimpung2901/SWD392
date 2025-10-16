@@ -15,11 +15,13 @@ public partial class CharacterOrder
 
     public decimal UnitPrice { get; set; }
 
+    public int QuantityMonths { get; set; } 
+
     public DateTime Start_Date { get; set; }
 
     public DateTime End_Date { get; set; }
 
-    public DateTime CreatedAt { get; set; }
-
     public string Status { get; set; } = null!;
+
+    public DateTime CreatedAt { get; set; }
 }

@@ -5710,11 +5710,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+      "projectUniqueName": "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
       "projectName": "WebNameProjectOfSWD",
-      "projectPath": "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+      "projectPath": "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
       "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-      "outputPath": "D:\\FPT\\DollAIStore\\WebNameProjectOfSWD\\obj\\",
+      "outputPath": "D:\\FPT\\DollStore\\WebNameProjectOfSWD\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -5735,8 +5735,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\FPT\\DollAIStore\\BLL\\BLL.csproj": {
-              "projectPath": "D:\\FPT\\DollAIStore\\BLL\\BLL.csproj"
+            "D:\\FPT\\DollStore\\BLL\\BLL.csproj": {
+              "projectPath": "D:\\FPT\\DollStore\\BLL\\BLL.csproj"
             }
           }
         }

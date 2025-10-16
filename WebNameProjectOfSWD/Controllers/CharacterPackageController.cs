@@ -12,7 +12,7 @@ namespace WebNameProjectOfSWD.Controllers
         private readonly ILogger<CharacterPackageController> _logger;
 
         public CharacterPackageController(
-            ICharacterPackageService service, 
+            ICharacterPackageService service,
             ILogger<CharacterPackageController> logger)
         {
             _service = service;
@@ -23,21 +23,23 @@ namespace WebNameProjectOfSWD.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetAllAsync();
-            return Ok(result);
+            return Ok(new { message = "Lấy danh sách package thành công", data = result });
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
-            return result == null ? NotFound() : Ok(result);
+            return result == null
+                ? NotFound(new { message = $"Không tìm thấy package #{id}" })
+                : Ok(new { message = "Lấy thông tin package thành công", data = result });
         }
 
-        [HttpGet("by-character/{characterId}")]
+        [HttpGet("character/{characterId}")]
         public async Task<IActionResult> GetByCharacterId(int characterId)
         {
             var result = await _service.GetByCharacterIdAsync(characterId);
-            return Ok(result);
+            return Ok(new { message = $"Lấy danh sách package của character #{characterId} thành công", data = result });
         }
 
         [HttpPost]
@@ -57,6 +59,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi khi tạo package");
                 return BadRequest(new { message = ex.Message });
             }
         }
@@ -74,21 +77,31 @@ namespace WebNameProjectOfSWD.Controllers
                 var result = await _service.UpdatePartialAsync(id, dto);
                 return result == null
                     ? NotFound(new { message = $"Không tìm thấy package #{id}" })
-                    : Ok(new { message = "Cập nhật thành công", data = result });
+                    : Ok(new { message = "Cập nhật package thành công", data = result });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Lỗi khi cập nhật package #{Id}", id);
                 return BadRequest(new { message = ex.Message });
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("soft/{id}")]
+        public async Task<IActionResult> SoftDelete(int id)
         {
-            var result = await _service.DeleteAsync(id);
+            var result = await _service.SoftDeleteAsync(id);
             return result
-                ? Ok(new { message = "Xóa thành công" })
-                : NotFound();
+                ? Ok(new { message = "Đã xóa mềm package thành công" })
+                : NotFound(new { message = $"Không tìm thấy package #{id}" });
+        }
+
+        [HttpDelete("hard/{id}")]
+        public async Task<IActionResult> HardDelete(int id)
+        {
+            var result = await _service.HardDeleteAsync(id);
+            return result
+                ? Ok(new { message = "Đã xóa vĩnh viễn package thành công" })
+                : NotFound(new { message = $"Không tìm thấy package #{id}" });
         }
     }
 }
