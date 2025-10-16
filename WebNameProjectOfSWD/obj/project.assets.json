@@ -254,6 +254,23 @@
           "Microsoft.AspNetCore.App"
         ]
       },
+      "Microsoft.AspNetCore.Http.Features/6.0.0-preview.4.21253.5": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "6.0.0-preview.4.21253.7",
+          "System.IO.Pipelines": "6.0.0-preview.4.21253.7"
+        },
+        "compile": {
+          "lib/net6.0/Microsoft.AspNetCore.Http.Features.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/Microsoft.AspNetCore.Http.Features.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
         "type": "package",
         "compile": {
@@ -1944,6 +1961,7 @@
           "FirebaseAdmin": "3.4.0",
           "Google.Apis.Auth": "1.72.0",
           "MailKit": "4.13.0",
+          "Microsoft.AspNetCore.Http.Features": "6.0.0-preview.4.21253.5",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.9",
           "Microsoft.Extensions.Configuration.Binder": "8.0.2"
         },
@@ -2286,6 +2304,25 @@
         "lib/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.xml",
         "microsoft.aspnetcore.authentication.jwtbearer.8.0.20.nupkg.sha512",
         "microsoft.aspnetcore.authentication.jwtbearer.nuspec"
+      ]
+    },
+    "Microsoft.AspNetCore.Http.Features/6.0.0-preview.4.21253.5": {
+      "sha512": "R3MUGcafdytxU9Bv5PWy46MPlHtPLgjCX9ay+Y7VPyvaxtpCijz6tMBUPletOUeAcmyYpwBgWU1FwdyuZn0n8w==",
+      "type": "package",
+      "path": "microsoft.aspnetcore.http.features/6.0.0-preview.4.21253.5",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/Microsoft.AspNetCore.Http.Features.dll",
+        "lib/net461/Microsoft.AspNetCore.Http.Features.xml",
+        "lib/net6.0/Microsoft.AspNetCore.Http.Features.dll",
+        "lib/net6.0/Microsoft.AspNetCore.Http.Features.xml",
+        "lib/netstandard2.0/Microsoft.AspNetCore.Http.Features.dll",
+        "lib/netstandard2.0/Microsoft.AspNetCore.Http.Features.xml",
+        "microsoft.aspnetcore.http.features.6.0.0-preview.4.21253.5.nupkg.sha512",
+        "microsoft.aspnetcore.http.features.nuspec"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/7.0.0": {
@@ -5710,9 +5747,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Documents\\SWD392\\DollAi\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+      "projectUniqueName": "D:\\Documents\\SWD392\\DOLLAI\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
       "projectName": "WebNameProjectOfSWD",
-      "projectPath": "D:\\Documents\\SWD392\\DollAi\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
+      "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\WebNameProjectOfSWD\\WebNameProjectOfSWD.csproj",
       "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
       "outputPath": "D:\\Documents\\SWD392\\DOLLAI\\WebNameProjectOfSWD\\obj\\",
       "projectStyle": "PackageReference",
@@ -5735,8 +5772,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj": {
-              "projectPath": "D:\\Documents\\SWD392\\DollAi\\BLL\\BLL.csproj"
+            "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj": {
+              "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\BLL\\BLL.csproj"
             }
           }
         }

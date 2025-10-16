@@ -1,59 +1,64 @@
-﻿using BLL.IService;
-using DAL.Models; 
+﻿using BLL.DTO;
+using BLL.IService;
+using DAL.IRepo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebNameProjectOfSWD.Controllers
-{ 
-    [ApiController]
-    [Route("api/[controller]")]
-    public class PaymentController : ControllerBase
+namespace WebNameProjectOfSWD.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class PaymentController : ControllerBase
+{
+    private readonly IPaymentService _paymentService;
+    private readonly IPaymentRepository _repo;
+
+    public PaymentController(IPaymentService paymentService, IPaymentRepository repo)
     {
-        private readonly IPaymentService _svc;
-        
-        public PaymentController(IPaymentService svc) => _svc = svc;
+        _paymentService = paymentService;
+        _repo = repo;
+    }
 
-        // Tạo giao dịch
-        [HttpPost("start")]
-        public async Task<IActionResult> Start(
-            [FromQuery] string provider, 
-            [FromQuery] decimal amount,
-            [FromQuery] string targetType, 
-            [FromQuery] int targetId, 
-            [FromQuery] int? orderId, 
-            [FromQuery] int? characterOrderId)
-        {
-            var p = await _svc.StartAsync(provider, amount, targetType, targetId, orderId, characterOrderId);
-            return Ok(new 
-            { 
-                p.PaymentID, 
-                p.Provider, 
-                p.Status, 
-                p.PayUrl, 
-                p.TransactionId 
-            });
-        }
+    // FE gọi -> nhận payUrl (MoMo) -> FE redirect => người dùng thấy QR trên MoMo
+    [HttpPost("create")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest req, CancellationToken ct)
+    {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        var result = await _paymentService.CreateMoMoPaymentAsync(
+            req.Amount, req.TargetType, req.TargetId, req.OrderId, req.CharacterOrderId, ct);
 
-        // MoMo IPN
-        [HttpPost("momo/ipn")]
-        public async Task<IActionResult> MoMoIpn()
-        {
-            var form = Request.HasFormContentType ? Request.Form : null;
-            var dict = form?.ToDictionary(k => k.Key, v => v.Value.ToString()) ?? new Dictionary<string, string>();
-            var ok = await _svc.HandleIpnAsync("MoMo", dict);
-            return Ok(new { result = ok ? 0 : 1 });
-        }
+        if (!result.Success) return BadRequest(new { success = false, message = result.Message });
 
-        // VNPay IPN 
-        [HttpGet("vnpay/ipn")]
-        public async Task<IActionResult> VNPayIpnGet()
-        {
-            var dict = Request.Query.ToDictionary(k => k.Key, v => v.Value.ToString());
-            var ok = await _svc.HandleIpnAsync("VNPay", dict);
-            return Ok(new { RspCode = ok ? "00" : "97", Message = ok ? "Success" : "Invalid signature" });
-        }
+        // đảm bảo absolute url nếu provider trả path tương đối
+        var payUrl = result.PayUrl!;
+        if (Uri.TryCreate(payUrl, UriKind.Relative, out _))
+            payUrl = $"{Request.Scheme}://{Request.Host}{payUrl}";
 
-        [HttpPost("vnpay/ipn")]
-        public Task<IActionResult> VNPayIpnPost() => VNPayIpnGet();
+        return Ok(new { success = true, payUrl, paymentId = result.PaymentId });
+    }
+
+    // Return URL từ MoMo (để UX), không chốt trạng thái ở đây
+    [HttpGet("momo/callback")]
+    [AllowAnonymous]
+    public IActionResult MoMoCallback([FromQuery] string orderId, [FromQuery] string? resultCode)
+        => Redirect($"/pay-result?orderId={orderId}&resultCode={resultCode}");
+
+    // IPN: chốt trạng thái
+    [HttpPost("momo/ipn")]
+    [AllowAnonymous]
+    public async Task<IActionResult> MoMoIpn(CancellationToken ct)
+    {
+        var (ok, message) = await _paymentService.HandleMoMoIpnAsync(Request.Form, ct);
+        return Ok(new { resultCode = ok ? 0 : 1, message });
+    }
+
+    // FE poll trạng thái
+    [HttpGet("status")]
+    public async Task<IActionResult> GetStatus([FromQuery] int paymentId)
+    {
+        var p = await _repo.GetByIdAsync(paymentId);
+        if (p == null) return NotFound();
+        return Ok(new { status = p.Status, orderId = p.OrderId, amount = p.Amount, completedAt = p.CompletedAt });
     }
 }
-

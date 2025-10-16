@@ -1,28 +1,64 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models;
 
-public partial class Payment
+[Table("Payment")]
+public class Payment
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int PaymentID { get; set; }
 
-    // chỉ một trong hai có giá trị, tùy Target_Type
-    public int? OrderID { get; set; }
-    public int? CharacterOrderID { get; set; }
+    [Required]
+    [MaxLength(50)]
+    public string Provider { get; set; } = string.Empty;
 
-    public string Provider { get; set; } = "Unknown";   // "MoMo" | "VNPay"
-    public string Method { get; set; } = "Redirect";     // "QR" | "ATM" | "Wallet"...
+    [MaxLength(50)]
+    public string? Method { get; set; }
 
+    [Column(TypeName = "decimal(18,2)")]
     public decimal Amount { get; set; }
-    public string Currency { get; set; } = "VND";     
 
-    public string Status { get; set; } = "Pending";      // Pending | Success | Failed | Canceled
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    [MaxLength(10)]
+    public string Currency { get; set; } = "VND";
 
-    public string Target_Type { get; set; } = "Order";   // "Order" | "CharacterOrder"
+    [Required]
+    [MaxLength(50)]
+    public string Status { get; set; } = "Pending";
+
+    [MaxLength(100)]
+    public string? TransactionId { get; set; }
+
+    // ✅ Đổi tên: OrderId từ MoMo
+    [MaxLength(100)]
+    [Column("MoMoOrderId")]
+    public string? OrderId { get; set; }
+
+    [MaxLength(500)]
+    public string? PayUrl { get; set; }
+
+    [MaxLength(255)]
+    public string? OrderInfo { get; set; }
+
+    [Column(TypeName = "nvarchar(max)")]
+    public string? RawResponse { get; set; }
+
+    [Required]
+    [MaxLength(50)]
+    public string Target_Type { get; set; } = string.Empty;
+
     public int Target_Id { get; set; }
 
-    public string? TransactionId { get; set; }           // MoMo: orderId/requestId ; VNPay: vnp_TxnRef
-    public string? PayUrl { get; set; }                  // URL để redirect người dùng
-    public string? RawResponse { get; set; }             // log payload trả về
+    // ✅ FK đến bảng Order
+    public int? OrderID { get; set; }
+
+    public int? CharacterOrderID { get; set; }
+
+    [Column(TypeName = "datetime2")]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [Column(TypeName = "datetime2")]
+    public DateTime? CompletedAt { get; set; }
 }

@@ -1,13 +1,10 @@
 using DAL.Models;
 
-namespace DAL.IRepo
+namespace DAL.IRepo;
+
+public interface IPaymentRepository
 {
-    public interface IPaymentRepository
-    {
-        Task<Payment?> GetByIdAsync(int id);
-        Task<Payment?> GetByTransactionIdAsync(string transactionId);
-        Task AddAsync(Payment payment);
-        Task UpdateAsync(Payment payment);
-        Task<bool> SaveChangesAsync();
-    }
+    Task<Payment?> GetByIdAsync(int id);
+    Task AddAsync(Payment payment);
+    Task UpdateAsync(Payment payment);
 }

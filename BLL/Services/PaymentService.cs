@@ -1,9 +1,9 @@
-﻿using BLL.IService;
-using DAL.Models;
+﻿using BLL.DTO;
+using BLL.IService;
 using DAL.IRepo;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq; // Add this using directive at the top
+using DAL.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace BLL.Services;
 
@@ -11,55 +11,64 @@ public class PaymentService : IPaymentService
 {
     private readonly IPaymentRepository _repo;
     private readonly DollDbContext _db;
-    private readonly IPaymentProvider _momoProvider;
-    private readonly IPaymentProvider _vnpayProvider;
+    private readonly IPaymentProvider _momo;
+    private readonly ILogger<PaymentService> _logger;
 
-    // Replace all instances of 'ProviderName' with 'Name' to match the IPaymentProvider interface
-    public PaymentService(
-        IPaymentRepository repo,
-        DollDbContext db,
-        IEnumerable<IPaymentProvider> providers)
+    public PaymentService(IPaymentRepository repo, DollDbContext db, IEnumerable<IPaymentProvider> providers, ILogger<PaymentService> logger)
     {
-        _repo = repo;
-        _db = db;
-        _momoProvider = providers.FirstOrDefault(p => p.Name == "MoMo")!;
-        _vnpayProvider = providers.FirstOrDefault(p => p.Name == "VNPay")!;
+        _repo = repo; _db = db; _logger = logger;
+        _momo = providers.First(p => p.Name == "MoMo");
     }
 
-    public async Task<Payment> StartAsync(
-        string provider,
-        decimal amount,
-        string targetType,
-        int targetId,
-        int? orderId,
-        int? characterOrderId)
+    public async Task<PaymentStartResponse> CreateMoMoPaymentAsync(decimal amount, string targetType, int targetId, int? orderId, int? characterOrderId, CancellationToken ct = default)
     {
-        var payment = new Payment
+        try
         {
-            Provider = provider,
-            Amount = amount,
-            Currency = "VND",
-            Status = "Pending",
-            Target_Type = targetType,
-            Target_Id = targetId,
-            OrderID = orderId,
-            CharacterOrderID = characterOrderId,
-            CreatedAt = DateTime.UtcNow
-        };
+            var p = new Payment
+            {
+                Provider = "MoMo",
+                Method = "Wallet",
+                Amount = amount,
+                Currency = "VND",
+                Status = "Pending",
+                Target_Type = targetType,
+                Target_Id = targetId,
+                OrderID = orderId,
+                CharacterOrderID = characterOrderId,
+                OrderInfo = $"Thanh toan {targetType} #{targetId}",
+                CreatedAt = DateTime.UtcNow
+            };
 
-        await _repo.AddAsync(payment);
-        await _repo.SaveChangesAsync();
+            await _repo.AddAsync(p);                    // có PaymentID ngay
+            await _momo.CreatePaymentAsync(_db, p, ct); // fill PayUrl, OrderId, TransactionId
 
-        // Tạo payment URL
-        var selectedProvider = provider == "MoMo" ? _momoProvider : _vnpayProvider;
-        await selectedProvider.CreatePaymentAsync(_db, payment);
-
-        return payment;
+            return new PaymentStartResponse
+            {
+                PaymentId = p.PaymentID,
+                PayUrl = p.PayUrl,
+                Success = !string.IsNullOrEmpty(p.PayUrl),
+                Message = string.IsNullOrEmpty(p.PayUrl) ? $"Create PayUrl failed: {p.RawResponse}" : "OK"
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Create MoMo payment error");
+            return new PaymentStartResponse { Success = false, Message = ex.Message };
+        }
     }
 
-    public async Task<bool> HandleIpnAsync(string provider, IDictionary<string, string> query)
+    public async Task<(bool ok, string message)> HandleMoMoIpnAsync(IFormCollection form, CancellationToken ct = default)
     {
-        var selectedProvider = provider == "MoMo" ? _momoProvider : _vnpayProvider;
-            return await selectedProvider.HandleIpnAsync(_db, query);
+        try
+        {
+            var dict = form.ToDictionary(k => k.Key, v => v.Value.ToString());
+            var ok = await _momo.HandleIpnAsync(_db, dict, ct);
+            return (ok, ok ? "IPN processed successfully" : "Invalid signature");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "IPN error");
+            return (false, ex.Message);
+        }
     }
 }

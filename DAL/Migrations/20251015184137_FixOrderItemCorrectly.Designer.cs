@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(DollDbContext))]
-    [Migration("20251004113409_AddIsDeletedToUser")]
-    partial class AddIsDeletedToUser
+    [Migration("20251015184137_FixOrderItemCorrectly")]
+    partial class FixOrderItemCorrectly
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -304,9 +304,6 @@ namespace DAL.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("ColorID")
-                        .HasColumnType("int");
-
                     b.Property<int>("DollModelID")
                         .HasColumnType("int");
 
@@ -331,9 +328,6 @@ namespace DAL.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("nvarchar(5)");
 
-                    b.Property<int>("SizeID")
-                        .HasColumnType("int");
-
                     b.HasKey("DollVariantID");
 
                     b.HasIndex("DollModelID");
@@ -357,12 +351,13 @@ namespace DAL.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("PaymentID")
+                    b.Property<int?>("PaymentID")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("ShippingAddress")
+                    b.Property<string>("ShippingAddress")
+                        .IsRequired()
                         .HasMaxLength(500)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -372,7 +367,7 @@ namespace DAL.Migrations
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("UserID")
+                    b.Property<int?>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("OrderID");
@@ -395,10 +390,16 @@ namespace DAL.Migrations
                     b.Property<int>("DollVariantID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("DollVariantID1")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("LineTotal")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderID1")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
@@ -416,7 +417,11 @@ namespace DAL.Migrations
 
                     b.HasIndex("DollVariantID");
 
+                    b.HasIndex("DollVariantID1");
+
                     b.HasIndex("OrderID");
+
+                    b.HasIndex("OrderID1");
 
                     b.ToTable("OrderItem", (string)null);
                 });
@@ -460,43 +465,6 @@ namespace DAL.Migrations
                     b.ToTable("OwnedDoll", (string)null);
                 });
 
-            modelBuilder.Entity("DAL.Models.PasswordReset", b =>
-                {
-                    b.Property<int>("PasswordResetsID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PasswordResetsID"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("CreatedByIp")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("Expires")
-                        .HasColumnType("datetime");
-
-                    b.Property<bool>("Used")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int")
-                        .HasColumnName("UserID");
-
-                    b.HasKey("PasswordResetsID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("PasswordResets", (string)null);
-                });
-
             modelBuilder.Entity("DAL.Models.Payment", b =>
                 {
                     b.Property<int>("PaymentID")
@@ -508,41 +476,68 @@ namespace DAL.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CharacterOrderID")
+                    b.Property<int?>("CharacterOrderID")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("SYSUTCDATETIME()");
 
-                    b.Property<int>("Currency")
+                    b.Property<string>("Currency")
+                        .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("Method")
-                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("MoMoOrderId");
+
+                    b.Property<string>("OrderInfo")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<int>("OrderID")
-                        .HasColumnType("int");
+                    b.Property<string>("PayUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Provider")
                         .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("RawResponse")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<int>("Target_Id")
+                        .HasColumnType("int");
 
                     b.Property<string>("Target_Type")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("target_id")
-                        .HasColumnType("int");
+                    b.Property<string>("TransactionId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("PaymentID");
 
@@ -565,7 +560,8 @@ namespace DAL.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedByIp")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime>("Expires")
                         .HasColumnType("datetime2");
@@ -584,7 +580,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.User", b =>
@@ -606,7 +602,9 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -614,9 +612,9 @@ namespace DAL.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Phones")
-                        .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("Phones");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -704,14 +702,14 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Models.CharacterPackage", null)
                         .WithMany()
                         .HasForeignKey("PackageID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_CharacterOrder_Package");
 
                     b.HasOne("DAL.Models.UserCharacter", null)
                         .WithMany()
                         .HasForeignKey("UserCharacterID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_CharacterOrder_UserCharacter");
                 });
@@ -738,29 +736,33 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Models.UserCharacter", null)
                         .WithMany()
                         .HasForeignKey("UserCharacterID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired()
                         .HasConstraintName("FK_DollCharacterLink_UserCharacter");
                 });
 
             modelBuilder.Entity("DAL.Models.DollModel", b =>
                 {
-                    b.HasOne("DAL.Models.DollType", null)
-                        .WithMany()
+                    b.HasOne("DAL.Models.DollType", "DollType")
+                        .WithMany("DollModels")
                         .HasForeignKey("DollTypeID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_DollModel_DollType");
+
+                    b.Navigation("DollType");
                 });
 
             modelBuilder.Entity("DAL.Models.DollVariant", b =>
                 {
-                    b.HasOne("DAL.Models.DollModel", null)
+                    b.HasOne("DAL.Models.DollModel", "DollModel")
                         .WithMany()
                         .HasForeignKey("DollModelID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_DollVariant_DollModel");
+
+                    b.Navigation("DollModel");
                 });
 
             modelBuilder.Entity("DAL.Models.Order", b =>
@@ -768,15 +770,13 @@ namespace DAL.Migrations
                     b.HasOne("DAL.Models.Payment", null)
                         .WithMany()
                         .HasForeignKey("PaymentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.NoAction)
                         .HasConstraintName("FK_Order_Payment");
 
                     b.HasOne("DAL.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
                         .HasConstraintName("FK_Order_User");
                 });
 
@@ -789,12 +789,24 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_OrderItem_DollVariant");
 
-                    b.HasOne("DAL.Models.Order", null)
+                    b.HasOne("DAL.Models.DollVariant", "DollVariant")
                         .WithMany()
+                        .HasForeignKey("DollVariantID1");
+
+                    b.HasOne("DAL.Models.Order", null)
+                        .WithMany("OrderItems")
                         .HasForeignKey("OrderID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_OrderItem_Order");
+
+                    b.HasOne("DAL.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderID1");
+
+                    b.Navigation("DollVariant");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("DAL.Models.OwnedDoll", b =>
@@ -814,32 +826,18 @@ namespace DAL.Migrations
                         .HasConstraintName("FK_OwnedDoll_User");
                 });
 
-            modelBuilder.Entity("DAL.Models.PasswordReset", b =>
-                {
-                    b.HasOne("DAL.Models.User", "User")
-                        .WithMany("PasswordResets")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_PasswordResets_User");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DAL.Models.Payment", b =>
                 {
                     b.HasOne("DAL.Models.CharacterOrder", null)
                         .WithMany()
                         .HasForeignKey("CharacterOrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_Payment_CharacterOrder");
 
                     b.HasOne("DAL.Models.Order", null)
                         .WithMany()
                         .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
+                        .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_Payment_Order");
                 });
 
@@ -878,10 +876,18 @@ namespace DAL.Migrations
                         .HasConstraintName("FK_UserCharacter_User");
                 });
 
+            modelBuilder.Entity("DAL.Models.DollType", b =>
+                {
+                    b.Navigation("DollModels");
+                });
+
+            modelBuilder.Entity("DAL.Models.Order", b =>
+                {
+                    b.Navigation("OrderItems");
+                });
+
             modelBuilder.Entity("DAL.Models.User", b =>
                 {
-                    b.Navigation("PasswordResets");
-
                     b.Navigation("RefreshTokens");
                 });
 #pragma warning restore 612, 618
