@@ -1,28 +1,24 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace BLL.DTO.CharacterDTO
+namespace BLL.DTO.CharacterDTO;
+
+public class CreateCharacterDto
 {
-    public class CreateCharacterDto
-    {
-        [Required]
-        [StringLength(255)]
-        public string Name { get; set; } = null!;
+    [Required(ErrorMessage = "Name là bắt buộc")]
+    [MaxLength(255, ErrorMessage = "Name không được vượt quá 255 ký tự")]
+    public string Name { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(50)]
-        public string Gender { get; set; } = null!;
+    [Required(ErrorMessage = "Image là bắt buộc")]
+    [MaxLength(500, ErrorMessage = "Image URL không được vượt quá 500 ký tự")]
+    public string Image { get; set; } = string.Empty;
 
-        [Required]
-        [StringLength(50)]
-        public string Language { get; set; } = null!;
+    [Range(0, 100, ErrorMessage = "AgeRange phải từ 0 đến 100")]
+    public int AgeRange { get; set; }
 
-        [Range(0, 150)]
-        public int AgeRange { get; set; }
+    [Required(ErrorMessage = "Personality là bắt buộc")]
+    [MaxLength(255)]
+    public string Personality { get; set; } = string.Empty;
 
-        [StringLength(255)]
-        public string Personality { get; set; } = null!;
-
-        [StringLength(255)]
-        public string Description { get; set; } = null!;
-    }
+    [MaxLength(255)]
+    public string? Description { get; set; }
 }

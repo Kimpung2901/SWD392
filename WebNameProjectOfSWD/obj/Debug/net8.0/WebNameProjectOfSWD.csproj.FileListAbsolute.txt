@@ -561,4 +561,5 @@ D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\refint\WebNamePr
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.pdb
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.genruntimeconfig.cache
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\ref\WebNameProjectOfSWD.dll
+D:\Documents\SWD392\DollAi\WebNameProjectOfSWD\obj\Debug\net8.0\WebNameProjectOfSWD.MvcApplicationPartsAssemblyInfo.cs
 D:\Documents\SWD392\DOLLAI\WebNameProjectOfSWD\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

@@ -123,6 +123,11 @@ builder.Services.AddScoped<IUserCharacterService, UserCharacterService>();
 builder.Services.AddScoped<ICharacterOrderRepository, CharacterOrderRepository>();
 builder.Services.AddScoped<ICharacterOrderService, CharacterOrderService>();
 
+// DollCharacterLink services
+builder.Services.AddScoped<IDollCharacterLinkRepository, DollCharacterLinkRepository>();
+builder.Services.AddScoped<IDollCharacterLinkService, DollCharacterLinkService>();
+
+
 
 // ✅ MoMo Payment Services
 //builder.Services.AddScoped<IPaymentProvider, FakeMoMoProvider>(); // ✅ Dùng fake provider
