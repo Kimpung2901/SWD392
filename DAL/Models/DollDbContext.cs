@@ -163,8 +163,9 @@ public partial class DollDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OwnedDoll_User");
             
-            entity.HasOne<DollVariant>()
-                .WithMany()
+            // ✅ Sửa lại để chỉ định navigation property rõ ràng
+            entity.HasOne(e => e.DollVariant)
+                .WithMany(d => d.OwnedDolls)
                 .HasForeignKey(e => e.DollVariantID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OwnedDoll_DollVariant");
@@ -212,19 +213,22 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.EndAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             
-            entity.HasOne<User>()
+            // ✅ FIX: Chỉ định navigation property rõ ràng
+            entity.HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_UserCharacter_User");
             
-            entity.HasOne<Character>()
+            // ✅ FIX: Chỉ định navigation property rõ ràng
+            entity.HasOne(e => e.Character)
                 .WithMany()
                 .HasForeignKey(e => e.CharacterID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_UserCharacter_Character");
             
-            entity.HasOne<CharacterPackage>()
+            // ✅ Đã đúng rồi
+            entity.HasOne(e => e.Package)
                 .WithMany()
                 .HasForeignKey(e => e.PackageId)
                 .OnDelete(DeleteBehavior.Cascade)
@@ -265,19 +269,20 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.End_Date).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             
-            entity.HasOne<Character>()
+            // ✅ Chỉ định navigation properties rõ ràng
+            entity.HasOne(e => e.Character)
                 .WithMany()
                 .HasForeignKey(e => e.CharacterID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_CharacterOrder_Character");
             
-            entity.HasOne<CharacterPackage>()
+            entity.HasOne(e => e.Package)
                 .WithMany()
                 .HasForeignKey(e => e.PackageID)
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_CharacterOrder_Package");
             
-            entity.HasOne<UserCharacter>()
+            entity.HasOne(e => e.UserCharacter)
                 .WithMany()
                 .HasForeignKey(e => e.UserCharacterID)
                 .OnDelete(DeleteBehavior.NoAction)

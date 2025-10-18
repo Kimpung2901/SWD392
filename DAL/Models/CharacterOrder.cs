@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models;
 
@@ -24,4 +24,14 @@ public partial class CharacterOrder
     public DateTime CreatedAt { get; set; }
 
     public string Status { get; set; } = null!;
+
+    // ✅ Navigation properties
+    [ForeignKey(nameof(PackageID))]
+    public virtual CharacterPackage? Package { get; set; }
+
+    [ForeignKey(nameof(CharacterID))]
+    public virtual Character? Character { get; set; }
+
+    [ForeignKey(nameof(UserCharacterID))]
+    public virtual UserCharacter? UserCharacter { get; set; }
 }

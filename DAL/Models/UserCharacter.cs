@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DAL.Models;
 
@@ -22,4 +22,11 @@ public partial class UserCharacter
     public string Status { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
+
+    // Navigation properties
+    public virtual User? User { get; set; }
+
+    public virtual Character? Character { get; set; }
+
+    public virtual CharacterPackage? Package { get; set; } // ĐỔI TỪ CharacterPackage → Package
 }
