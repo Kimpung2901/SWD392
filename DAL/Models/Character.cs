@@ -5,16 +5,14 @@ namespace DAL.Models;
 
 public partial class Character
 {
+  
+
     public int CharacterId { get; set; }
 
     public string Name { get; set; } = null!;
 
-    public string Gender { get; set; } = null!;
-
-    public string Language { get; set; } = null!;
-
     public int AgeRange { get; set; }
-
+    public string Image { get; set; } = null!;
     public string Personality { get; set; } = null!;
 
     public string Description { get; set; } = null!;

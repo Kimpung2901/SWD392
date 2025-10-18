@@ -2,6 +2,7 @@
 using BLL.DTO.OwnedDollDTO;
 using BLL.DTO.UserCharacterDTO;
 using BLL.DTO.CharacterOrderDTO;
+using BLL.DTO.DollCharacterLinkDTO;
 using DAL.Models;
 
 
@@ -48,6 +49,8 @@ namespace BLL.Helper
 
             CreateMap<CreateCharacterOrderDto, CharacterOrder>()
                 .ForMember(dest => dest.CharacterOrderID, opt => opt.Ignore())
+                .ForMember(dest => dest.UnitPrice, opt => opt.Ignore()) 
+                .ForMember(dest => dest.End_Date, opt => opt.Ignore())  
                 .ForMember(dest => dest.Start_Date, opt => opt.MapFrom(src => src.Start_Date ?? DateTime.UtcNow))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.Package, opt => opt.Ignore())
@@ -55,6 +58,18 @@ namespace BLL.Helper
                 .ForMember(dest => dest.UserCharacter, opt => opt.Ignore());
 
             CreateMap<UpdateCharacterOrderDto, CharacterOrder>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // ✅ DollCharacterLink mappings
+            CreateMap<CreateDollCharacterLinkDto, DollCharacterLink>()
+                .ForMember(dest => dest.LinkID, opt => opt.Ignore())
+                .ForMember(dest => dest.BoundAt, opt => opt.MapFrom(src => src.BoundAt ?? DateTime.UtcNow))
+                .ForMember(dest => dest.UnBoundAt, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
+                .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note ?? string.Empty));
+
+            CreateMap<UpdateDollCharacterLinkDto, DollCharacterLink>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }

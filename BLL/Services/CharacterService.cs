@@ -31,11 +31,10 @@ namespace BLL.Services
             var entity = new Character
             {
                 Name = dto.Name,
-                Gender = dto.Gender,
-                Language = dto.Language,
+                Image = dto.Image,
                 AgeRange = dto.AgeRange,
                 Personality = dto.Personality,
-                Description = dto.Description,
+                Description = dto.Description ?? string.Empty,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -49,12 +48,10 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-          
             static string? Clean(string? s)
             {
                 if (string.IsNullOrWhiteSpace(s)) return null;
                 var t = s.Trim();
-        
                 if (string.Equals(t, "string", StringComparison.OrdinalIgnoreCase)) return null;
                 return t;
             }
@@ -62,11 +59,8 @@ namespace BLL.Services
             var name = Clean(dto.Name);
             if (name != null) entity.Name = name;
 
-            var gender = Clean(dto.Gender);
-            if (gender != null) entity.Gender = gender;
-
-            var language = Clean(dto.Language);
-            if (language != null) entity.Language = language;
+            var image = Clean(dto.Image);
+            if (image != null) entity.Image = image;
 
             if (dto.AgeRange.HasValue) entity.AgeRange = dto.AgeRange.Value;
 
@@ -82,7 +76,6 @@ namespace BLL.Services
             return await GetByIdAsync(entity.CharacterId);
         }
 
-
         public async Task<bool> DeleteAsync(int id)
         {
             await _repo.DeleteAsync(id);
@@ -93,8 +86,7 @@ namespace BLL.Services
         {
             CharacterId = c.CharacterId,
             Name = c.Name,
-            Gender = c.Gender,
-            Language = c.Language,
+            Image = c.Image,
             AgeRange = c.AgeRange,
             Personality = c.Personality,
             Description = c.Description,

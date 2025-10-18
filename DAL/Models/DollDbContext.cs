@@ -93,7 +93,7 @@ public partial class DollDbContext : DbContext
                 .HasDefaultValue("Active");
             entity.Property(e => e.Role)
                 .IsRequired()
-                .HasDefaultValue("user");
+                .HasDefaultValue("Customer");  
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("datetime2")
                 .HasDefaultValueSql("SYSUTCDATETIME()");
@@ -177,8 +177,9 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.CharacterId);
             entity.ToTable("Character");
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
-            entity.Property(e => e.Gender).HasMaxLength(50).IsRequired();
-            entity.Property(e => e.Language).HasMaxLength(50).IsRequired();
+            
+            entity.Property(e => e.Image).HasMaxLength(500).IsRequired();
+            
             entity.Property(e => e.Personality).HasMaxLength(255).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(255).IsRequired();
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
