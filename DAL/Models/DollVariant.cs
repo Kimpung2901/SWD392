@@ -21,4 +21,5 @@ public partial class DollVariant
     public string Image { get; set; } = null!;
 
     public bool IsActive { get; set; }
+    public ICollection<OwnedDoll> OwnedDolls { get; set; } = new List<OwnedDoll>();
 }

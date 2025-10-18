@@ -134,7 +134,7 @@ namespace BLL.Services
             var order = new Order
             {
                 UserID = dto.UserID,
-                PaymentID = 0, // Will be updated after payment creation
+                PaymentID = null, // Will be updated after payment creation
                 OrderDate = DateTime.UtcNow,
                 TotalAmount = totalAmount,
                 Currency = dto.Currency,

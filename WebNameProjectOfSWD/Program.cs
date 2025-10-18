@@ -83,8 +83,8 @@ builder.Services.AddDbContext<DollDbContext>(opt =>
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<JwtTokenService>();
 
-
-
+// ✅ Thêm AutoMapper
+builder.Services.AddAutoMapper(typeof(Mapping));
 
 // Doll services
 builder.Services.AddScoped<IDollTypeRepository, DollTypeRepository>();
@@ -112,6 +112,16 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
+// Thêm vào phần DI registration
+builder.Services.AddScoped<IOwnedDollRepository, OwnedDollRepository>();
+builder.Services.AddScoped<IOwnedDollService, OwnedDollService>();
+// UserCharacter services
+builder.Services.AddScoped<IUserCharacterRepository, UserCharacterRepository>();
+builder.Services.AddScoped<IUserCharacterService, UserCharacterService>();
+
+// CharacterOrder services
+builder.Services.AddScoped<ICharacterOrderRepository, CharacterOrderRepository>();
+builder.Services.AddScoped<ICharacterOrderService, CharacterOrderService>();
 
 
 // ✅ MoMo Payment Services
