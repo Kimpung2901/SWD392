@@ -1,8 +1,7 @@
 ﻿using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
-using BLL.Services.MailService;  
-
+using BLL.Services.MailService;
 
 namespace BLL.Services
 {
@@ -10,10 +9,14 @@ namespace BLL.Services
     {
         private readonly IUserRepository _users;
         private readonly IAuthRepository _auth;
-        private readonly IEmailSender _email; // BLL.Services.MailService
+        private readonly IEmailSender _email;
 
         public AuthService(IUserRepository users, IAuthRepository auth, IEmailSender email)
-        { _users = users; _auth = auth; _email = email; }
+        { 
+            _users = users; 
+            _auth = auth; 
+            _email = email; 
+        }
 
         public async Task<User?> AuthenticateAsync(string username, string password)
         {
@@ -23,12 +26,24 @@ namespace BLL.Services
             return BCrypt.Net.BCrypt.Verify(password, user.Password) ? user : null;
         }
 
-        public async Task<User> RegisterAsync(string username, string rawPassword, string role = "customer",
-                                              string? email = null, string? phone = null)
+        public async Task<User> RegisterAsync(
+            string username, 
+            string rawPassword, 
+            string role = "Customer",  // ✅ Default role
+            string? email = null, 
+            string? phone = null)
         {
             var uname = username.Trim();
             if (await _users.GetUserByUsernameAsync(uname) != null)
                 throw new InvalidOperationException("Username already exists");
+
+            // ✅ Validate role
+            var validRoles = new[] { "Admin", "Manager", "Customer" };
+            var normalizedRole = role.Trim();
+            if (!validRoles.Contains(normalizedRole, StringComparer.OrdinalIgnoreCase))
+            {
+                normalizedRole = "Customer"; // Default to Customer if invalid
+            }
 
             var user = new User
             {
@@ -36,7 +51,7 @@ namespace BLL.Services
                 Email = email?.Trim(),
                 Phones = phone?.Trim(),
                 Password = BCrypt.Net.BCrypt.HashPassword(rawPassword),
-                Role = role.Trim(),
+                Role = normalizedRole,
                 Status = "Active",
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
@@ -51,17 +66,16 @@ namespace BLL.Services
         {
             var user = await _auth.GetUserByIdAsync(userId);
             if (user == null || user.IsDeleted ||
-                !user.Status.Equals("Active", StringComparison.OrdinalIgnoreCase)) return false;
+                !user.Status.Equals("Active", StringComparison.OrdinalIgnoreCase)) 
+                return false;
 
-            if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.Password)) return false;
+            if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.Password)) 
+                return false;
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _users.UpdateAsync(user);
-    
+            await _users.SaveChangesAsync();
             return true;
         }
-
-
     }
-
 }
