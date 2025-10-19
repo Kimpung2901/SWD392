@@ -50,6 +50,22 @@ namespace BLL.Services
             };
         }
 
+        // GetByDollTypeIdAsync - NEW METHOD
+        public async Task<List<DollModelDto>> GetByDollTypeIdAsync(int dollTypeId)
+        {
+            var models = await _repo.GetByTypeIdAsync(dollTypeId);
+            return models.Select(m => new DollModelDto
+            {
+                DollModelID = m.DollModelID,
+                DollTypeID = m.DollTypeID,
+                DollTypeName = m.DollType?.Name,
+                Name = m.Name,
+                Description = m.Description,
+                Create_at = m.Create_at,
+                Image = m.Image,
+                IsActive = m.IsActive
+            }).ToList();
+        }
 
         public async Task<DollModelDto> CreateAsync(CreateDollModelDto dto)
         {

@@ -16,6 +16,14 @@ public class DollModelController : ControllerBase
     public async Task<IActionResult> Get(int id)
         => (await _svc.GetByIdAsync(id)) is { } m ? Ok(m) : NotFound();
 
+    // NEW ENDPOINT - Lấy các DollModel theo DollTypeID
+    [HttpGet("by-type/{dollTypeId}")]
+    public async Task<IActionResult> GetByDollTypeId(int dollTypeId)
+    {
+        var models = await _svc.GetByDollTypeIdAsync(dollTypeId);
+        return Ok(new { message = $"Tìm thấy {models.Count} model(s)", data = models });
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateDollModelDto dto)
         => Ok(await _svc.CreateAsync(dto));

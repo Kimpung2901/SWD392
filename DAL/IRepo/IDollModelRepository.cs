@@ -6,6 +6,7 @@ namespace DAL.IRepo
     {
         Task<List<DollModel>> GetAllAsync();
         Task<DollModel?> GetByIdAsync(int id);
+        Task<List<DollModel>> GetByTypeIdAsync(int dollTypeId);
         Task AddAsync(DollModel entity);
         Task UpdateAsync(DollModel entity);
         Task SoftDeleteAsync(int id);
