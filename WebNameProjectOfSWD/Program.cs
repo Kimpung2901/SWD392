@@ -129,13 +129,9 @@ builder.Services.AddScoped<IDollCharacterLinkService, DollCharacterLinkService>(
 
 
 
-// ✅ MoMo Payment Services
-//builder.Services.AddScoped<IPaymentProvider, FakeMoMoProvider>(); // ✅ Dùng fake provider
+// MoMo Payment Services
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
-//builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payments"));
-
-//Console.WriteLine("✅ Payment services registered (Using FakeMoMoProvider)");
 
 // Options
 builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payment"));

@@ -18,38 +18,22 @@ namespace BLL.Services
         public async Task<List<DollModelDto>> GetAllAsync()
         {
             var models = await _repo.GetAllAsync(); 
-            return models.Select(m => new DollModelDto
-            {
-                DollModelID = m.DollModelID,
-                DollTypeID = m.DollTypeID,
-                DollTypeName = m.DollType?.Name, 
-                Name = m.Name,
-                Description = m.Description,
-                Create_at = m.Create_at,
-                Image = m.Image,
-                IsActive = m.IsActive
-            }).ToList();
+            return models.Select(MapToDto).ToList();
         }
 
         // GetByIdAsync
         public async Task<DollModelDto?> GetByIdAsync(int id)
         {
             var m = await _repo.GetByIdAsync(id);
-            if (m == null) return null;
-
-            return new DollModelDto
-            {
-                DollModelID = m.DollModelID,
-                DollTypeID = m.DollTypeID,
-                DollTypeName = m.DollType?.Name, 
-                Name = m.Name,
-                Description = m.Description,
-                Create_at = m.Create_at,
-                Image = m.Image,
-                IsActive = m.IsActive
-            };
+            return m == null ? null : MapToDto(m);
         }
 
+        // GetByDollTypeIdAsync
+        public async Task<List<DollModelDto>> GetByDollTypeIdAsync(int dollTypeId)
+        {
+            var models = await _repo.GetByTypeIdAsync(dollTypeId);
+            return models.Select(MapToDto).ToList();
+        }
 
         public async Task<DollModelDto> CreateAsync(CreateDollModelDto dto)
         {
@@ -87,5 +71,18 @@ namespace BLL.Services
 
         public Task<bool> HardDeleteAsync(int id)
             => _repo.HardDeleteAsync(id).ContinueWith(_ => true);
+
+        // Helper method to map entity to DTO
+        private static DollModelDto MapToDto(DollModel m) => new()
+        {
+            DollModelID = m.DollModelID,
+            DollTypeID = m.DollTypeID,
+            DollTypeName = m.DollType?.Name,
+            Name = m.Name,
+            Description = m.Description,
+            Create_at = m.Create_at,
+            Image = m.Image,
+            IsActive = m.IsActive
+        };
     }
 }
