@@ -17,12 +17,28 @@ namespace WebNameProjectOfSWD.Controllers
             _logger = logger;
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var result = await _service.GetAllAsync();
+        //    return Ok(result);
+        //}
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _service.GetAllAsync();
-            return Ok(result);
+            try
+            {
+                var result = await _service.GetAllAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GET /api/Character failed");
+                return StatusCode(500, new { message = ex.Message, detail = ex.ToString() });
+            }
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
