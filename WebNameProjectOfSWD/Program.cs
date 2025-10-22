@@ -162,22 +162,6 @@ builder.Services.AddAuthorization(o =>
 
 var app = builder.Build();
 
-
-//// TẠM THỜI cho debug: hiện lỗi chi tiết
-//app.UseDeveloperExceptionPage();
-
-//// In ra connection string đang dùng (ẩn mật khẩu)
-//try
-//{
-//    var raw = builder.Configuration.GetConnectionString("DefaultConnection") ?? "(null)";
-//    var masked = System.Text.RegularExpressions.Regex.Replace(raw, @"(?i)(Password\s*=\s*)([^;]+)", "$1***");
-//    Console.WriteLine($"[BOOT] DefaultConnection = {masked}");
-//}
-//catch { }
-
-//// (nếu bạn đã có swagger ở trên thì giữ nguyên)
-
-
 var swaggerEnabled = app.Environment.IsDevelopment() 
     || builder.Configuration.GetValue<bool>("Swagger:Enabled");
 

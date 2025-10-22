@@ -6,6 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Disable default content items to avoid conflicts -->
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
+    <!-- Disable Swashbuckle CLI tool installation during publish -->
+    <SwaggerGenEnabled>false</SwaggerGenEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,5 +39,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+	<PropertyGroup>
+		<GenerateOpenApiDocuments>false</GenerateOpenApiDocuments>
+		<GenerateOpenApiDocumentsOnBuild>false</GenerateOpenApiDocumentsOnBuild>
+		<GenerateOpenApiDocumentsOnPublish>false</GenerateOpenApiDocumentsOnPublish>
+	</PropertyGroup>
+
 
 </Project>
