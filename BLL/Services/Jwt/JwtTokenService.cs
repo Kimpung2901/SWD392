@@ -42,16 +42,23 @@ namespace BLL.Services.Jwt
         }
         public static TokenValidationParameters GetValidationParameters(IConfiguration cfg)
         {
+            // Đọc cả ":" và "__" (Azure App Service sử dụng "__")
+            var key      = cfg["Jwt:Key"]      ?? cfg["Jwt__Key"];
+            var issuer   = cfg["Jwt:Issuer"]   ?? cfg["Jwt__Issuer"];
+            var audience = cfg["Jwt:Audience"] ?? cfg["Jwt__Audience"];
+
+            if (string.IsNullOrWhiteSpace(key))
+                throw new InvalidOperationException(
+                    "Missing Jwt:Key (or Jwt__Key). Add it in Azure App Service → Environment variables.");
+
             return new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = cfg["Jwt:Issuer"],
-                ValidAudience = cfg["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(cfg["Jwt:Key"]!)),
-                ClockSkew = TimeSpan.Zero
+                ValidIssuer = issuer,
+                ValidAudience = audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
             };
         }
     }
