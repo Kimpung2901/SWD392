@@ -5738,6 +5738,7 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.9",
       "Microsoft.EntityFrameworkCore.Tools >= 9.0.9",
       "Microsoft.IdentityModel.JsonWebTokens >= 7.1.2",
+      "Microsoft.IdentityModel.Logging >= 7.1.2",
       "Microsoft.IdentityModel.Tokens >= 7.1.2",
       "Swashbuckle.AspNetCore >= 6.9.0",
       "System.IdentityModel.Tokens.Jwt >= 7.1.2"
@@ -5838,6 +5839,10 @@
             "version": "[9.0.9, )"
           },
           "Microsoft.IdentityModel.JsonWebTokens": {
+            "target": "Package",
+            "version": "[7.1.2, )"
+          },
+          "Microsoft.IdentityModel.Logging": {
             "target": "Package",
             "version": "[7.1.2, )"
           },
