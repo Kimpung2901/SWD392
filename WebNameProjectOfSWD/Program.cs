@@ -158,12 +158,16 @@ builder.Services.AddAuthorization(o =>
 var app = builder.Build();
 
 // ===== Swagger - Luôn bật =====
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+var enableSwagger = app.Environment.IsDevelopment()
+    || string.Equals(Environment.GetEnvironmentVariable("ENABLE_SWAGGER"), "true", StringComparison.OrdinalIgnoreCase);
+
+if (enableSwagger)
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "DollAI Store API v1");
-    // Bỏ dòng RoutePrefix = string.Empty để giữ URL /swagger
-});
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+// Redirect "/" về Swagger để có cái hiển thị
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 // Chỉ redirect HTTPS trong Development
