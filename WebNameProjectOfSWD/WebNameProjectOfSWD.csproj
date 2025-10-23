@@ -32,10 +32,11 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
     
-    <!-- JWT packages -->
+    <!-- JWT packages - Đầy đủ tất cả dependencies -->
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.1.2" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.1.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Logging" Version="7.1.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +47,7 @@
     <!-- Copy appsettings files to output -->
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="appsettings.*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

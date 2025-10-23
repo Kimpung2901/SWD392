@@ -316,6 +316,10 @@
               "target": "Package",
               "version": "[7.1.2, )"
             },
+            "Microsoft.IdentityModel.Logging": {
+              "target": "Package",
+              "version": "[7.1.2, )"
+            },
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",
               "version": "[7.1.2, )"
