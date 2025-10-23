@@ -20,7 +20,7 @@ var builder = WebApplication.CreateBuilder(args);
 // ===== Firebase Initialization =====
 try
 {
-    var firebaseCredPath = builder.Configuration["Firebase:CredentialPath"] ?? "firebase-adminsdk.json";
+    var firebaseCredPath = builder.Configuration["Firebase:CredentialPath"] ?? builder.Configuration["Firebase__CredentialPath"] ?? "firebase-adminsdk.json";
     var fullPath = Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
     
     if (File.Exists(fullPath))
@@ -33,7 +33,7 @@ try
     }
     else
     {
-        Console.WriteLine($"⚠️ Warning: Firebase credential file not found");
+        Console.WriteLine($"⚠️ Warning: Firebase credential file not found at: {fullPath}");
     }
 }
 catch (Exception ex)
@@ -127,8 +127,6 @@ builder.Services.AddScoped<ICharacterOrderService, CharacterOrderService>();
 builder.Services.AddScoped<IDollCharacterLinkRepository, DollCharacterLinkRepository>();
 builder.Services.AddScoped<IDollCharacterLinkService, DollCharacterLinkService>();
 
-
-
 // MoMo Payment Services
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
@@ -137,7 +135,6 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payment"));
 
 builder.Services.AddHttpClient<IPaymentProvider, MoMoProvider>();
-
 
 // Email sender
 builder.Services.AddScoped<BLL.IService.IEmailSender, SmtpEmailSender>();
@@ -158,19 +155,22 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy("AdminOrManager", p => p.RequireRole("admin", "manager"));
 });
 
-
-
 var app = builder.Build();
 
-var swaggerEnabled = app.Environment.IsDevelopment() 
-    || builder.Configuration.GetValue<bool>("Swagger:Enabled");
+// ===== Swagger - Luôn bật =====
+var enableSwagger = app.Environment.IsDevelopment()
+    || string.Equals(Environment.GetEnvironmentVariable("ENABLE_SWAGGER"), "true", StringComparison.OrdinalIgnoreCase);
 
-if (swaggerEnabled)
+if (enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Redirect "/" về Swagger để có cái hiển thị
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
+// Chỉ redirect HTTPS trong Development
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
@@ -179,6 +179,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers(); // ✅ Phải có dòng này
+app.MapControllers();
 
 app.Run();

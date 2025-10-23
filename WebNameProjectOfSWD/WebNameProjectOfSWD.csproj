@@ -4,10 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Disable default content items to avoid conflicts -->
+    <!-- Tắt default content items để tự quản lý -->
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <!-- Disable Swashbuckle CLI tool installation during publish -->
     <SwaggerGenEnabled>false</SwaggerGenEnabled>
+    <!-- Disable OpenAPI document generation -->
+    <GenerateOpenApiDocuments>false</GenerateOpenApiDocuments>
+    <GenerateOpenApiDocumentsOnBuild>false</GenerateOpenApiDocumentsOnBuild>
+    <GenerateOpenApiDocumentsOnPublish>false</GenerateOpenApiDocumentsOnPublish>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,6 +31,11 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+    
+    <!-- JWT packages -->
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.1.2" />
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.1.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,16 +43,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Explicitly include firebase-adminsdk.json as Content -->
-    <Content Include="firebase-adminsdk.json">
+    <!-- Copy appsettings files to output -->
+    <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="appsettings.*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    
+    <!-- Copy firebase credential file -->
+    <Content Include="firebase-adminsdk.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
-	<PropertyGroup>
-		<GenerateOpenApiDocuments>false</GenerateOpenApiDocuments>
-		<GenerateOpenApiDocumentsOnBuild>false</GenerateOpenApiDocumentsOnBuild>
-		<GenerateOpenApiDocumentsOnPublish>false</GenerateOpenApiDocumentsOnPublish>
-	</PropertyGroup>
-
 
 </Project>
