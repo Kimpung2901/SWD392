@@ -1,54 +1,65 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy ASP.Net Core app to Azure Web App - dollaistore-api
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.x'
+          dotnet-version: '8.0.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      # ĐỔI đường dẫn csproj bên dưới cho đúng với project Web API của bạn
+      # (nhìn trong Solution Explorer: ví dụ WebNameProjectOfSWD/WebNameProjectOfSWD.csproj)
+      - name: Restore
+        run: dotnet restore ./WebNameProjectOfSWD/WebNameProjectOfSWD.csproj
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      - name: Publish
+        run: dotnet publish ./WebNameProjectOfSWD/WebNameProjectOfSWD.csproj -c Release -o ./publish
 
-      - name: Upload artifact for deployment job
+      # Kiểm tra có DLL JWT (bước chẩn đoán để log ra, không bắt buộc)
+      - name: List publish output
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path ./publish -Recurse -Filter "System.IdentityModel.Tokens.Jwt.dll" | Format-List FullName
+          Get-ChildItem -Path ./publish -Filter "*.dll" | Measure-Object
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          name: api-publish
+          path: ./publish
 
   deploy:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
-      
-      - name: Login to Azure
+          name: api-publish
+          path: ./publish
+
+      # (tuỳ chọn) zip lại cho chắc
+      - name: Zip package
+        shell: pwsh
+        run: Compress-Archive -Path ./publish/* -DestinationPath ./app.zip -Force
+
+      - name: Azure login
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C34CDEA844D6447AB0A46354D33C730E }}
@@ -56,10 +67,8 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9F03824DD8374956A0F9EB253480FC40 }}
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'dollaistore-api'
-          slot-name: 'Production'
-          package: .
-          
+          app-name: dollaistore-api
+          slot-name: Production
+          package: ./app.zip   # hoặc: package: ./publish
