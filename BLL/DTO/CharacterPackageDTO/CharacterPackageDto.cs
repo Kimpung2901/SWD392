@@ -1,3 +1,5 @@
+using DAL.Enum;
+
 namespace BLL.DTO.CharacterPackageDTO
 {
     public class CharacterPackageDto
@@ -12,6 +14,7 @@ namespace BLL.DTO.CharacterPackageDTO
         public string Description { get; set; } = null!;
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string Status { get; set; } = null!;
+        public CharacterPackageStatus Status { get; set; }
+        public string StatusDisplay => Status.ToString();
     }
 }

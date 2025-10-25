@@ -1,5 +1,6 @@
-using DAL.IRepo;
+﻿using DAL.IRepo;
 using DAL.Models;
+using DAL.Enum;  // ✅ THÊM DÒNG NÀY
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -69,7 +70,7 @@ namespace DAL.Repositories
                 .Include(co => co.Package)
                 .Include(co => co.Character)
                 .Include(co => co.UserCharacter)
-                .Where(co => co.Status == "Pending")
+                .Where(co => co.Status == CharacterOrderStatus.Pending)
                 .OrderBy(co => co.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();

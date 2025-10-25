@@ -1,5 +1,6 @@
 ﻿using DAL.IRepo;
 using DAL.Models;
+using DAL.Enum;  // ✅ THÊM DÒNG NÀY
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -70,7 +71,7 @@ namespace DAL.Repositories
                 .Include(uc => uc.Character)
                 .Include(uc => uc.Package)  // ✅ ĐỔI
                 .Where(uc => uc.UserID == userId 
-                    && uc.Status == "Active" 
+                    && uc.Status == UserCharacterStatus.Active 
                     && uc.EndAt > now)
                 .OrderByDescending(uc => uc.EndAt)
                 .AsNoTracking()

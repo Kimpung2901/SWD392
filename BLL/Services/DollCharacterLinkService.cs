@@ -2,6 +2,7 @@
 using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
+using DAL.Enum;
 
 namespace BLL.Services;
 
@@ -81,35 +82,30 @@ public class DollCharacterLinkService : IDollCharacterLinkService
 
     public async Task<DollCharacterLinkDto> CreateAsync(CreateDollCharacterLinkDto dto)
     {
-        // Validate OwnedDoll exists
         var ownedDoll = await _ownedDollRepo.GetByIdAsync(dto.OwnedDollID);
         if (ownedDoll == null)
             throw new Exception($"OwnedDoll với ID {dto.OwnedDollID} không tồn tại");
 
-        // Validate UserCharacter exists
         var userCharacter = await _userCharacterRepo.GetByIdAsync(dto.UserCharacterID);
         if (userCharacter == null)
             throw new Exception($"UserCharacter với ID {dto.UserCharacterID} không tồn tại");
 
-        // Check if OwnedDoll already has an active link
         var existingLink = await _repo.GetActiveLinkByOwnedDollIdAsync(dto.OwnedDollID);
         if (existingLink != null)
-            throw new Exception($"OwnedDoll #{dto.OwnedDollID} đã được bind với character khác. Vui lòng unbind trước.");
+            throw new Exception($"OwnedDoll #{dto.OwnedDollID} đã được bind với character khác.");
 
-        // Create new link
         var entity = new DollCharacterLink
         {
             OwnedDollID = dto.OwnedDollID,
             UserCharacterID = dto.UserCharacterID,
             BoundAt = dto.BoundAt ?? DateTime.UtcNow,
-            UnBoundAt = DateTime.MinValue, // Not unbound yet
+            UnBoundAt = DateTime.MinValue,
             IsActive = true,
-            Status = "Active",
+            Status = DollCharacterLinkStatus.Active, // ✅ Dùng enum
             Note = dto.Note ?? string.Empty
         };
 
         await _repo.AddAsync(entity);
-
         return await GetByIdAsync(entity.LinkID) ?? throw new Exception("Failed to create link");
     }
 
@@ -121,14 +117,13 @@ public class DollCharacterLinkService : IDollCharacterLinkService
         if (!string.IsNullOrWhiteSpace(dto.Note))
             entity.Note = dto.Note.Trim();
 
-        if (!string.IsNullOrWhiteSpace(dto.Status))
-            entity.Status = dto.Status.Trim();
+        if (dto.Status.HasValue) // ✅ Nullable enum
+            entity.Status = dto.Status.Value;
 
         if (dto.IsActive.HasValue)
             entity.IsActive = dto.IsActive.Value;
 
         await _repo.UpdateAsync(entity);
-
         return await GetByIdAsync(id);
     }
 
@@ -141,11 +136,10 @@ public class DollCharacterLinkService : IDollCharacterLinkService
             throw new Exception("Link này đã được unbind rồi");
 
         entity.IsActive = false;
-        entity.Status = "Unbound";
+        entity.Status = DollCharacterLinkStatus.Unbound; // ✅ Dùng enum
         entity.UnBoundAt = DateTime.UtcNow;
 
         await _repo.UpdateAsync(entity);
-
         return true;
     }
 

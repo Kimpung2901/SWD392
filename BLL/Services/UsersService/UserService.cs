@@ -1,5 +1,6 @@
 ﻿using BLL.DTO.UserDTO;
 using BLL.IService;
+using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
 
@@ -25,7 +26,8 @@ public class UserService : IUserService
             UserName = u.UserName,
             Phones = u.Phones,
             Email = u.Email,
-            Status = u.Status,
+            Age = u.Age,
+            Status = u.Status.ToString(),
             Role = u.Role,
             IsDeleted = u.IsDeleted,
             CreatedAt = u.CreatedAt
@@ -43,7 +45,7 @@ public class UserService : IUserService
             UserName = user.UserName,
             Phones = user.Phones,
             Email = user.Email,
-            Status = user.Status,
+            Status = user.Status.ToString(), 
             Role = user.Role,
             IsDeleted = user.IsDeleted,
             CreatedAt = user.CreatedAt
@@ -58,7 +60,7 @@ public class UserService : IUserService
             Phones = dto.Phones,
             Email = dto.Email,
             Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Status = "Active",
+            Status = UserStatus.Active,
             Role = dto.Role,
             CreatedAt = DateTime.UtcNow,
             IsDeleted = false
@@ -77,7 +79,14 @@ public class UserService : IUserService
         if (dto.Phones != null) entity.Phones = dto.Phones;
         if (dto.Email != null) entity.Email = dto.Email;
         if (dto.Password != null) entity.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
-        if (dto.Status != null) entity.Status = dto.Status;
+        if (dto.Status != null)
+        {
+            if (Enum.TryParse<UserStatus>(dto.Status, out var status))
+            {
+                entity.Status = status;
+            }
+            
+        }
         if (dto.Role != null) entity.Role = dto.Role;
         if (dto.IsDeleted.HasValue) entity.IsDeleted = dto.IsDeleted.Value;
 
@@ -97,7 +106,7 @@ public class UserService : IUserService
         return true;
     }
 
-    // ✅ Implement methods mới cho Auth
+
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         return await _repo.GetUserByEmailAsync(email);

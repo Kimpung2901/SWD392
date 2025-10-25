@@ -4,6 +4,7 @@ using BLL.DTO.CharacterOrderDTO;
 using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
+using DAL.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
@@ -99,14 +100,14 @@ namespace BLL.Services
                 .Include(co => co.Package)
                 .Include(co => co.Character)
                 .Include(co => co.UserCharacter)
-                .Where(co => co.Status == "Pending")
+                .Where(co => co.Status == CharacterOrderStatus.Pending) // ✅ Dùng enum
                 .OrderBy(co => co.CreatedAt)
                 .AsNoTracking()
                 .ProjectTo<CharacterOrderDto>(_mapper.ConfigurationProvider)
                 .ToListAsync();
         }
 
-        public async Task<CharacterOrderDto> CreateAsync(CreateCharacterOrderDto dto)
+        public async Task<CharacterOrderDto> CreateAsync(CreateCharacterOrderDto dto, int userId)
         {
             // Validate character exists
             var character = await _characterRepo.GetByIdAsync(dto.CharacterID);
@@ -121,25 +122,37 @@ namespace BLL.Services
             if (package.CharacterId != dto.CharacterID)
                 throw new InvalidOperationException("Package không thuộc về Character đã chọn");
 
-            // Validate user character exists
-            var userCharacter = await _userCharacterRepo.GetByIdAsync(dto.UserCharacterID);
-            if (userCharacter == null)
-                throw new InvalidOperationException($"UserCharacter với ID {dto.UserCharacterID} không tồn tại");
-
             var now = DateTime.UtcNow;
-            var startDate = dto.Start_Date ?? now;
-            var durationDays = dto.QuantityMonths * 30; // Approximate: 1 month = 30 days
+            var startDate = now;
+            var endDate = startDate.AddDays(package.DurationDays);
+
+            // Tự động tạo UserCharacter mới
+            var userCharacter = new UserCharacter
+            {
+                UserID = userId,
+                CharacterID = dto.CharacterID,
+                PackageId = dto.PackageID,
+                StartAt = startDate,
+                EndAt = endDate,
+                AutoRenew = false,
+                Status = UserCharacterStatus.Active, // ✅ Dùng enum
+                CreatedAt = now
+            };
+
+            await _userCharacterRepo.AddAsync(userCharacter);
+
+            // Tính QuantityMonths từ DurationDays
+            var quantityMonths = (int)Math.Ceiling(package.DurationDays / 30.0);
 
             var entity = new CharacterOrder
             {
                 PackageID = dto.PackageID,
                 CharacterID = dto.CharacterID,
-                UserCharacterID = dto.UserCharacterID,
-                QuantityMonths = dto.QuantityMonths,
+                UserCharacterID = userCharacter.UserCharacterID,
+                QuantityMonths = quantityMonths,
                 UnitPrice = package.Price,
                 Start_Date = startDate,
-                End_Date = startDate.AddDays(durationDays),
-                Status = dto.Status,
+                End_Date = endDate,
                 CreatedAt = now
             };
 
@@ -153,19 +166,18 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-            if (dto.Start_Date.HasValue)
+            if (dto.StartAt.HasValue)
             {
-                entity.Start_Date = dto.Start_Date.Value;
-                // Recalculate End_Date based on QuantityMonths
+                entity.Start_Date = dto.StartAt.Value;
                 var durationDays = entity.QuantityMonths * 30;
                 entity.End_Date = entity.Start_Date.AddDays(durationDays);
             }
 
-            if (dto.End_Date.HasValue)
-                entity.End_Date = dto.End_Date.Value;
+            if (dto.EndAt.HasValue)
+                entity.End_Date = dto.EndAt.Value;
 
-            if (!string.IsNullOrWhiteSpace(dto.Status))
-                entity.Status = dto.Status;
+            if (dto.Status.HasValue) // ✅ Nullable enum
+                entity.Status = dto.Status.Value;
 
             await _repo.UpdateAsync(entity);
             return await GetByIdAsync(entity.CharacterOrderID);
@@ -182,13 +194,13 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return false;
 
-            if (entity.Status == "Completed")
+            if (entity.Status == CharacterOrderStatus.Completed) // ✅ Enum comparison
                 throw new InvalidOperationException("Order đã được hoàn thành");
 
-            if (entity.Status == "Cancelled")
+            if (entity.Status == CharacterOrderStatus.Cancelled)
                 throw new InvalidOperationException("Không thể hoàn thành order đã bị hủy");
 
-            entity.Status = "Completed";
+            entity.Status = CharacterOrderStatus.Completed; // ✅ Set enum
             await _repo.UpdateAsync(entity);
             return true;
         }
@@ -198,13 +210,13 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return false;
 
-            if (entity.Status == "Completed")
+            if (entity.Status == CharacterOrderStatus.Completed)
                 throw new InvalidOperationException("Không thể hủy order đã hoàn thành");
 
-            if (entity.Status == "Cancelled")
+            if (entity.Status == CharacterOrderStatus.Cancelled)
                 throw new InvalidOperationException("Order đã bị hủy trước đó");
 
-            entity.Status = "Cancelled";
+            entity.Status = CharacterOrderStatus.Cancelled; // ✅ Set enum
             await _repo.UpdateAsync(entity);
             return true;
         }

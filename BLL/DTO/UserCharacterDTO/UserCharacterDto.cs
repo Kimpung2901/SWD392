@@ -1,3 +1,5 @@
+using DAL.Enum;
+
 namespace BLL.DTO.UserCharacterDTO
 {
     public class UserCharacterDto
@@ -12,7 +14,8 @@ namespace BLL.DTO.UserCharacterDTO
         public DateTime StartAt { get; set; }
         public DateTime EndAt { get; set; }
         public bool AutoRenew { get; set; }
-        public string Status { get; set; } = null!;
+        public UserCharacterStatus Status { get; set; }
+        public string StatusDisplay => Status.ToString();
         public DateTime CreatedAt { get; set; }
     }
 }

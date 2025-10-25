@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using DAL.Enum;
+
 namespace BLL.DTO.CharacterOrderDTO
 {
     public class CharacterOrderDto
@@ -13,6 +16,8 @@ namespace BLL.DTO.CharacterOrderDTO
         public DateTime Start_Date { get; set; }
         public DateTime End_Date { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string Status { get; set; } = null!;
+        public CharacterOrderStatus Status { get; set; }
+        
+        public string StatusDisplay => Status.ToString();
     }
 }

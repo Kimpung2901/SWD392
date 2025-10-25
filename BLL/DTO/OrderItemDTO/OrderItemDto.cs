@@ -1,6 +1,8 @@
+using DAL.Enum;
+
 namespace BLL.DTO.OrderDTO
 {
-    public class OrderItemDetailDto
+    public class OrderItemDto
     {
         public int OrderItemID { get; set; }
         public int OrderID { get; set; }
@@ -9,6 +11,7 @@ namespace BLL.DTO.OrderDTO
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal LineTotal { get; set; }
-        public string Status { get; set; } = null!;
+        public OrderItemStatus Status { get; set; }
+        public string StatusDisplay => Status.ToString();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -23,7 +24,8 @@ public partial class CharacterOrder
 
     public DateTime CreatedAt { get; set; }
 
-    public string Status { get; set; } = null!;
+    // ✅ Chuyển sang enum
+    public CharacterOrderStatus Status { get; set; } = CharacterOrderStatus.Pending;
 
     // ✅ Navigation properties
     [ForeignKey(nameof(PackageID))]

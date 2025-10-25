@@ -1,5 +1,6 @@
 ﻿using BLL.DTO;
 using BLL.IService;
+using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
 using Microsoft.AspNetCore.Http;
@@ -30,7 +31,7 @@ public class PaymentService : IPaymentService
                 Method = "Wallet",
                 Amount = amount,
                 Currency = "VND",
-                Status = "Pending",
+                Status = PaymentStatus.Pending,
                 Target_Type = targetType,
                 Target_Id = targetId,
                 OrderID = orderId,

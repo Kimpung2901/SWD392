@@ -1,4 +1,4 @@
-using BLL.DTO.CharacterOrderDTO;
+﻿using BLL.DTO.CharacterOrderDTO;
 
 namespace BLL.IService
 {
@@ -10,7 +10,7 @@ namespace BLL.IService
         Task<List<CharacterOrderDto>> GetByCharacterIdAsync(int characterId);
         Task<List<CharacterOrderDto>> GetByPackageIdAsync(int packageId);
         Task<List<CharacterOrderDto>> GetPendingOrdersAsync();
-        Task<CharacterOrderDto> CreateAsync(CreateCharacterOrderDto dto);
+        Task<CharacterOrderDto> CreateAsync(CreateCharacterOrderDto dto, int userId); // ✅ Thêm userId parameter
         Task<CharacterOrderDto?> UpdatePartialAsync(int id, UpdateCharacterOrderDto dto);
         Task<bool> DeleteAsync(int id);
         Task<bool> CompleteOrderAsync(int id);

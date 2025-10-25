@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DAL.Enum;
 
 namespace BLL.DTO.OwnedDollDTO
 {
@@ -7,8 +8,8 @@ namespace BLL.DTO.OwnedDollDTO
         [StringLength(255, ErrorMessage = "SerialCode không được vượt quá 255 ký tự")]
         public string? SerialCode { get; set; }
 
-        [StringLength(50, ErrorMessage = "Status không được vượt quá 50 ký tự")]
-        public string? Status { get; set; }
+        public OwnedDollStatus? Status { get; set; }
+        
         public DateTime? Expired_at { get; set; }
     }
 }

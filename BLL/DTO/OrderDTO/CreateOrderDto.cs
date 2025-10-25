@@ -11,9 +11,6 @@ namespace BLL.DTO.OrderDTO
         [StringLength(500)]
         public string ShippingAddress { get; set; } = null!;
 
-        [StringLength(10)]
-        public string Currency { get; set; } = "VND";
-
         [Required]
         public List<CreateOrderItemDto> OrderItems { get; set; } = new();
     }

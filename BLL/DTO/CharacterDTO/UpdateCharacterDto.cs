@@ -20,4 +20,8 @@ public class UpdateCharacterDto
     public string? Description { get; set; }
 
     public bool? IsActive { get; set; }
+    
+    [MaxLength(500, ErrorMessage = "AI URL không được vượt quá 500 ký tự")]
+    [Url(ErrorMessage = "AI URL phải là URL hợp lệ")]
+    public string? AIUrl { get; set; }
 }

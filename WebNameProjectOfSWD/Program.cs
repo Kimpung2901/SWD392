@@ -17,6 +17,18 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Thêm dịch vụ CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Địa chỉ của frontend
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // ===== Firebase Initialization =====
 try
 {
@@ -175,6 +187,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
+
+// 2. Sử dụng CORS middleware (đặt trước UseAuthorization)
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

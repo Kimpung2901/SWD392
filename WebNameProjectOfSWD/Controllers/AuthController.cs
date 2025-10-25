@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BLL.DTO;
+using BLL.DTO.OrderDTO;  
 using BLL.IService;
 using BLL.Services.Jwt;
+using DAL.Enum;
 using DAL.Models;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
@@ -77,11 +79,17 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        // ✅ Check qua service
+   
         if (await _userService.CheckUserExistsAsync(req.Username, req.Email))
             return BadRequest(new { message = "Username or email already exists" });
 
-        var user = await _auth.RegisterAsync(req.Username, req.Password, "customer", req.Email, req.Phones);
+        var user = await _auth.RegisterAsync(
+            req.Username, 
+            req.Password, 
+            "customer", 
+            req.Email, 
+            req.Phones,
+            req.Age);
 
         return Ok(new
         {
@@ -89,6 +97,7 @@ public class AuthController : ControllerBase
             username = user.UserName,
             email = user.Email,
             phones = user.Phones,
+            age = user.Age, 
             role = user.Role,
             message = "Register successful"
         });
@@ -111,9 +120,9 @@ public class AuthController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPasswordOtp([FromBody] ForgotPasswordOtpRequest req)
     {
-        // ✅ Query qua service
+
         var user = await _userService.GetUserByEmailAsync(req.Email.Trim());
-        if (user != null && !user.IsDeleted && user.Status.Equals("active", StringComparison.OrdinalIgnoreCase))
+        if (user != null && !user.IsDeleted && user.Status == UserStatus.Active)
         {
             await _otp.SendOtpAsync(req.Email.Trim());
         }
@@ -128,7 +137,7 @@ public class AuthController : ControllerBase
         var ok = await _otp.VerifyOtpAsync(req.Email.Trim(), req.Otp);
         if (!ok) return BadRequest(new { message = "Invalid or expired OTP" });
 
-        // ✅ Reset password qua service
+
         var result = await _userService.ResetPasswordAsync(req.Email.Trim(), req.NewPassword);
         if (!result)
             return BadRequest(new { message = "Failed to reset password" });
@@ -157,7 +166,7 @@ public class AuthController : ControllerBase
             if (string.IsNullOrEmpty(email))
                 return BadRequest(new { message = "Email not found in Google token" });
 
-            // ✅ Check và tạo user qua service
+
             var user = await _userService.GetUserByEmailAsync(email);
 
             if (user == null)
@@ -171,16 +180,15 @@ public class AuthController : ControllerBase
                     phone: null
                 );
             }
-            else if (user.IsDeleted || !user.Status.Equals("active", StringComparison.OrdinalIgnoreCase))
+            else if (user.IsDeleted || !string.Equals(user.Status.ToString(), "active", StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest(new { message = "Account is inactive or deleted" });
             }
 
-            // Phát hành JWT
             var minutes = int.TryParse(_cfg["Jwt:AccessTokenMinutes"], out var m) ? m : 60;
             var jwt = _jwt.CreateAccessToken(user, TimeSpan.FromMinutes(minutes));
 
-            // ✅ Tạo refresh token qua service
+
             var refreshToken = await _userService.CreateRefreshTokenAsync(
                 user.UserID,
                 HttpContext.Connection.RemoteIpAddress?.ToString()
@@ -216,8 +224,3 @@ public class AuthController : ControllerBase
     }
 }
 
-public class GoogleLoginRequest
-{
-    [Required]
-    public string IdToken { get; set; } = string.Empty;
-}

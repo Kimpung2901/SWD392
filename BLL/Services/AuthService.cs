@@ -2,6 +2,7 @@
 using DAL.IRepo;
 using DAL.Models;
 using BLL.Services.MailService;
+using DAL.Enum;
 
 namespace BLL.Services
 {
@@ -21,7 +22,7 @@ namespace BLL.Services
         public async Task<User?> AuthenticateAsync(string username, string password)
         {
             var user = await _users.GetUserByUsernameAsync(username.Trim());
-            if (user == null || user.IsDeleted || !user.Status.Equals("Active", StringComparison.OrdinalIgnoreCase))
+            if (user == null || user.IsDeleted || user.Status != UserStatus.Active)
                 return null;
             return BCrypt.Net.BCrypt.Verify(password, user.Password) ? user : null;
         }
@@ -29,20 +30,21 @@ namespace BLL.Services
         public async Task<User> RegisterAsync(
             string username, 
             string rawPassword, 
-            string role = "Customer",  // ✅ Default role
+            string role = "Customer", 
             string? email = null, 
-            string? phone = null)
+            string? phone = null,
+            int? age = null) 
         {
             var uname = username.Trim();
             if (await _users.GetUserByUsernameAsync(uname) != null)
                 throw new InvalidOperationException("Username already exists");
 
-            // ✅ Validate role
+          
             var validRoles = new[] { "Admin", "Manager", "Customer" };
             var normalizedRole = role.Trim();
             if (!validRoles.Contains(normalizedRole, StringComparer.OrdinalIgnoreCase))
             {
-                normalizedRole = "Customer"; // Default to Customer if invalid
+                normalizedRole = "Customer"; 
             }
 
             var user = new User
@@ -51,8 +53,9 @@ namespace BLL.Services
                 Email = email?.Trim(),
                 Phones = phone?.Trim(),
                 Password = BCrypt.Net.BCrypt.HashPassword(rawPassword),
+                Age = age, 
                 Role = normalizedRole,
-                Status = "Active",
+                Status = UserStatus.Active, 
                 CreatedAt = DateTime.UtcNow,
                 IsDeleted = false
             };
@@ -66,7 +69,7 @@ namespace BLL.Services
         {
             var user = await _auth.GetUserByIdAsync(userId);
             if (user == null || user.IsDeleted ||
-                !user.Status.Equals("Active", StringComparison.OrdinalIgnoreCase)) 
+                user.Status != UserStatus.Active) 
                 return false;
 
             if (!BCrypt.Net.BCrypt.Verify(oldPassword, user.Password)) 
@@ -76,6 +79,18 @@ namespace BLL.Services
             await _users.UpdateAsync(user);
             await _users.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<User?> AuthenticateWithGoogleAsync(string idToken, string? ipAddress)
+        {
+            return await Task.FromResult<User?>(null);
+        }
+
+        public async Task<bool> CanSendOtpAsync(string email)
+        {
+            var user = await _users.GetUserByEmailAsync(email.Trim());
+           
+            return user != null && !user.IsDeleted && user.Status == UserStatus.Active; 
         }
     }
 }

@@ -11,9 +11,11 @@ namespace BLL.IService
             string rawPassword,
             string role = "customer",
             string? email = null,
-            string? phone = null);
+            string? phone = null,
+            int? age = null);
 
         Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
-
+        Task<bool> CanSendOtpAsync(string email);
+        Task<User?> AuthenticateWithGoogleAsync(string idToken, string? ipAddress);
     }
 }

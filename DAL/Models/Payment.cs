@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -24,9 +25,8 @@ public class Payment
     [MaxLength(10)]
     public string Currency { get; set; } = "VND";
 
-    [Required]
-    [MaxLength(50)]
-    public string Status { get; set; } = "Pending";
+    // ✅ Chuyển sang enum
+    public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
 
     [MaxLength(100)]
     public string? TransactionId { get; set; }

@@ -4,6 +4,7 @@ using BLL.DTO;
 using BLL.Helper;
 using BLL.IService;
 using BLL.Options;
+using DAL.Enum;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -78,11 +79,11 @@ public class MoMoProvider : IPaymentProvider
         if (momo?.IsSuccess == true && !string.IsNullOrEmpty(momo.PayUrl))
         {
             payment.PayUrl = momo.PayUrl;   // ← URL trang MoMo (hiển thị QR)
-            payment.Status = "Pending";
+            payment.Status = PaymentStatus.Pending;
         }
         else
         {
-            payment.Status = "Failed";
+            payment.Status = PaymentStatus.Failed;
             payment.OrderInfo = $"MoMo Error [{momo?.ResultCode ?? -1}]: {momo?.Message ?? "Unknown"}";
         }
 
@@ -104,12 +105,12 @@ public class MoMoProvider : IPaymentProvider
         var p = await db.Payments.FirstOrDefaultAsync(x => x.OrderId == orderId, ct);
         if (p == null) return false;
 
-        if (p.Status is "Success" or "Failed") return true; // idempotent
+        if (p.Status == PaymentStatus.Completed || p.Status == PaymentStatus.Failed) return true; // idempotent
 
         int rc = -1;
         var hasRc = form.TryGetValue("resultCode", out var rcStr) && int.TryParse(rcStr, out rc);
-        p.Status = (hasRc && rc == 0) ? "Success" : "Failed";
-        if (p.Status == "Success") p.CompletedAt = DateTime.UtcNow;
+        p.Status = (hasRc && rc == 0) ? PaymentStatus.Completed : PaymentStatus.Failed;
+        if (p.Status == PaymentStatus.Completed) p.CompletedAt = DateTime.UtcNow;
 
         p.RawResponse = $"IPN:{string.Join("&", form.Select(kv => $"{kv.Key}={kv.Value}"))}";
         await db.SaveChangesAsync(ct);
