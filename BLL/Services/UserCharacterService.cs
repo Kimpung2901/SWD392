@@ -4,6 +4,7 @@ using BLL.DTO.UserCharacterDTO;
 using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
+using DAL.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
@@ -38,7 +39,7 @@ namespace BLL.Services
             return await _db.UserCharacters
                 .Include(uc => uc.User)
                 .Include(uc => uc.Character)
-                .Include(uc => uc.Package)  // ✅ ĐỔI TỪ CharacterPackage → Package
+                .Include(uc => uc.Package)
                 .OrderByDescending(uc => uc.CreatedAt)
                 .AsNoTracking()
                 .ProjectTo<UserCharacterDto>(_mapper.ConfigurationProvider)
@@ -50,7 +51,7 @@ namespace BLL.Services
             return await _db.UserCharacters
                 .Include(uc => uc.User)
                 .Include(uc => uc.Character)
-                .Include(uc => uc.Package)  // ✅ ĐỔI
+                .Include(uc => uc.Package)
                 .Where(uc => uc.UserCharacterID == id)
                 .AsNoTracking()
                 .ProjectTo<UserCharacterDto>(_mapper.ConfigurationProvider)
@@ -100,7 +101,7 @@ namespace BLL.Services
                 .Include(uc => uc.Character)
                 .Include(uc => uc.Package)
                 .Where(uc => uc.UserID == userId 
-                    && uc.Status == "Active" 
+                    && uc.Status == UserCharacterStatus.Active
                     && uc.EndAt > now)
                 .OrderByDescending(uc => uc.EndAt)
                 .AsNoTracking()
@@ -160,8 +161,8 @@ namespace BLL.Services
             if (dto.AutoRenew.HasValue)
                 entity.AutoRenew = dto.AutoRenew.Value;
 
-            if (!string.IsNullOrWhiteSpace(dto.Status))
-                entity.Status = dto.Status;
+            if (dto.Status.HasValue)
+                entity.Status = dto.Status.Value;
 
             await _repo.UpdateAsync(entity);
             return await GetByIdAsync(entity.UserCharacterID);
@@ -196,7 +197,7 @@ namespace BLL.Services
                 entity.EndAt = entity.EndAt.AddDays(package.DurationDays);
             }
 
-            entity.Status = "Active";
+            entity.Status = UserCharacterStatus.Active;
             await _repo.UpdateAsync(entity);
             return true;
         }

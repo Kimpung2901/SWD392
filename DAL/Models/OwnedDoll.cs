@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -14,7 +14,8 @@ public partial class OwnedDoll
 
     public string SerialCode { get; set; } = null!;
 
-    public string Status { get; set; } = null!;
+    // ✅ Chuyển sang enum
+    public OwnedDollStatus Status { get; set; } = OwnedDollStatus.Active;
 
     public DateTime Acquired_at { get; set; }
 

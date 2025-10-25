@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using BLL.DTO.OwnedDollDTO;
 using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
+using DAL.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
@@ -75,7 +75,6 @@ namespace BLL.Services
 
         public async Task<OwnedDollDto> CreateAsync(CreateOwnedDollDto dto)
         {
-            // Kiểm tra SerialCode đã tồn tại chưa
             var existing = await _repo.GetBySerialCodeAsync(dto.SerialCode);
             if (existing != null)
                 throw new InvalidOperationException($"SerialCode '{dto.SerialCode}' đã tồn tại");
@@ -85,7 +84,7 @@ namespace BLL.Services
                 UserID = dto.UserID,
                 DollVariantID = dto.DollVariantID,
                 SerialCode = dto.SerialCode,
-                Status = dto.Status,
+                Status = OwnedDollStatus.Active, // ✅ Default enum value
                 Acquired_at = dto.Acquired_at ?? DateTime.UtcNow,
                 Expired_at = dto.Expired_at ?? DateTime.UtcNow.AddYears(1)
             };
@@ -102,7 +101,6 @@ namespace BLL.Services
 
             if (!string.IsNullOrWhiteSpace(dto.SerialCode))
             {
-                // Kiểm tra SerialCode mới có trùng với record khác không
                 var existing = await _repo.GetBySerialCodeAsync(dto.SerialCode);
                 if (existing != null && existing.OwnedDollID != id)
                     throw new InvalidOperationException($"SerialCode '{dto.SerialCode}' đã được sử dụng");
@@ -110,8 +108,8 @@ namespace BLL.Services
                 entity.SerialCode = dto.SerialCode;
             }
 
-            if (!string.IsNullOrWhiteSpace(dto.Status))
-                entity.Status = dto.Status;
+            if (dto.Status.HasValue) // ✅ Nullable enum
+                entity.Status = dto.Status.Value;
 
             if (dto.Expired_at.HasValue)
                 entity.Expired_at = dto.Expired_at.Value;

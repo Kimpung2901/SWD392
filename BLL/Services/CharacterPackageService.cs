@@ -1,5 +1,6 @@
 ﻿using BLL.DTO.CharacterPackageDTO;
 using BLL.IService;
+using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
 
@@ -65,7 +66,7 @@ namespace BLL.Services
                 Price = dto.Price,
                 Description = dto.Description,
                 IsActive = true,
-                Status = "Active",
+                Status = CharacterPackageStatus.Active, // <-- FIXED HERE
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -105,8 +106,14 @@ namespace BLL.Services
             if (dto.IsActive.HasValue)
                 entity.IsActive = dto.IsActive.Value;
 
-            var status = Clean(dto.Status);
-            if (status != null) entity.Status = status;
+            // FIX: Convert string status to enum
+            if (!string.IsNullOrWhiteSpace(dto.Status))
+            {
+                if (Enum.TryParse<CharacterPackageStatus>(dto.Status, true, out var parsedStatus))
+                {
+                    entity.Status = parsedStatus;
+                }
+            }
 
             await _repo.UpdateAsync(entity);
 

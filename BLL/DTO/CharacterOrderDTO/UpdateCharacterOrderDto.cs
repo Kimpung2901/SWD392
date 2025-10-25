@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DAL.Enum;
 
 namespace BLL.DTO.CharacterOrderDTO
 {
     public class UpdateCharacterOrderDto
     {
-        public DateTime? Start_Date { get; set; }
+        public DateTime? StartAt { get; set; }
 
-        public DateTime? End_Date { get; set; }
+        public DateTime? EndAt { get; set; }
 
-        [StringLength(50, ErrorMessage = "Status không được vượt quá 50 ký tự")]
-        public string? Status { get; set; }
+        public bool? AutoRenew { get; set; }
+
+        public CharacterOrderStatus? Status { get; set; }
     }
 }

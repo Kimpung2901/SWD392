@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -23,5 +23,6 @@ public partial class CharacterPackage
 
     public DateTime CreatedAt { get; set; }
 
-    public string Status { get; set; } = null!;
+    // ✅ Chuyển sang enum
+    public CharacterPackageStatus Status { get; set; } = CharacterPackageStatus.Active;
 }

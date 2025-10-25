@@ -63,8 +63,8 @@ namespace BLL.Services
                 entity.LineTotal = entity.UnitPrice * entity.Quantity;
             }
 
-            if (!string.IsNullOrWhiteSpace(dto.Status))
-                entity.Status = dto.Status.Trim();
+            if (dto.Status.HasValue)
+                entity.Status = dto.Status.Value;
 
             await _repo.UpdateAsync(entity);
 

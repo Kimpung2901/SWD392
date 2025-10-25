@@ -87,10 +87,14 @@ public partial class DollDbContext : DbContext
             entity.HasIndex(e => e.Email).IsUnique();
             
             entity.Property(e => e.Password).HasMaxLength(255).IsRequired();
+
+            entity.Property(e => e.Age)
+                .IsRequired(false); 
+            
             entity.Property(e => e.Status)
-                .HasMaxLength(255)
-                .IsRequired()
-                .HasDefaultValue("Active");
+               .HasConversion<string>()
+               .HasMaxLength(50)
+               .IsRequired();
             entity.Property(e => e.Role)
                 .IsRequired()
                 .HasDefaultValue("Customer");  
@@ -107,10 +111,12 @@ public partial class DollDbContext : DbContext
             entity.ToTable("Order");
             entity.Property(e => e.OrderDate).HasColumnType("datetime");
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.Currency).HasMaxLength(10).IsRequired();
             entity.Property(e => e.ShippingAddress).HasMaxLength(500).IsRequired();
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
-            
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+
             entity.HasOne<User>()
                 .WithMany()
                 .HasForeignKey(e => e.UserID)
@@ -131,17 +137,20 @@ public partial class DollDbContext : DbContext
             entity.ToTable("OrderItem");
             entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
             entity.Property(e => e.LineTotal).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
-            
-            // ✅ Sửa lại relationship - Thêm principal entity
-            entity.HasOne(e => e.Order)  // ✅ Chỉ định navigation property
-                .WithMany(o => o.OrderItems)  // ✅ Chỉ định collection navigation
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+
+
+            entity.HasOne(e => e.Order)  
+                .WithMany(o => o.OrderItems)  
                 .HasForeignKey(e => e.OrderID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OrderItem_Order");
             
-            entity.HasOne(e => e.DollVariant)  // ✅ Chỉ định navigation property
-                .WithMany()  // ✅ DollVariant không có collection navigation
+            entity.HasOne(e => e.DollVariant) 
+                .WithMany()  
                 .HasForeignKey(e => e.DollVariantID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OrderItem_DollVariant");
@@ -153,7 +162,10 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.OwnedDollID);
             entity.ToTable("OwnedDoll");
             entity.Property(e => e.SerialCode).HasMaxLength(255).IsRequired();
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
             entity.Property(e => e.Acquired_at).HasColumnType("datetime");
             entity.Property(e => e.Expired_at).HasColumnType("datetime");
             
@@ -182,6 +194,11 @@ public partial class DollDbContext : DbContext
             
             entity.Property(e => e.Personality).HasMaxLength(255).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(255).IsRequired();
+            
+            entity.Property(e => e.AIUrl)
+                .HasMaxLength(500)
+                .IsRequired(false);
+            
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
         });
 
@@ -194,7 +211,10 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.Billing_Cycle).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Description).HasMaxLength(255);
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             
             entity.HasOne<Character>()
@@ -209,7 +229,10 @@ public partial class DollDbContext : DbContext
         {
             entity.HasKey(e => e.UserCharacterID);
             entity.ToTable("UserCharacter");
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
             entity.Property(e => e.StartAt).HasColumnType("datetime");
             entity.Property(e => e.EndAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -244,8 +267,11 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.BoundAt).HasColumnType("datetime");
             entity.Property(e => e.UnBoundAt).HasColumnType("datetime");
             entity.Property(e => e.Note).HasMaxLength(255);
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
-            
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
+
             entity.HasOne<OwnedDoll>()
                 .WithMany()
                 .HasForeignKey(e => e.OwnedDollID)
@@ -265,7 +291,10 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.CharacterOrderID);
             entity.ToTable("CharacterOrder");
             entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
             entity.Property(e => e.Start_Date).HasColumnType("datetime");
             entity.Property(e => e.End_Date).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
@@ -300,7 +329,10 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.Method).HasMaxLength(50);
             entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Currency).HasMaxLength(10).IsRequired();
-            entity.Property(e => e.Status).HasMaxLength(50).IsRequired().HasDefaultValue("Pending");
+            entity.Property(e => e.Status)
+                .HasConversion<string>()
+                .HasMaxLength(50)
+                .IsRequired();
             entity.Property(e => e.CreatedAt).HasColumnType("datetime2").HasDefaultValueSql("SYSUTCDATETIME()");
             entity.Property(e => e.Target_Type).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Target_Id).IsRequired();
@@ -342,6 +374,8 @@ public partial class DollDbContext : DbContext
                 .HasForeignKey(e => e.UserID)
                 .OnDelete(DeleteBehavior.Cascade);
         });
+
+        
 
         OnModelCreatingPartial(modelBuilder);
     }

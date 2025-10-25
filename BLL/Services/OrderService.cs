@@ -1,5 +1,6 @@
 ﻿using BLL.DTO.OrderDTO;
 using BLL.IService;
+using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
 
@@ -34,7 +35,7 @@ namespace BLL.Services
 
             foreach (var order in orders)
             {
-                var user = order.UserID.HasValue ? await _userRepo.GetByIdAsync(order.UserID.Value) : null;  // ✅ Check null
+                var user = order.UserID.HasValue ? await _userRepo.GetByIdAsync(order.UserID.Value) : null;  
                 dtos.Add(MapToDto(order, user?.UserName));
             }
 
@@ -47,7 +48,7 @@ namespace BLL.Services
             if (order == null) return null;
 
             var user = await _userRepo.GetByIdAsync((int)order.UserID);
-            return MapToDto(order, user?.UserName); // ✅ Remove await
+            return MapToDto(order, user?.UserName); 
         }
 
         public async Task<List<OrderDto>> GetByUserIdAsync(int userId)
@@ -58,7 +59,7 @@ namespace BLL.Services
 
             foreach (var order in orders)
             {
-                dtos.Add(MapToDto(order, user?.UserName)); // ✅ Remove await
+                dtos.Add(MapToDto(order, user?.UserName));
             }
 
             return dtos;
@@ -85,7 +86,7 @@ namespace BLL.Services
                     DollVariantID = item.DollVariantID,
                     DollVariantName = variant?.Name,
                     Quantity = item.Quantity,
-                    UnitPrice = item.UnitPrice,  // ✅ Sửa từ item.VolumePrice thành item.UnitPrice
+                    UnitPrice = item.UnitPrice,  
                     LineTotal = item.LineTotal,
                     Status = item.Status
                 });
@@ -126,20 +127,19 @@ namespace BLL.Services
                     Quantity = itemDto.Quantity,
                     UnitPrice = variant.Price,
                     LineTotal = lineTotal,
-                    Status = "Pending"
+                    Status = OrderItemStatus.Pending 
                 });
             }
 
-            // Create payment first (temporary PaymentID = 0)
+
             var order = new Order
             {
                 UserID = dto.UserID,
-                PaymentID = null, // Will be updated after payment creation
+                PaymentID = null,
                 OrderDate = DateTime.UtcNow,
                 TotalAmount = totalAmount,
-                Currency = dto.Currency,
                 ShippingAddress = dto.ShippingAddress,
-                Status = "Pending"
+                Status = OrderStatus.Pending 
             };
 
             await _orderRepo.AddAsync(order);
@@ -151,7 +151,7 @@ namespace BLL.Services
             }
             await _orderItemRepo.AddRangeAsync(orderItems);
 
-            return MapToDto(order, user.UserName); // ✅ Remove await
+            return MapToDto(order, user.UserName); 
         }
 
         public async Task<OrderDto?> UpdatePartialAsync(int id, UpdateOrderDto dto)
@@ -162,13 +162,13 @@ namespace BLL.Services
             if (!string.IsNullOrWhiteSpace(dto.ShippingAddress))
                 entity.ShippingAddress = dto.ShippingAddress.Trim();
 
-            if (!string.IsNullOrWhiteSpace(dto.Status))
-                entity.Status = dto.Status.Trim();
+            if (dto.Status.HasValue)
+                entity.Status = dto.Status.Value;
 
             await _orderRepo.UpdateAsync(entity);
 
             var user = await _userRepo.GetByIdAsync((int)entity.UserID);
-            return MapToDto(entity, user?.UserName); // ✅ Remove await
+            return MapToDto(entity, user?.UserName); 
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -182,37 +182,36 @@ namespace BLL.Services
             var order = await _orderRepo.GetByIdAsync(id);
             if (order == null) return false;
 
-            if (order.Status == "Completed" || order.Status == "Shipped")
+            if (order.Status == OrderStatus.Delivered || order.Status == OrderStatus.Shipped)
                 throw new Exception("Không thể hủy đơn hàng đã giao hoặc đang giao");
 
-            order.Status = "Cancelled";
+            order.Status = OrderStatus.Cancelled;
             await _orderRepo.UpdateAsync(order);
 
             // Update order items status
             var items = await _orderItemRepo.GetByOrderIdAsync(id);
             foreach (var item in items)
             {
-                item.Status = "Cancelled";
+                item.Status = OrderItemStatus.Cancelled;
                 await _orderItemRepo.UpdateAsync(item);
             }
 
             return true;
         }
 
-        // ✅ Giữ nguyên giá trị nullable
+
         private OrderDto MapToDto(Order o, string? userName)
         {
             return new OrderDto
             {
                 OrderID = o.OrderID,
-                UserID = o.UserID,  // ✅ Giữ nguyên nullable
+                UserID = o.UserID, 
                 UserName = userName,
-                PaymentID = o.PaymentID,  // ✅ Giữ nguyên nullable
+                PaymentID = o.PaymentID,  
                 OrderDate = o.OrderDate,
                 TotalAmount = o.TotalAmount,
-                Currency = o.Currency,  // ✅ Giữ nguyên nullable
-                ShippingAddress = o.ShippingAddress,  // ✅ Giữ nguyên nullable
-                Status = o.Status  // ✅ Giữ nguyên nullable
+                ShippingAddress = o.ShippingAddress,
+                Status = o.Status 
             };
         }
     }

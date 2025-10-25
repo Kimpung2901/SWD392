@@ -5,7 +5,6 @@ using BLL.DTO.CharacterOrderDTO;
 using BLL.DTO.DollCharacterLinkDTO;
 using DAL.Models;
 
-
 namespace BLL.Helper
 {
     public class Mapping : Profile
@@ -40,7 +39,7 @@ namespace BLL.Helper
                 .ForMember(dest => dest.Character, opt => opt.Ignore())
                 .ForMember(dest => dest.Package, opt => opt.Ignore());
 
-            // ✅ CharacterOrder mappings
+            // ✅ CharacterOrder mappings - Enum được map tự động
             CreateMap<CharacterOrder, CharacterOrderDto>()
                 .ForMember(dest => dest.PackageName,
                     opt => opt.MapFrom(src => src.Package != null ? src.Package.Name : string.Empty))
@@ -49,9 +48,11 @@ namespace BLL.Helper
 
             CreateMap<CreateCharacterOrderDto, CharacterOrder>()
                 .ForMember(dest => dest.CharacterOrderID, opt => opt.Ignore())
-                .ForMember(dest => dest.UnitPrice, opt => opt.Ignore()) 
-                .ForMember(dest => dest.End_Date, opt => opt.Ignore())  
-                .ForMember(dest => dest.Start_Date, opt => opt.MapFrom(src => src.Start_Date ?? DateTime.UtcNow))
+                .ForMember(dest => dest.UserCharacterID, opt => opt.Ignore())
+                .ForMember(dest => dest.QuantityMonths, opt => opt.Ignore())
+                .ForMember(dest => dest.UnitPrice, opt => opt.Ignore())
+                .ForMember(dest => dest.Start_Date, opt => opt.Ignore())
+                .ForMember(dest => dest.End_Date, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.Package, opt => opt.Ignore())
                 .ForMember(dest => dest.Character, opt => opt.Ignore())
@@ -66,7 +67,6 @@ namespace BLL.Helper
                 .ForMember(dest => dest.BoundAt, opt => opt.MapFrom(src => src.BoundAt ?? DateTime.UtcNow))
                 .ForMember(dest => dest.UnBoundAt, opt => opt.Ignore())
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => "Active"))
                 .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note ?? string.Empty));
 
             CreateMap<UpdateDollCharacterLinkDto, DollCharacterLink>()

@@ -20,4 +20,5 @@ public partial class Character
     public bool IsActive { get; set; }
 
     public DateTime CreatedAt { get; set; }
+    public string? AIUrl { get; set; }
 }

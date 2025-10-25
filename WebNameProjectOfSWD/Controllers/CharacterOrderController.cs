@@ -1,6 +1,8 @@
 ﻿using BLL.DTO.CharacterOrderDTO;
 using BLL.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WebNameProjectOfSWD.Controllers
 {
@@ -62,6 +64,7 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpPost]
+        [Authorize] // Yêu cầu đăng nhập
         public async Task<IActionResult> Create([FromBody] CreateCharacterOrderDto dto)
         {
             if (!ModelState.IsValid)
@@ -69,7 +72,17 @@ namespace WebNameProjectOfSWD.Controllers
 
             try
             {
-                var created = await _service.CreateAsync(dto);
+                // Lấy UserID từ JWT token
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
+                    ?? User.FindFirst("sub")?.Value 
+                    ?? User.FindFirst("userId")?.Value;
+                
+                if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+                {
+                    return Unauthorized(new { message = "Không thể xác định user từ token" });
+                }
+
+                var created = await _service.CreateAsync(dto, userId);
                 return CreatedAtAction(
                     nameof(GetById),
                     new { id = created.CharacterOrderID },

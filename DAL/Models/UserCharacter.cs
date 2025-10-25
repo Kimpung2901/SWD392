@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -19,14 +20,18 @@ public partial class UserCharacter
 
     public bool AutoRenew { get; set; }
 
-    public string Status { get; set; } = null!;
+    // ✅ Chuyển sang enum
+    public UserCharacterStatus Status { get; set; } = UserCharacterStatus.Active;
 
     public DateTime CreatedAt { get; set; }
 
     // Navigation properties
+    [ForeignKey(nameof(UserID))]
     public virtual User? User { get; set; }
 
+    [ForeignKey(nameof(CharacterID))]
     public virtual Character? Character { get; set; }
 
-    public virtual CharacterPackage? Package { get; set; } // ĐỔI TỪ CharacterPackage → Package
+    [ForeignKey(nameof(PackageId))]
+    public virtual CharacterPackage? Package { get; set; }
 }

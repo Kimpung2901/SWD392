@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 
 namespace BLL.DTO
@@ -18,5 +18,8 @@ namespace BLL.DTO
         public string Password { get; set; } = null!;
 
         public string? Phones { get; set; }
+
+        [Range(1, 150, ErrorMessage = "Age phải từ 1 đến 150")]
+        public int? Age { get; set; }
     }
 }

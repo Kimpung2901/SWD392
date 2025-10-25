@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -14,10 +15,11 @@ public partial class User
     public string Email { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+    
+    public int? Age { get; set; }
+    
+    public UserStatus Status { get; set; } = UserStatus.Active;
 
-    public string Status { get; set; } = "Active";
-
-    // ✅ Sửa default từ "user" thành "Customer"
     public string Role { get; set; } = "Customer";
 
     public DateTime CreatedAt { get; set; }

@@ -1,4 +1,4 @@
-using BLL.DTO.CharacterDTO;
+﻿using BLL.DTO.CharacterDTO;
 using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
@@ -35,6 +35,7 @@ namespace BLL.Services
                 AgeRange = dto.AgeRange,
                 Personality = dto.Personality,
                 Description = dto.Description ?? string.Empty,
+                AIUrl = dto.AIUrl,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -70,6 +71,10 @@ namespace BLL.Services
             var description = Clean(dto.Description);
             if (description != null) entity.Description = description;
 
+            // ✅ THÊM MỚI: Cập nhật AI Model URL
+            var aiModelUrl = Clean(dto.AIUrl);
+            if (aiModelUrl != null) entity.AIUrl = aiModelUrl;
+
             if (dto.IsActive.HasValue) entity.IsActive = dto.IsActive.Value;
 
             await _repo.UpdateAsync(entity);
@@ -90,6 +95,7 @@ namespace BLL.Services
             AgeRange = c.AgeRange,
             Personality = c.Personality,
             Description = c.Description,
+            AIUrl = c.AIUrl, 
             IsActive = c.IsActive,
             CreatedAt = c.CreatedAt
         };

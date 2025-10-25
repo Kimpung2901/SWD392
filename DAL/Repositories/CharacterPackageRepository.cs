@@ -1,5 +1,6 @@
-using DAL.IRepo;
+﻿using DAL.IRepo;
 using DAL.Models;
+using DAL.Enum;  // ✅ THÊM DÒNG NÀY
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -57,7 +58,7 @@ namespace DAL.Repositories
             if (entity != null)
             {
                 entity.IsActive = false;
-                entity.Status = "Deleted";
+                entity.Status = CharacterPackageStatus.Archived;
                 await _db.SaveChangesAsync();
                 return true;
             }

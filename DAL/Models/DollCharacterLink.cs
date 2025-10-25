@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -17,7 +17,8 @@ public partial class DollCharacterLink
 
     public bool IsActive { get; set; }
 
-    public string Note { get; set; } = null!;
+    public string Note { get; set; } = string.Empty;
 
-    public string Status { get; set; } = null!;
+    // ✅ Chuyển sang enum
+    public DollCharacterLinkStatus Status { get; set; } = DollCharacterLinkStatus.Active;
 }

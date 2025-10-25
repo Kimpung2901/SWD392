@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DAL.Enum;
 
 namespace BLL.DTO.UserCharacterDTO
 {
@@ -10,7 +11,6 @@ namespace BLL.DTO.UserCharacterDTO
 
         public bool? AutoRenew { get; set; }
 
-        [StringLength(50, ErrorMessage = "Status không được vượt quá 50 ký tự")]
-        public string? Status { get; set; }
+        public UserCharacterStatus? Status { get; set; }
     }
 }

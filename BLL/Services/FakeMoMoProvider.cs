@@ -1,4 +1,5 @@
 ﻿using BLL.IService;
+using DAL.Enum;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ public class FakeMoMoProvider : IPaymentProvider
         payment.Method = "Wallet";
         payment.OrderId = orderId;    // momo orderId
         payment.TransactionId = requestId;  // requestId
-        payment.Status = "Pending";
+        payment.Status = PaymentStatus.Pending; // <-- FIXED: use enum value
 
         // ✅ Route mới nằm dưới PaymentController: /api/payment/sandbox/momo
         payment.PayUrl = $"/api/payment/sandbox/momo?orderId={orderId}&amount={payment.Amount}";
@@ -40,15 +41,15 @@ public class FakeMoMoProvider : IPaymentProvider
         if (p == null) return false;
 
         // Idempotent
-        if (p.Status is "Success" or "Failed") return true;
+        if (p.Status == PaymentStatus.Completed || p.Status == PaymentStatus.Failed) return true;
 
         var rc = data.TryGetValue("resultCode", out var s) && int.TryParse(s, out var i) ? i : -1;
         if (rc == 0)
         {
-            p.Status = "Success";
+            p.Status = PaymentStatus.Completed;
             p.CompletedAt = DateTime.UtcNow;
         }
-        else p.Status = "Failed";
+        else p.Status = PaymentStatus.Failed;
 
         p.RawResponse = $"IPN(FAKE):{string.Join("&", data.Select(kv => $"{kv.Key}={kv.Value}"))}";
         await db.SaveChangesAsync(ct);
