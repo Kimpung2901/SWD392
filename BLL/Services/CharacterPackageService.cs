@@ -137,7 +137,7 @@ namespace BLL.Services
             CharacterId = p.CharacterId,
             CharacterName = characterName,
             Name = p.Name,
-            DurationDays = p.DurationDays,
+            DurationDays = (int)p.DurationDays,
             Billing_Cycle = p.Billing_Cycle,
             Price = p.Price,
             Description = p.Description,

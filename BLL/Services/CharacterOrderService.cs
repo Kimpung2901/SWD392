@@ -39,7 +39,6 @@ namespace BLL.Services
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
                 .ProjectTo<CharacterOrderDto>(_mapper.ConfigurationProvider)
@@ -51,7 +50,6 @@ namespace BLL.Services
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .Where(co => co.CharacterOrderID == id)
                 .AsNoTracking()
                 .ProjectTo<CharacterOrderDto>(_mapper.ConfigurationProvider)
@@ -63,7 +61,6 @@ namespace BLL.Services
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Where(co => co.UserCharacterID == userCharacterId)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
                 .ProjectTo<CharacterOrderDto>(_mapper.ConfigurationProvider)
@@ -74,7 +71,6 @@ namespace BLL.Services
         {
             return await _db.CharacterOrders
                 .Include(co => co.Package)
-                .Include(co => co.UserCharacter)
                 .Where(co => co.CharacterID == characterId)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
@@ -86,7 +82,6 @@ namespace BLL.Services
         {
             return await _db.CharacterOrders
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .Where(co => co.PackageID == packageId)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
@@ -99,7 +94,6 @@ namespace BLL.Services
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .Where(co => co.Status == CharacterOrderStatus.Pending) // ✅ Dùng enum
                 .OrderBy(co => co.CreatedAt)
                 .AsNoTracking()
@@ -148,11 +142,7 @@ namespace BLL.Services
             {
                 PackageID = dto.PackageID,
                 CharacterID = dto.CharacterID,
-                UserCharacterID = userCharacter.UserCharacterID,
-                QuantityMonths = quantityMonths,
                 UnitPrice = package.Price,
-                Start_Date = startDate,
-                End_Date = endDate,
                 CreatedAt = now
             };
 
@@ -165,16 +155,6 @@ namespace BLL.Services
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
-
-            if (dto.StartAt.HasValue)
-            {
-                entity.Start_Date = dto.StartAt.Value;
-                var durationDays = entity.QuantityMonths * 30;
-                entity.End_Date = entity.Start_Date.AddDays(durationDays);
-            }
-
-            if (dto.EndAt.HasValue)
-                entity.End_Date = dto.EndAt.Value;
 
             if (dto.Status.HasValue) // ✅ Nullable enum
                 entity.Status = dto.Status.Value;
