@@ -48,15 +48,11 @@ namespace BLL.Helper
 
             CreateMap<CreateCharacterOrderDto, CharacterOrder>()
                 .ForMember(dest => dest.CharacterOrderID, opt => opt.Ignore())
-                .ForMember(dest => dest.UserCharacterID, opt => opt.Ignore())
-                .ForMember(dest => dest.QuantityMonths, opt => opt.Ignore())
                 .ForMember(dest => dest.UnitPrice, opt => opt.Ignore())
-                .ForMember(dest => dest.Start_Date, opt => opt.Ignore())
-                .ForMember(dest => dest.End_Date, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.Package, opt => opt.Ignore())
-                .ForMember(dest => dest.Character, opt => opt.Ignore())
-                .ForMember(dest => dest.UserCharacter, opt => opt.Ignore());
+                .ForMember(dest => dest.Character, opt => opt.Ignore());
+
 
             CreateMap<UpdateCharacterOrderDto, CharacterOrder>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));

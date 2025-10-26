@@ -11,8 +11,6 @@ public partial class CharacterPackage
 
     public string Name { get; set; } = null!;
 
-    public int DurationDays { get; set; }
-
     public string Billing_Cycle { get; set; } = null!;
 
     public decimal Price { get; set; }
@@ -22,7 +20,6 @@ public partial class CharacterPackage
     public bool IsActive { get; set; }
 
     public DateTime CreatedAt { get; set; }
-
-    // ✅ Chuyển sang enum
     public CharacterPackageStatus Status { get; set; } = CharacterPackageStatus.Active;
+    public double DurationDays { get; set; }
 }

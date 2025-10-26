@@ -16,7 +16,6 @@ namespace DAL.Repositories
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();
@@ -27,7 +26,6 @@ namespace DAL.Repositories
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .FirstOrDefaultAsync(co => co.CharacterOrderID == id);
         }
 
@@ -36,7 +34,6 @@ namespace DAL.Repositories
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Where(co => co.UserCharacterID == userCharacterId)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();
@@ -46,7 +43,6 @@ namespace DAL.Repositories
         {
             return await _db.CharacterOrders
                 .Include(co => co.Package)
-                .Include(co => co.UserCharacter)
                 .Where(co => co.CharacterID == characterId)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
@@ -57,7 +53,6 @@ namespace DAL.Repositories
         {
             return await _db.CharacterOrders
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .Where(co => co.PackageID == packageId)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
@@ -69,7 +64,6 @@ namespace DAL.Repositories
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Include(co => co.UserCharacter)
                 .Where(co => co.Status == CharacterOrderStatus.Pending)
                 .OrderBy(co => co.CreatedAt)
                 .AsNoTracking()

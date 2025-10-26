@@ -175,7 +175,7 @@ public partial class DollDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_OwnedDoll_User");
             
-            // ✅ Sửa lại để chỉ định navigation property rõ ràng
+            
             entity.HasOne(e => e.DollVariant)
                 .WithMany(d => d.OwnedDolls)
                 .HasForeignKey(e => e.DollVariantID)
@@ -189,16 +189,18 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.CharacterId);
             entity.ToTable("Character");
             entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
-            
+
+            entity.Property(e => e.AgeRange).IsRequired(); 
+
             entity.Property(e => e.Image).HasMaxLength(500).IsRequired();
-            
+
             entity.Property(e => e.Personality).HasMaxLength(255).IsRequired();
             entity.Property(e => e.Description).HasMaxLength(255).IsRequired();
-            
+
             entity.Property(e => e.AIUrl)
                 .HasMaxLength(500)
                 .IsRequired(false);
-            
+
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
         });
 
@@ -237,21 +239,20 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.EndAt).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             
-            // ✅ FIX: Chỉ định navigation property rõ ràng
+            
             entity.HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_UserCharacter_User");
-            
-            // ✅ FIX: Chỉ định navigation property rõ ràng
+
             entity.HasOne(e => e.Character)
                 .WithMany()
                 .HasForeignKey(e => e.CharacterID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_UserCharacter_Character");
             
-            // ✅ Đã đúng rồi
+         
             entity.HasOne(e => e.Package)
                 .WithMany()
                 .HasForeignKey(e => e.PackageId)
@@ -291,12 +292,11 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.CharacterOrderID);
             entity.ToTable("CharacterOrder");
             entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.DurationDays).IsRequired();
             entity.Property(e => e.Status)
                 .HasConversion<string>()
                 .HasMaxLength(50)
                 .IsRequired();
-            entity.Property(e => e.Start_Date).HasColumnType("datetime");
-            entity.Property(e => e.End_Date).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             
             // ✅ Chỉ định navigation properties rõ ràng
@@ -311,12 +311,6 @@ public partial class DollDbContext : DbContext
                 .HasForeignKey(e => e.PackageID)
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_CharacterOrder_Package");
-            
-            entity.HasOne(e => e.UserCharacter)
-                .WithMany()
-                .HasForeignKey(e => e.UserCharacterID)
-                .OnDelete(DeleteBehavior.NoAction)
-                .HasConstraintName("FK_CharacterOrder_UserCharacter");
         });
 
         // Payment

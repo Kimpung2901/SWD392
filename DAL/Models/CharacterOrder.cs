@@ -11,20 +11,12 @@ public partial class CharacterOrder
     public int PackageID { get; set; }
 
     public int CharacterID { get; set; }
-
-    public int UserCharacterID { get; set; }
-
-    public int QuantityMonths { get; set; }
+    public int? DurationDays { get; set; }
 
     public decimal UnitPrice { get; set; }
 
-    public DateTime Start_Date { get; set; }
-
-    public DateTime End_Date { get; set; }
-
     public DateTime CreatedAt { get; set; }
 
-    // ✅ Chuyển sang enum
     public CharacterOrderStatus Status { get; set; } = CharacterOrderStatus.Pending;
 
     // ✅ Navigation properties
@@ -34,6 +26,4 @@ public partial class CharacterOrder
     [ForeignKey(nameof(CharacterID))]
     public virtual Character? Character { get; set; }
 
-    [ForeignKey(nameof(UserCharacterID))]
-    public virtual UserCharacter? UserCharacter { get; set; }
 }
