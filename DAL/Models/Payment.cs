@@ -21,17 +21,11 @@ public class Payment
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal Amount { get; set; }
-
-    [MaxLength(10)]
-    public string Currency { get; set; } = "VND";
-
-    // ✅ Chuyển sang enum
     public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
 
     [MaxLength(100)]
     public string? TransactionId { get; set; }
 
-    // ✅ Đổi tên: OrderId từ MoMo
     [MaxLength(100)]
     [Column("MoMoOrderId")]
     public string? OrderId { get; set; }
@@ -50,8 +44,6 @@ public class Payment
     public string Target_Type { get; set; } = string.Empty;
 
     public int Target_Id { get; set; }
-
-    // ✅ FK đến bảng Order
     public int? OrderID { get; set; }
 
     public int? CharacterOrderID { get; set; }
