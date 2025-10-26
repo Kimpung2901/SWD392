@@ -20,5 +20,5 @@ public partial class DollCharacterLink
     public string Note { get; set; } = string.Empty;
 
     // ✅ Chuyển sang enum
-    public DollCharacterLinkStatus Status { get; set; } = DollCharacterLinkStatus.Active;
+    public DollCharacterLinkStatus Status { get; set; } = DollCharacterLinkStatus.Bound; // ✅ ĐỔI
 }

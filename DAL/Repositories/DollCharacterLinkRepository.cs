@@ -1,6 +1,6 @@
 ﻿using DAL.IRepo;
 using DAL.Models;
-using DAL.Enum;  // ✅ THÊM DÒNG NÀY
+using DAL.Enum;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories;
@@ -46,7 +46,7 @@ public class DollCharacterLinkRepository : IDollCharacterLinkRepository
     public async Task<List<DollCharacterLink>> GetActiveLinksAsync()
     {
         return await _db.DollCharacterLinks
-            .Where(l => l.IsActive && l.Status == DollCharacterLinkStatus.Active)
+            .Where(l => l.IsActive && l.Status == DollCharacterLinkStatus.Bound) // ✅ ĐỔI Active → Bound
             .OrderByDescending(l => l.BoundAt)
             .AsNoTracking()
             .ToListAsync();
@@ -55,7 +55,7 @@ public class DollCharacterLinkRepository : IDollCharacterLinkRepository
     public async Task<DollCharacterLink?> GetActiveLinkByOwnedDollIdAsync(int ownedDollId)
     {
         return await _db.DollCharacterLinks
-            .Where(l => l.OwnedDollID == ownedDollId && l.IsActive && l.Status == DollCharacterLinkStatus.Active)
+            .Where(l => l.OwnedDollID == ownedDollId && l.IsActive && l.Status == DollCharacterLinkStatus.Bound) // ✅ ĐỔI
             .OrderByDescending(l => l.BoundAt)
             .FirstOrDefaultAsync();
     }

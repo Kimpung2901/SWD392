@@ -23,7 +23,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // Địa chỉ của frontend
+            policy.WithOrigins("http://localhost:5173",
+           "https://doll-sales-system-fe.vercel.app")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });

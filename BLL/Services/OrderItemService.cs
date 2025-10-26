@@ -57,12 +57,6 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-            if (dto.Quantity.HasValue && dto.Quantity.Value > 0)
-            {
-                entity.Quantity = dto.Quantity.Value;
-                entity.LineTotal = entity.UnitPrice * entity.Quantity;
-            }
-
             if (dto.Status.HasValue)
                 entity.Status = dto.Status.Value;
 
@@ -84,7 +78,6 @@ namespace BLL.Services
             OrderID = oi.OrderID,
             DollVariantID = oi.DollVariantID,
             DollVariantName = variantName,
-            Quantity = oi.Quantity,
             UnitPrice = oi.UnitPrice,
             LineTotal = oi.LineTotal,
             Status = oi.Status

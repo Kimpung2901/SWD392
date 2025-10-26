@@ -85,7 +85,6 @@ namespace BLL.Services
                     OrderID = item.OrderID,
                     DollVariantID = item.DollVariantID,
                     DollVariantName = variant?.Name,
-                    Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,  
                     LineTotal = item.LineTotal,
                     Status = item.Status
@@ -118,19 +117,19 @@ namespace BLL.Services
                 if (!variant.IsActive)
                     throw new Exception($"DollVariant '{variant.Name}' không còn khả dụng");
 
-                var lineTotal = variant.Price * itemDto.Quantity;
+                // ✅ THAY ĐỔI: Không nhân với Quantity nữa
+                var lineTotal = variant.Price; // Mỗi item = 1 sản phẩm
                 totalAmount += lineTotal;
 
                 orderItems.Add(new OrderItem
                 {
                     DollVariantID = itemDto.DollVariantID,
-                    Quantity = itemDto.Quantity,
+                    // ❌ XÓA: Quantity = itemDto.Quantity,
                     UnitPrice = variant.Price,
-                    LineTotal = lineTotal,
+                    LineTotal = lineTotal, // ✅ LineTotal = UnitPrice (không nhân Quantity)
                     Status = OrderItemStatus.Pending 
                 });
             }
-
 
             var order = new Order
             {
@@ -182,7 +181,7 @@ namespace BLL.Services
             var order = await _orderRepo.GetByIdAsync(id);
             if (order == null) return false;
 
-            if (order.Status == OrderStatus.Delivered || order.Status == OrderStatus.Shipped)
+            if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Shipped) // ✅ ĐỔI Delivered → Completed
                 throw new Exception("Không thể hủy đơn hàng đã giao hoặc đang giao");
 
             order.Status = OrderStatus.Cancelled;
@@ -198,7 +197,6 @@ namespace BLL.Services
 
             return true;
         }
-
 
         private OrderDto MapToDto(Order o, string? userName)
         {

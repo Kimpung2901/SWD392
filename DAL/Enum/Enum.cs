@@ -46,7 +46,7 @@ namespace DAL.Enum
         Pending = 0,      // Đang chờ xử lý
         Processing = 1,   // Đang xử lý
         Shipped = 2,      // Đã giao cho vận chuyển
-        Delivered = 3,    // Đã giao hàng thành công
+        Completed = 3,    // Đã giao hàng thành công
         Cancelled = 4,    // Đã hủy
         Returned = 5      // Đã trả hàng
     }
@@ -69,9 +69,8 @@ namespace DAL.Enum
 
     public enum DollCharacterLinkStatus
     {
-        Inactive = 0,     // Không hoạt động
-        Active = 1,       // Đang hoạt động
-        Unbound = 2       // Đã ngắt kết nối
+        Unbound = 0,      // Đã ngắt kết nối
+        Bound = 1         // ✅ Thêm alias cho Active (nếu cần tương thích với data cũ)
     }
 
 

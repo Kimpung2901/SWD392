@@ -101,7 +101,7 @@ public class DollCharacterLinkService : IDollCharacterLinkService
             BoundAt = dto.BoundAt ?? DateTime.UtcNow,
             UnBoundAt = DateTime.MinValue,
             IsActive = true,
-            Status = DollCharacterLinkStatus.Active, // ✅ Dùng enum
+            Status = DollCharacterLinkStatus.Bound, // ✅ ĐỔI Active → Bound
             Note = dto.Note ?? string.Empty
         };
 
@@ -136,7 +136,7 @@ public class DollCharacterLinkService : IDollCharacterLinkService
             throw new Exception("Link này đã được unbind rồi");
 
         entity.IsActive = false;
-        entity.Status = DollCharacterLinkStatus.Unbound; // ✅ Dùng enum
+        entity.Status = DollCharacterLinkStatus.Unbound; // ✅ GIỮ NGUYÊN
         entity.UnBoundAt = DateTime.UtcNow;
 
         await _repo.UpdateAsync(entity);
