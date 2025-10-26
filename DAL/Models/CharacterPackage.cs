@@ -21,5 +21,5 @@ public partial class CharacterPackage
 
     public DateTime CreatedAt { get; set; }
     public CharacterPackageStatus Status { get; set; } = CharacterPackageStatus.Active;
-    public double DurationDays { get; set; }
+    public int DurationDays { get; set; }
 }

@@ -11,7 +11,6 @@ public partial class CharacterOrder
     public int PackageID { get; set; }
 
     public int CharacterID { get; set; }
-    public int? DurationDays { get; set; }
 
     public decimal UnitPrice { get; set; }
 

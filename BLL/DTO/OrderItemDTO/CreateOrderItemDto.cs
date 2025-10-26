@@ -8,8 +8,5 @@ namespace BLL.DTO.OrderDTO
         [Required]
         public int DollVariantID { get; set; }
 
-        [Required]
-        [Range(1, 999)]
-        public int Quantity { get; set; }
     }
 }
