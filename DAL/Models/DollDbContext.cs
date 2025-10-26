@@ -328,7 +328,6 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.Provider).HasMaxLength(50).IsRequired();
             entity.Property(e => e.Method).HasMaxLength(50);
             entity.Property(e => e.Amount).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.Currency).HasMaxLength(10).IsRequired();
             entity.Property(e => e.Status)
                 .HasConversion<string>()
                 .HasMaxLength(50)

@@ -30,7 +30,6 @@ public class PaymentService : IPaymentService
                 Provider = "MoMo",
                 Method = "Wallet",
                 Amount = amount,
-                Currency = "VND",
                 Status = PaymentStatus.Pending,
                 Target_Type = targetType,
                 Target_Id = targetId,
