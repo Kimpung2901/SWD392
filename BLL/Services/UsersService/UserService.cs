@@ -60,9 +60,10 @@ public class UserService : IUserService
             Phones = dto.Phones,
             Email = dto.Email,
             Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Age = dto.Age,
             Status = UserStatus.Active,
             Role = dto.Role,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow, 
             IsDeleted = false
         };
 
@@ -78,7 +79,8 @@ public class UserService : IUserService
         if (dto.UserName != null) entity.UserName = dto.UserName;
         if (dto.Phones != null) entity.Phones = dto.Phones;
         if (dto.Email != null) entity.Email = dto.Email;
-        if (dto.Password != null) entity.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        if (dto.Age.HasValue) entity.Age = dto.Age.Value;
+
         if (dto.Status != null)
         {
             if (Enum.TryParse<UserStatus>(dto.Status, out var status))

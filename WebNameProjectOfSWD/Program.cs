@@ -60,6 +60,10 @@ builder.Services.AddControllers()
     {
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        
+        // ✅ THÊM: Cấu hình DateTime format tự động
+        // Mặc định .NET 8 đã serialize DateTime theo ISO 8601
+        // Chỉ cần đảm bảo dùng DateTime.UtcNow trong code
     });
 
 builder.Services.AddEndpointsApiExplorer();

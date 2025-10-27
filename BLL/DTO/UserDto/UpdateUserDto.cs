@@ -13,11 +13,7 @@ namespace BLL.DTO.UserDTO
         [EmailAddress(ErrorMessage = "Email không hợp lệ")]
         [StringLength(255, ErrorMessage = "Email không được vượt quá 255 ký tự")]
         public string? Email { get; set; }
-        
-        [StringLength(255, MinimumLength = 6, ErrorMessage = "Password phải từ 6-255 ký tự")]
-        public string? Password { get; set; }
-        
-        // ✅ THÊM MỚI
+
         [Range(1, 150, ErrorMessage = "Age phải từ 1 đến 150")]
         public int? Age { get; set; }
         
