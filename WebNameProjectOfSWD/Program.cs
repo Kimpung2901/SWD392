@@ -24,7 +24,9 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("http://localhost:5173",
-           "https://doll-sales-system-fe.vercel.app")
+           "https://doll-sales-system-fe.vercel.app",
+           "http://localhost:5174"
+           )
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });

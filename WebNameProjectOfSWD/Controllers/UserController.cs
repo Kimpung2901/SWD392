@@ -1,13 +1,14 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using BLL.DTO.UserDTO;
-using BLL.Helper;
+﻿using BLL.DTO.UserDTO;
 using BLL.IService;
-using DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace WebNameProjectOfSWD.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/users")] // ✅ RESTful route
+[Authorize] // ✅ Yêu cầu authentication
 public class UserController : ControllerBase
 {
     private readonly IUserService _svc;
@@ -19,80 +20,136 @@ public class UserController : ControllerBase
         _config = config;
     }
 
+    /// <summary>
+    /// Lấy danh sách users với search/sort/pagination
+    /// GET /api/users?search=john&sortBy=userName&sortDir=asc&page=1&pageSize=10
+    /// </summary>
     [HttpGet]
-    //[Authorize(Roles = "admin")]
-    public async Task<IActionResult> GetAll() => Ok(await _svc.GetAllAsync());
-
-    [HttpGet("{id}")]
-    //[Authorize(Roles = "admin")]
-    public async Task<IActionResult> GetById(int id)
+    [Authorize(Policy = "AdminOnly")] // ✅ Chỉ Admin
+    public async Task<IActionResult> GetAll(
+        [FromQuery] string? search,
+        [FromQuery] string? sortBy,
+        [FromQuery] string? sortDir,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
-        var user = await _svc.GetByIdAsync(id);
-        return user == null ? NotFound(new { message = $"Không tìm thấy user #{id}" }) : Ok(user);
+        var result = await _svc.GetAsync(search, sortBy, sortDir, page, pageSize);
+
+        return Ok(new
+        {
+            success = true,
+            message = "Lấy danh sách users thành công",
+            data = result.Items,
+            pagination = new
+            {
+                result.Page,
+                result.PageSize,
+                result.Total,
+                result.TotalPages,
+                result.HasPreviousPage,
+                result.HasNextPage
+            }
+        });
     }
 
+    /// <summary>
+    /// Lấy thông tin user theo ID
+    /// GET /api/users/{id}
+    /// </summary>
+    [HttpGet("{id}")]
+    [Authorize]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var currentUserId = GetCurrentUserId();
+        var isAdmin = User.IsInRole("admin");
+
+        if (!isAdmin && currentUserId != id)
+            return Forbid();
+
+        var user = await _svc.GetByIdAsync(id);
+        return user == null
+            ? NotFound(new { success = false, message = $"Không tìm thấy user #{id}" })
+            : Ok(new { success = true, data = user });
+    }
+
+    /// <summary>
+    /// Tạo user mới
+    /// POST /api/users
+    /// </summary>
     [HttpPost]
-    //[Authorize(Roles = "admin")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
     {
         if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+            return BadRequest(new { success = false, errors = ModelState });
 
         try
         {
             var created = await _svc.CreateAsync(dto);
             return CreatedAtAction(
-                nameof(GetById), 
-                new { id = created.UserID }, 
-                new { message = "Tạo user thành công", data = created }
+                nameof(GetById),
+                new { id = created.UserID },
+                new { success = true, message = "Tạo user thành công", data = created }
             );
         }
         catch (Exception ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest(new { success = false, message = ex.Message });
         }
     }
 
+    /// <summary>
+    /// Cập nhật thông tin user
+    /// PATCH /api/users/{id}
+    /// </summary>
     [HttpPatch("{id}")]
-    //[Authorize(Roles = "admin")]
+    [Authorize]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
     {
+        var currentUserId = GetCurrentUserId();
+        var isAdmin = User.IsInRole("admin");
 
-        var claim = User.FindFirst("UserID")
-                 ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)
-                 ?? User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub);
-
-        if (claim == null)
-            return Unauthorized(new { message = "Token không có UserID" });
-
-        if (!int.TryParse(claim.Value, out var currentUserId))
-            return Unauthorized(new { message = "UserID không hợp lệ" });
-
-        var currentRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "user";
-
-        if (currentUserId != id && !string.Equals(currentRole, "admin", StringComparison.OrdinalIgnoreCase))
-            return Forbid("Bạn không có quyền chỉnh người khác.");
+        if (!isAdmin && currentUserId != id)
+            return Forbid();
 
         var updated = await _svc.UpdatePartialAsync(id, dto);
         if (updated == null)
-            return NotFound(new { message = $"Không tìm thấy user #{id}" });
+            return NotFound(new { success = false, message = $"Không tìm thấy user #{id}" });
 
-        return Ok(new { message = "Cập nhật thành công", data = updated });
+        return Ok(new { success = true, message = "Cập nhật thành công", data = updated });
     }
 
-    [HttpDelete("soft/{id}")]
-   //[Authorize(Roles = "admin")]
+    /// <summary>
+    /// Soft delete user
+    /// DELETE /api/users/{id}
+    /// </summary>
+    [HttpDelete("{id}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> SoftDelete(int id)
     {
         await _svc.SoftDeleteAsync(id);
-        return Ok(new { message = "Đã xóa mềm user" });
+        return Ok(new { success = true, message = "Đã xóa mềm user" });
     }
 
-    [HttpDelete("hard/{id}")]
-    //[Authorize(Roles = "admin")]
+    /// <summary>
+    /// Hard delete user (permanent)
+    /// DELETE /api/users/{id}/permanent
+    /// </summary>
+    [HttpDelete("{id}/permanent")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> HardDelete(int id)
     {
         await _svc.HardDeleteAsync(id);
-        return Ok(new { message = "Đã xóa vĩnh viễn user" });
+        return Ok(new { success = true, message = "Đã xóa vĩnh viễn user" });
+    }
+
+    // ✅ Helper method
+    private int GetCurrentUserId()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)
+                    ?? User.FindFirst("UserID")
+                    ?? User.FindFirst("sub");
+
+        return claim != null && int.TryParse(claim.Value, out var userId) ? userId : 0;
     }
 }

@@ -1,8 +1,11 @@
-﻿using BLL.DTO.UserDTO;
+﻿using BLL.DTO.Common;
+using BLL.DTO.UserDTO;
+using BLL.Helper;
 using BLL.IService;
 using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services.UsersService;
 
@@ -20,36 +23,55 @@ public class UserService : IUserService
     public async Task<List<UserDto>> GetAllAsync()
     {
         var users = await _repo.GetAllAsync();
-        return users.Select(u => new UserDto
+        return users.Select(MapToDto).ToList();
+    }
+
+
+    public async Task<PagedResult<UserDto>> GetAsync(
+        string? search,
+        string? sortBy,
+        string? sortDir,
+        int page,
+        int pageSize)
+    {
+        
+        var query = _repo.GetQueryable();
+
+    
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            UserID = u.UserID,
-            UserName = u.UserName,
-            Phones = u.Phones,
-            Email = u.Email,
-            Age = u.Age,
-            Status = u.Status.ToString(),
-            Role = u.Role,
-            IsDeleted = u.IsDeleted,
-            CreatedAt = u.CreatedAt
-        }).ToList();
+            var searchLower = search.ToLower().Trim();
+            query = query.Where(u =>
+                u.UserName.ToLower().Contains(searchLower) ||
+                u.Email.ToLower().Contains(searchLower) ||
+                (u.Phones != null && u.Phones.ToLower().Contains(searchLower)));
+        }
+
+      
+        var total = await query.CountAsync();
+
+  
+        query = ApplySorting(query, sortBy, sortDir);
+
+   
+        query = query.ApplyPagination(page, pageSize);
+
+
+        var items = await query.ToListAsync();
+
+        return new PagedResult<UserDto>
+        {
+            Items = items.Select(MapToDto).ToList(),
+            Total = total,
+            Page = page,
+            PageSize = pageSize
+        };
     }
 
     public async Task<UserDto?> GetByIdAsync(int id)
     {
         var user = await _repo.GetByIdAsync(id);
-        if (user == null) return null;
-
-        return new UserDto
-        {
-            UserID = user.UserID,
-            UserName = user.UserName,
-            Phones = user.Phones,
-            Email = user.Email,
-            Status = user.Status.ToString(), 
-            Role = user.Role,
-            IsDeleted = user.IsDeleted,
-            CreatedAt = user.CreatedAt
-        };
+        return user == null ? null : MapToDto(user);
     }
 
     public async Task<UserDto> CreateAsync(CreateUserDto dto)
@@ -63,7 +85,7 @@ public class UserService : IUserService
             Age = dto.Age,
             Status = UserStatus.Active,
             Role = dto.Role,
-            CreatedAt = DateTime.UtcNow, 
+            CreatedAt = DateTime.UtcNow,
             IsDeleted = false
         };
 
@@ -81,14 +103,11 @@ public class UserService : IUserService
         if (dto.Email != null) entity.Email = dto.Email;
         if (dto.Age.HasValue) entity.Age = dto.Age.Value;
 
-        if (dto.Status != null)
+        if (dto.Status != null && Enum.TryParse<UserStatus>(dto.Status, out var status))
         {
-            if (Enum.TryParse<UserStatus>(dto.Status, out var status))
-            {
-                entity.Status = status;
-            }
-            
+            entity.Status = status;
         }
+
         if (dto.Role != null) entity.Role = dto.Role;
         if (dto.IsDeleted.HasValue) entity.IsDeleted = dto.IsDeleted.Value;
 
@@ -107,7 +126,6 @@ public class UserService : IUserService
         await _repo.HardDeleteAsync(id);
         return true;
     }
-
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
@@ -144,6 +162,69 @@ public class UserService : IUserService
         await _context.SaveChangesAsync();
 
         return refresh;
+    }
+
+    // ✅ PRIVATE HELPER METHODS
+
+    /// <summary>
+    /// Map User entity sang UserDto
+    /// </summary>
+    private static UserDto MapToDto(User u) => new()
+    {
+        UserID = u.UserID,
+        UserName = u.UserName,
+        Phones = u.Phones,
+        Email = u.Email,
+        Age = u.Age,
+        Status = u.Status.ToString(),
+        Role = u.Role,
+        IsDeleted = u.IsDeleted,
+        CreatedAt = u.CreatedAt
+    };
+
+    /// <summary>
+    /// Apply sorting cho User query
+    /// </summary>
+    private static IQueryable<User> ApplySorting(
+        IQueryable<User> query,
+        string? sortBy,
+        string? sortDir)
+    {
+        if (string.IsNullOrWhiteSpace(sortBy))
+            return query.OrderByDescending(u => u.UserID); // Default sort
+
+        var isDescending = string.Equals(sortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+        // ✅ Switch-case cho các field phổ biến (performance tốt hơn reflection)
+        return sortBy.ToLower() switch
+        {
+            "userid" => isDescending
+                ? query.OrderByDescending(u => u.UserID)
+                : query.OrderBy(u => u.UserID),
+
+            "username" => isDescending
+                ? query.OrderByDescending(u => u.UserName)
+                : query.OrderBy(u => u.UserName),
+
+            "email" => isDescending
+                ? query.OrderByDescending(u => u.Email)
+                : query.OrderBy(u => u.Email),
+
+            "createdat" => isDescending
+                ? query.OrderByDescending(u => u.CreatedAt)
+                : query.OrderBy(u => u.CreatedAt),
+
+            "age" => isDescending
+                ? query.OrderByDescending(u => u.Age)
+                : query.OrderBy(u => u.Age),
+
+            "status" => isDescending
+                ? query.OrderByDescending(u => u.Status)
+                : query.OrderBy(u => u.Status),
+
+            // ✅ Fallback: Dùng dynamic sorting cho các field khác
+            _ => query.ApplySort(sortBy, sortDir)
+        };
     }
 }
 

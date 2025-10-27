@@ -99,9 +99,9 @@ public class DollCharacterLinkService : IDollCharacterLinkService
             OwnedDollID = dto.OwnedDollID,
             UserCharacterID = dto.UserCharacterID,
             BoundAt = dto.BoundAt ?? DateTime.UtcNow,
-            UnBoundAt = DateTime.MinValue,
+            UnBoundAt = null, // ✅ NULL khi chưa unbind
             IsActive = true,
-            Status = DollCharacterLinkStatus.Bound, // ✅ ĐỔI Active → Bound
+            Status = DollCharacterLinkStatus.Bound,
             Note = dto.Note ?? string.Empty
         };
 
@@ -136,8 +136,8 @@ public class DollCharacterLinkService : IDollCharacterLinkService
             throw new Exception("Link này đã được unbind rồi");
 
         entity.IsActive = false;
-        entity.Status = DollCharacterLinkStatus.Unbound; // ✅ GIỮ NGUYÊN
-        entity.UnBoundAt = DateTime.UtcNow;
+        entity.Status = DollCharacterLinkStatus.Unbound;
+        entity.UnBoundAt = DateTime.UtcNow; // ✅ Set giá trị khi unbind
 
         await _repo.UpdateAsync(entity);
         return true;
@@ -162,7 +162,7 @@ public class DollCharacterLinkService : IDollCharacterLinkService
             UserCharacterID = link.UserCharacterID,
             CharacterName = userCharacter?.Character?.Name,
             BoundAt = link.BoundAt,
-            UnBoundAt = link.UnBoundAt,
+            UnBoundAt = link.UnBoundAt ?? default(DateTime), // ✅ Explicit cast from DateTime? to DateTime
             IsActive = link.IsActive,
             Note = link.Note,
             Status = link.Status

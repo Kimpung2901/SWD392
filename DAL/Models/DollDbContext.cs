@@ -267,7 +267,7 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.LinkID);
             entity.ToTable("DollCharacterLink");
             entity.Property(e => e.BoundAt).HasColumnType("datetime");
-            entity.Property(e => e.UnBoundAt).HasColumnType("datetime");
+            entity.Property(e => e.UnBoundAt).HasColumnType("datetime").IsRequired(false); // ✅ NULLABLE
             entity.Property(e => e.Note).HasMaxLength(255);
             entity.Property(e => e.Status)
                 .HasConversion<string>()
