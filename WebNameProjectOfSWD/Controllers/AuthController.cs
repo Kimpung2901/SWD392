@@ -67,9 +67,11 @@ public class AuthController : ControllerBase
             accessToken,
             expiresAt = DateTime.UtcNow.AddMinutes(minutes),
             refreshToken = refreshToken.Token,
+            userId = user.UserID,
             username = user.UserName,
             role = user.Role
         });
+   
     }
 
     [HttpPost("register")]

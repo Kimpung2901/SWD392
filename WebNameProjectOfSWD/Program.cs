@@ -32,28 +32,50 @@ builder.Services.AddCors(options =>
         });
 });
 
-// ===== Firebase Initialization =====
+// ===== Firebase Initialization + NotificationService DI =====
 try
 {
-    var firebaseCredPath = builder.Configuration["Firebase:CredentialPath"] ?? builder.Configuration["Firebase__CredentialPath"] ?? "firebase-adminsdk.json";
-    var fullPath = Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
-    
+    // Ưu tiên lấy đường dẫn từ appsettings.json: "Firebase": { "CredentialPath": "Configs/firebase-adminsdk.json" }
+    var firebaseCredPath =
+        builder.Configuration["Firebase:CredentialPath"] // dạng Firebase:CredentialPath
+        ?? builder.Configuration["Firebase__CredentialPath"] // fallback dạng biến env
+        ?? Path.Combine("Configs", "firebase-adminsdk.json"); // fallback mặc định
+
+    // Chuẩn hoá full path tuyệt đối
+    var fullPath = Path.IsPathRooted(firebaseCredPath)
+        ? firebaseCredPath
+        : Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
+
     if (File.Exists(fullPath))
     {
-        var firebaseApp = FirebaseApp.Create(new AppOptions()
+        // Nếu app chưa tạo FirebaseApp thì mới tạo
+        if (FirebaseApp.DefaultInstance == null)
         {
-            Credential = GoogleCredential.FromFile(fullPath)
-        });
-        Console.WriteLine("✅ Firebase initialized successfully");
+            FirebaseApp.Create(new AppOptions
+            {
+                Credential = GoogleCredential.FromFile(fullPath)
+            });
+
+            Console.WriteLine("✅ Firebase initialized successfully with " + fullPath);
+        }
+        else
+        {
+            Console.WriteLine("ℹ️ Firebase already initialized, skipping.");
+        }
+
+        // Đăng ký NotificationService vào DI nếu Firebase ready
+        builder.Services.AddSingleton<NotificationService>();
     }
     else
     {
-        Console.WriteLine($"⚠️ Warning: Firebase credential file not found at: {fullPath}");
+        Console.WriteLine("⚠️ Firebase credential file NOT FOUND at: " + fullPath);
+        // Vẫn build app bình thường, chỉ là không gửi noti được
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"⚠️ Firebase initialization failed: {ex.Message}");
+    Console.WriteLine("⚠️ Firebase initialization failed: " + ex.Message);
+    // không throw để API vẫn chạy
 }
 
 // ===== Controllers & Swagger =====
