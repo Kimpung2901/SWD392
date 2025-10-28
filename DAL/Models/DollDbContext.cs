@@ -77,6 +77,10 @@ public partial class DollDbContext : DbContext
             entity.ToTable("User");
             entity.Property(e => e.UserName).HasMaxLength(255).IsRequired();
             entity.HasIndex(e => e.UserName).IsUnique();
+
+            entity.Property(e => e.FullName)
+                .HasMaxLength(255)
+                .IsRequired(false);
             
             entity.Property(e => e.Phones)
                 .HasColumnName("Phones")

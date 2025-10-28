@@ -1,5 +1,7 @@
 ﻿using BLL.DTO.Common;
 using BLL.DTO.UserDTO;
+using DAL.Enum;
+using DAL.Enum;
 using DAL.Models;
 
 namespace BLL.IService;
@@ -23,4 +25,5 @@ public interface IUserService
     Task<bool> CheckUserExistsAsync(string username, string email);
     Task<bool> ResetPasswordAsync(string email, string newPassword);
     Task<RefreshToken> CreateRefreshTokenAsync(int userId, string? ipAddress);
+    Task<UserDto?> UpdateStatusAsync(int id, UserStatus status);
 }

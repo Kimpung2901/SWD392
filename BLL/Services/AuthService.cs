@@ -35,7 +35,8 @@ namespace BLL.Services
             string role = "Customer", 
             string? email = null, 
             string? phone = null,
-            int? age = null) 
+            int? age = null,
+            string? fullName = null) 
         {
             var uname = username.Trim();
             
@@ -55,6 +56,7 @@ namespace BLL.Services
             var user = new User
             {
                 UserName = uname,
+                FullName = fullName?.Trim(),
                 Email = email?.Trim(),
                 Phones = phone?.Trim(),
                 Password = BCrypt.Net.BCrypt.HashPassword(rawPassword),

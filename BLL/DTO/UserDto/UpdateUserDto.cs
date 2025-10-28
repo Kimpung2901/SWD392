@@ -1,27 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace BLL.DTO.UserDTO
 {
     public class UpdateUserDto
     {
-        [StringLength(255, ErrorMessage = "UserName không được vượt quá 255 ký tự")]
-        public string? UserName { get; set; }
+        [StringLength(255)]
+        public string? FullName { get; set; }
+
         
-        [StringLength(255, ErrorMessage = "Phones không được vượt quá 255 ký tự")]
+        [StringLength(255, ErrorMessage = "Phones kh�ng du?c vu?t qu� 255 k� t?")]
         public string? Phones { get; set; }
         
-        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
-        [StringLength(255, ErrorMessage = "Email không được vượt quá 255 ký tự")]
+        [EmailAddress(ErrorMessage = "Email kh�ng h?p l?")]
+        [StringLength(255, ErrorMessage = "Email kh�ng du?c vu?t qu� 255 k� t?")]
         public string? Email { get; set; }
 
-        [Range(1, 150, ErrorMessage = "Age phải từ 1 đến 150")]
+        [Range(1, 150, ErrorMessage = "Age ph?i t? 1 d?n 150")]
         public int? Age { get; set; }
         
-        public string? Status { get; set; }
         
-        [StringLength(50, ErrorMessage = "Role không được vượt quá 50 ký tự")]
-        public string? Role { get; set; }
-        
-        public bool? IsDeleted { get; set; }
     }
 }

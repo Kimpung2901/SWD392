@@ -1,5 +1,6 @@
-﻿using BLL.DTO.UserDTO;
+using BLL.DTO.UserDTO;
 using BLL.IService;
+using DAL.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -7,8 +8,8 @@ using System.Security.Claims;
 namespace WebNameProjectOfSWD.Controllers;
 
 [ApiController]
-[Route("api/users")] // ✅ RESTful route
-[Authorize] // ✅ Yêu cầu authentication
+[Route("api/users")] // ? RESTful route
+[Authorize] // ? Y�u c?u authentication
 public class UserController : ControllerBase
 {
     private readonly IUserService _svc;
@@ -21,11 +22,11 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy danh sách users với search/sort/pagination
+    /// L?y danh s�ch users v?i search/sort/pagination
     /// GET /api/users?search=john&sortBy=userName&sortDir=asc&page=1&pageSize=10
     /// </summary>
     [HttpGet]
-    [Authorize(Policy = "AdminOnly")] // ✅ Chỉ Admin
+    [Authorize(Policy = "AdminOnly")] // ? Ch? Admin
     public async Task<IActionResult> GetAll(
         [FromQuery] string? search,
         [FromQuery] string? sortBy,
@@ -38,7 +39,7 @@ public class UserController : ControllerBase
         return Ok(new
         {
             success = true,
-            message = "Lấy danh sách users thành công",
+            message = "L?y danh s�ch users th�nh c�ng",
             data = result.Items,
             pagination = new
             {
@@ -53,7 +54,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Lấy thông tin user theo ID
+    /// L?y th�ng tin user theo ID
     /// GET /api/users/{id}
     /// </summary>
     [HttpGet("{id}")]
@@ -68,12 +69,12 @@ public class UserController : ControllerBase
 
         var user = await _svc.GetByIdAsync(id);
         return user == null
-            ? NotFound(new { success = false, message = $"Không tìm thấy user #{id}" })
+            ? NotFound(new { success = false, message = $"Kh�ng t�m th?y user #{id}" })
             : Ok(new { success = true, data = user });
     }
 
     /// <summary>
-    /// Tạo user mới
+    /// T?o user m?i
     /// POST /api/users
     /// </summary>
     [HttpPost]
@@ -89,7 +90,7 @@ public class UserController : ControllerBase
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = created.UserID },
-                new { success = true, message = "Tạo user thành công", data = created }
+                new { success = true, message = "T?o user th�nh c�ng", data = created }
             );
         }
         catch (Exception ex)
@@ -99,7 +100,7 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Cập nhật thông tin user
+    /// C?p nh?t th�ng tin user
     /// PATCH /api/users/{id}
     /// </summary>
     [HttpPatch("{id}")]
@@ -114,9 +115,27 @@ public class UserController : ControllerBase
 
         var updated = await _svc.UpdatePartialAsync(id, dto);
         if (updated == null)
-            return NotFound(new { success = false, message = $"Không tìm thấy user #{id}" });
+            return NotFound(new { success = false, message = $"Kh�ng t�m th?y user #{id}" });
 
-        return Ok(new { success = true, message = "Cập nhật thành công", data = updated });
+        return Ok(new { success = true, message = "C?p nh?t th�nh c�ng", data = updated });
+    }
+
+    /// <summary>
+    /// Manager c?p nh?t tr?ng th�i user
+    /// PATCH /api/users/{id}/status
+    /// </summary>
+    [HttpPatch("{id}/status")]
+    [Authorize(Policy = "ManagerOnly")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateUserStatusDto dto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(new { success = false, errors = ModelState });
+
+        var updated = await _svc.UpdateStatusAsync(id, dto.Status);
+        if (updated == null)
+            return NotFound(new { success = false, message = $"Kh�ng t?m th?y user #{id}" });
+
+        return Ok(new { success = true, message = "C?p nh?t tr?ng th�i th?nh c?ng", data = updated });
     }
 
     /// <summary>
@@ -128,7 +147,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> SoftDelete(int id)
     {
         await _svc.SoftDeleteAsync(id);
-        return Ok(new { success = true, message = "Đã xóa mềm user" });
+        return Ok(new { success = true, message = "�� x�a m?m user" });
     }
 
     /// <summary>
@@ -140,10 +159,10 @@ public class UserController : ControllerBase
     public async Task<IActionResult> HardDelete(int id)
     {
         await _svc.HardDeleteAsync(id);
-        return Ok(new { success = true, message = "Đã xóa vĩnh viễn user" });
+        return Ok(new { success = true, message = "�� x�a vinh vi?n user" });
     }
 
-    // ✅ Helper method
+    // ? Helper method
     private int GetCurrentUserId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)

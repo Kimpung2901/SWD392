@@ -34,26 +34,27 @@ public class UserService : IUserService
         int page,
         int pageSize)
     {
-        
+
         var query = _repo.GetQueryable();
 
-    
+
         if (!string.IsNullOrWhiteSpace(search))
         {
             var searchLower = search.ToLower().Trim();
             query = query.Where(u =>
                 u.UserName.ToLower().Contains(searchLower) ||
+                (u.FullName != null && u.FullName.ToLower().Contains(searchLower)) ||
                 u.Email.ToLower().Contains(searchLower) ||
                 (u.Phones != null && u.Phones.ToLower().Contains(searchLower)));
         }
 
-      
+
         var total = await query.CountAsync();
 
-  
+
         query = ApplySorting(query, sortBy, sortDir);
 
-   
+
         query = query.ApplyPagination(page, pageSize);
 
 
@@ -79,6 +80,7 @@ public class UserService : IUserService
         var entity = new User
         {
             UserName = dto.UserName,
+            FullName = dto.FullName?.Trim(),
             Phones = dto.Phones,
             Email = dto.Email,
             Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
@@ -98,21 +100,24 @@ public class UserService : IUserService
         var entity = await _repo.GetByIdAsync(id);
         if (entity == null) return null;
 
-        if (dto.UserName != null) entity.UserName = dto.UserName;
+        if (dto.FullName != null) entity.FullName = dto.FullName.Trim();
         if (dto.Phones != null) entity.Phones = dto.Phones;
         if (dto.Email != null) entity.Email = dto.Email;
         if (dto.Age.HasValue) entity.Age = dto.Age.Value;
 
-        if (dto.Status != null && Enum.TryParse<UserStatus>(dto.Status, out var status))
-        {
-            entity.Status = status;
-        }
-
-        if (dto.Role != null) entity.Role = dto.Role;
-        if (dto.IsDeleted.HasValue) entity.IsDeleted = dto.IsDeleted.Value;
-
         await _repo.UpdateAsync(entity);
         return await GetByIdAsync(entity.UserID);
+    }
+
+    public async Task<UserDto?> UpdateStatusAsync(int id, UserStatus status)
+    {
+        var entity = await _repo.GetByIdAsync(id);
+        if (entity == null) return null;
+
+        entity.Status = status;
+        await _repo.UpdateAsync(entity);
+
+        return MapToDto(entity);
     }
 
     public async Task<bool> SoftDeleteAsync(int id)
@@ -173,12 +178,12 @@ public class UserService : IUserService
     {
         UserID = u.UserID,
         UserName = u.UserName,
+        FullName = u.FullName,
         Phones = u.Phones,
         Email = u.Email,
         Age = u.Age,
-        Status = u.Status.ToString(),
+        Status = u.Status,
         Role = u.Role,
-        IsDeleted = u.IsDeleted,
         CreatedAt = u.CreatedAt
     };
 
@@ -205,6 +210,10 @@ public class UserService : IUserService
             "username" => isDescending
                 ? query.OrderByDescending(u => u.UserName)
                 : query.OrderBy(u => u.UserName),
+
+            "fullname" => isDescending
+                ? query.OrderByDescending(u => u.FullName)
+                : query.OrderBy(u => u.FullName),
 
             "email" => isDescending
                 ? query.OrderByDescending(u => u.Email)
