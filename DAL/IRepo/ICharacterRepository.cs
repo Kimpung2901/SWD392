@@ -10,5 +10,6 @@ namespace DAL.IRepo
         Task UpdateAsync(Character entity);
         Task DeleteAsync(int id);
         Task<bool> SaveChangesAsync();
+        IQueryable<Character> Query();
     }
 }

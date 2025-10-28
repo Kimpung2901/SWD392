@@ -1,7 +1,10 @@
 ﻿using BLL.DTO.CharacterDTO;
+using BLL.DTO.Common;
+using BLL.Helper;
 using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
@@ -14,10 +17,38 @@ namespace BLL.Services
             _repo = repo;
         }
 
-        public async Task<List<CharacterDto>> GetAllAsync()
+        public async Task<PagedResult<CharacterDto>> GetAsync(
+            string? search,
+            string? sortBy,
+            string? sortDir,
+            int page,
+            int pageSize)
         {
-            var characters = await _repo.GetAllAsync();
-            return characters.Select(Map).ToList();
+            var query = _repo.Query().Where(c => c.IsActive);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim().ToLowerInvariant();
+                query = query.Where(c =>
+                    c.Name.ToLower().Contains(term) ||
+                    (c.Personality != null && c.Personality.ToLower().Contains(term)) ||
+                    (c.Description != null && c.Description.ToLower().Contains(term)));
+            }
+
+            var total = await query.CountAsync();
+
+            query = ApplySorting(query, sortBy, sortDir);
+            query = query.ApplyPagination(page, pageSize);
+
+            var items = await query.ToListAsync();
+
+            return new PagedResult<CharacterDto>
+            {
+                Items = items.Select(Map).ToList(),
+                Total = total,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
         public async Task<CharacterDto?> GetByIdAsync(int id)
@@ -99,5 +130,32 @@ namespace BLL.Services
             IsActive = c.IsActive,
             CreatedAt = c.CreatedAt
         };
+
+        private static IQueryable<Character> ApplySorting(
+            IQueryable<Character> query,
+            string? sortBy,
+            string? sortDir)
+        {
+            if (string.IsNullOrWhiteSpace(sortBy))
+            {
+                return query.OrderByDescending(c => c.CreatedAt);
+            }
+
+            var isDesc = string.Equals(sortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            return sortBy.ToLowerInvariant() switch
+            {
+                "name" => isDesc
+                    ? query.OrderByDescending(c => c.Name)
+                    : query.OrderBy(c => c.Name),
+                "agerange" => isDesc
+                    ? query.OrderByDescending(c => c.AgeRange)
+                    : query.OrderBy(c => c.AgeRange),
+                "createdat" => isDesc
+                    ? query.OrderByDescending(c => c.CreatedAt)
+                    : query.OrderBy(c => c.CreatedAt),
+                _ => query.ApplySort(sortBy, sortDir)
+            };
+        }
     }
 }

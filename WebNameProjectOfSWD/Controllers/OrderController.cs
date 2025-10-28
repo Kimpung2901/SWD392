@@ -20,10 +20,7 @@ public class OrderController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Lấy tất cả orders với search/sort/pagination
-    /// GET /api/orders?search=&sortBy=orderDate&sortDir=desc&page=1&pageSize=10
-    /// </summary>
+
     [HttpGet]
     [Authorize(Policy = "AdminOrManager")]
     public async Task<IActionResult> GetAll(
@@ -52,10 +49,7 @@ public class OrderController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Lấy orders của user hiện tại với pagination
-    /// GET /api/orders/my-orders?search=&sortBy=orderDate&sortDir=desc&page=1&pageSize=10
-    /// </summary>
+
     [HttpGet("my-orders")]
     [Authorize]
     public async Task<IActionResult> GetMyOrders(
@@ -85,10 +79,7 @@ public class OrderController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// Lấy thông tin order theo ID
-    /// GET /api/orders/{id}
-    /// </summary>
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -105,10 +96,7 @@ public class OrderController : ControllerBase
         return Ok(new { success = true, data = order });
     }
 
-    /// <summary>
-    /// Lấy chi tiết order kèm items
-    /// GET /api/orders/{id}/details
-    /// </summary>
+
     [HttpGet("{id}/details")]
     public async Task<IActionResult> GetByIdWithItems(int id)
     {
@@ -125,10 +113,7 @@ public class OrderController : ControllerBase
         return Ok(new { success = true, data = order });
     }
 
-    /// <summary>
-    /// Tạo order mới
-    /// POST /api/orders
-    /// </summary>
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> Create([FromBody] CreateOrderDto dto)
@@ -156,10 +141,7 @@ public class OrderController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Cập nhật order
-    /// PATCH /api/orders/{id}
-    /// </summary>
+
     [HttpPatch("{id}")]
     [Authorize(Policy = "AdminOrManager")]
     public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateOrderDto dto)
@@ -181,10 +163,7 @@ public class OrderController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Hủy order
-    /// POST /api/orders/{id}/cancel
-    /// </summary>
+
     [HttpPost("{id}/cancel")]
     [Authorize]
     public async Task<IActionResult> Cancel(int id)
@@ -213,10 +192,7 @@ public class OrderController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Xóa order
-    /// DELETE /api/orders/{id}
-    /// </summary>
+
     [HttpDelete("{id}")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Delete(int id)

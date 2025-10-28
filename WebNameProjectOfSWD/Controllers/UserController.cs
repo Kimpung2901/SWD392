@@ -21,12 +21,8 @@ public class UserController : ControllerBase
         _config = config;
     }
 
-    /// <summary>
-    /// L?y danh s�ch users v?i search/sort/pagination
-    /// GET /api/users?search=john&sortBy=userName&sortDir=asc&page=1&pageSize=10
-    /// </summary>
     [HttpGet]
-    [Authorize(Policy = "AdminOnly")] // ? Ch? Admin
+    [Authorize(Policy = "AdminOnly")] 
     public async Task<IActionResult> GetAll(
         [FromQuery] string? search,
         [FromQuery] string? sortBy,
@@ -53,12 +49,8 @@ public class UserController : ControllerBase
         });
     }
 
-    /// <summary>
-    /// L?y th�ng tin user theo ID
-    /// GET /api/users/{id}
-    /// </summary>
     [HttpGet("{id}")]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> GetById(int id)
     {
         var currentUserId = GetCurrentUserId();
@@ -73,10 +65,7 @@ public class UserController : ControllerBase
             : Ok(new { success = true, data = user });
     }
 
-    /// <summary>
-    /// T?o user m?i
-    /// POST /api/users
-    /// </summary>
+
     [HttpPost]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
@@ -99,10 +88,7 @@ public class UserController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// C?p nh?t th�ng tin user
-    /// PATCH /api/users/{id}
-    /// </summary>
+
     [HttpPatch("{id}")]
     [Authorize]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
@@ -120,10 +106,7 @@ public class UserController : ControllerBase
         return Ok(new { success = true, message = "C?p nh?t th�nh c�ng", data = updated });
     }
 
-    /// <summary>
-    /// Manager c?p nh?t tr?ng th�i user
-    /// PATCH /api/users/{id}/status
-    /// </summary>
+
     [HttpPatch("{id}/status")]
     [Authorize(Policy = "ManagerOnly")]
     public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateUserStatusDto dto)
@@ -138,10 +121,7 @@ public class UserController : ControllerBase
         return Ok(new { success = true, message = "C?p nh?t tr?ng th�i th?nh c?ng", data = updated });
     }
 
-    /// <summary>
-    /// Soft delete user
-    /// DELETE /api/users/{id}
-    /// </summary>
+
     [HttpDelete("{id}")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> SoftDelete(int id)
@@ -150,10 +130,7 @@ public class UserController : ControllerBase
         return Ok(new { success = true, message = "�� x�a m?m user" });
     }
 
-    /// <summary>
-    /// Hard delete user (permanent)
-    /// DELETE /api/users/{id}/permanent
-    /// </summary>
+
     [HttpDelete("{id}/permanent")]
     [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> HardDelete(int id)
@@ -162,7 +139,6 @@ public class UserController : ControllerBase
         return Ok(new { success = true, message = "�� x�a vinh vi?n user" });
     }
 
-    // ? Helper method
     private int GetCurrentUserId()
     {
         var claim = User.FindFirst(ClaimTypes.NameIdentifier)

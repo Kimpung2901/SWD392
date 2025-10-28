@@ -1,12 +1,13 @@
-﻿using BLL.DTO.DollModelDTO;
+using BLL.DTO.DollModelDTO;
 using BLL.IService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
+
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/doll-models")]
     public class DollModelController : ControllerBase
     {
         private readonly IDollModelService _svc;
@@ -19,26 +20,35 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetDollModels(
+            [FromQuery] int? dollTypeId,
+            [FromQuery] string? search,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDir,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var result = await _svc.GetAllAsync();
-            return Ok(new { message = "Lấy danh sách doll model thành công", data = result });
+            var result = await _svc.GetAsync(dollTypeId, search, sortBy, sortDir, page, pageSize);
+            return Ok(new
+            {
+                items = result.Items,
+                pagination = new
+                {
+                    result.Page,
+                    result.PageSize,
+                    result.Total,
+                    result.TotalPages,
+                    result.HasPreviousPage,
+                    result.HasNextPage
+                }
+            });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _svc.GetByIdAsync(id);
-            return result == null
-                ? NotFound(new { message = $"Không tìm thấy doll model #{id}" })
-                : Ok(new { message = "Lấy thông tin doll model thành công", data = result });
-        }
-
-        [HttpGet("by-type/{dollTypeId}")]
-        public async Task<IActionResult> GetByDollTypeId(int dollTypeId)
-        {
-            var result = await _svc.GetByDollTypeIdAsync(dollTypeId);
-            return Ok(new { message = $"Lấy danh sách doll model của type #{dollTypeId} thành công", data = result });
+            return result == null ? NotFound() : Ok(result);
         }
 
         [HttpPost]
@@ -50,47 +60,41 @@ namespace WebNameProjectOfSWD.Controllers
             try
             {
                 var created = await _svc.CreateAsync(dto);
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new { id = created.DollModelID },
-                    new { message = "Tạo doll model thành công", data = created }
-                );
+                return CreatedAtAction(nameof(GetById), new { id = created.DollModelID }, created);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi tạo doll model");
+                _logger.LogError(ex, "Error creating doll model");
                 return BadRequest(new { message = ex.Message });
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateDollModelDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var result = await _svc.UpdatePartialAsync(id, dto);
-            return result == null
-                ? NotFound(new { message = $"Không tìm thấy doll model #{id}" })
-                : Ok(new { message = "Cập nhật doll model thành công", data = result });
+            return result == null ? NotFound() : Ok(result);
         }
 
-        [HttpDelete("soft/{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
             var result = await _svc.SoftDeleteAsync(id);
             return result
-                ? Ok(new { message = "Xóa mềm doll model thành công" })
-                : NotFound(new { message = $"Không tìm thấy doll model #{id}" });
+                ? NoContent()
+                : NotFound();
         }
 
-        [HttpDelete("hard/{id}")]
+        [HttpDelete("{id:int}/hard")]
         public async Task<IActionResult> HardDelete(int id)
         {
             var result = await _svc.HardDeleteAsync(id);
             return result
-                ? Ok(new { message = "Xóa cứng doll model thành công" })
-                : NotFound(new { message = $"Không tìm thấy doll model #{id}" });
+                ? NoContent()
+                : NotFound();
         }
     }
 }

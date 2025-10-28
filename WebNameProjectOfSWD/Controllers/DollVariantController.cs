@@ -1,11 +1,11 @@
-﻿using BLL.DTO.DollVariantDTO;
+using BLL.DTO.DollVariantDTO;
 using BLL.IService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/doll-variants")]
     public class DollVariantController : ControllerBase
     {
         private readonly IDollVariantService _service;
@@ -16,24 +16,35 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetDollVariants(
+            [FromQuery] int? dollModelId,
+            [FromQuery] string? search,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDir,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var result = await _service.GetAllAsync();
-            return Ok(result);
+            var result = await _service.GetAsync(dollModelId, search, sortBy, sortDir, page, pageSize);
+            return Ok(new
+            {
+                items = result.Items,
+                pagination = new
+                {
+                    result.Page,
+                    result.PageSize,
+                    result.Total,
+                    result.TotalPages,
+                    result.HasPreviousPage,
+                    result.HasNextPage
+                }
+            });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             return result == null ? NotFound() : Ok(result);
-        }
-
-        [HttpGet("by-model/{dollModelId}")]
-        public async Task<IActionResult> GetByDollModelId(int dollModelId)
-        {
-            var result = await _service.GetByDollModelIdAsync(dollModelId);
-            return Ok(result);
         }
 
         [HttpPost]
@@ -45,11 +56,7 @@ namespace WebNameProjectOfSWD.Controllers
             try
             {
                 var created = await _service.CreateAsync(dto);
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new { id = created.DollVariantID },
-                    new { message = "Tạo variant thành công", data = created }
-                );
+                return CreatedAtAction(nameof(GetById), new { id = created.DollVariantID }, created);
             }
             catch (Exception ex)
             {
@@ -57,22 +64,18 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateDollVariantDto dto)
         {
             var result = await _service.UpdatePartialAsync(id, dto);
-            return result == null 
-                ? NotFound(new { message = $"Không tìm thấy variant #{id}" }) 
-                : Ok(new { message = "Cập nhật thành công", data = result });
+            return result == null ? NotFound() : Ok(result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
-            return result 
-                ? Ok(new { message = "Xóa thành công" }) 
-                : NotFound();
+            return result ? NoContent() : NotFound();
         }
     }
 }

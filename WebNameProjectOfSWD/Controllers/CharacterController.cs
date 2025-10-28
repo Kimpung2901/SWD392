@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/characters")]
     public class CharacterController : ControllerBase
     {
         private readonly ICharacterService _service;
@@ -17,20 +17,30 @@ namespace WebNameProjectOfSWD.Controllers
             _logger = logger;
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var result = await _service.GetAllAsync();
-        //    return Ok(result);
-        //}
-
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetCharacters(
+            [FromQuery] string? search,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDir,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
             try
             {
-                var result = await _service.GetAllAsync();
-                return Ok(result);
+                var result = await _service.GetAsync(search, sortBy, sortDir, page, pageSize);
+                return Ok(new
+                {
+                    items = result.Items,
+                    pagination = new
+                    {
+                        result.Page,
+                        result.PageSize,
+                        result.Total,
+                        result.TotalPages,
+                        result.HasPreviousPage,
+                        result.HasNextPage
+                    }
+                });
             }
             catch (Exception ex)
             {

@@ -1,7 +1,10 @@
+using BLL.DTO.Common;
 using BLL.DTO.DollVariantDTO;
+using BLL.Helper;
 using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
@@ -14,22 +17,50 @@ namespace BLL.Services
             _repo = repo;
         }
 
-        public async Task<List<DollVariantDto>> GetAllAsync()
+        public async Task<PagedResult<DollVariantDto>> GetAsync(
+            int? dollModelId,
+            string? search,
+            string? sortBy,
+            string? sortDir,
+            int page,
+            int pageSize)
         {
-            var variants = await _repo.GetAllAsync();
-            return variants.Select(Map).ToList();
+            var query = _repo.Query().Where(v => v.IsActive);
+
+            if (dollModelId.HasValue)
+            {
+                query = query.Where(v => v.DollModelID == dollModelId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim().ToLowerInvariant();
+                query = query.Where(v =>
+                    v.Name.ToLower().Contains(term) ||
+                    (v.Color != null && v.Color.ToLower().Contains(term)) ||
+                    (v.Size != null && v.Size.ToLower().Contains(term)));
+            }
+
+            var total = await query.CountAsync();
+
+            query = ApplySorting(query, sortBy, sortDir);
+            query = query.ApplyPagination(page, pageSize);
+
+            var items = await query.ToListAsync();
+
+            return new PagedResult<DollVariantDto>
+            {
+                Items = items.Select(Map).ToList(),
+                Total = total,
+                Page = page,
+                PageSize = pageSize
+            };
         }
 
         public async Task<DollVariantDto?> GetByIdAsync(int id)
         {
             var variant = await _repo.GetByIdAsync(id);
             return variant == null ? null : Map(variant);
-        }
-
-        public async Task<List<DollVariantDto>> GetByDollModelIdAsync(int dollModelId)
-        {
-            var variants = await _repo.GetByDollModelIdAsync(dollModelId);
-            return variants.Select(Map).ToList();
         }
 
         public async Task<DollVariantDto> CreateAsync(CreateDollVariantDto dto)
@@ -46,7 +77,7 @@ namespace BLL.Services
             };
 
             await _repo.AddAsync(entity);
-            
+
             return Map(await _repo.GetByIdAsync(entity.DollVariantID) ?? entity);
         }
 
@@ -63,7 +94,7 @@ namespace BLL.Services
             if (dto.IsActive.HasValue) entity.IsActive = dto.IsActive.Value;
 
             await _repo.UpdateAsync(entity);
-            
+
             return Map(await _repo.GetByIdAsync(id) ?? entity);
         }
 
@@ -85,5 +116,26 @@ namespace BLL.Services
             Image = v.Image,
             IsActive = v.IsActive
         };
+
+        private static IQueryable<DollVariant> ApplySorting(
+            IQueryable<DollVariant> query,
+            string? sortBy,
+            string? sortDir)
+        {
+            if (string.IsNullOrWhiteSpace(sortBy))
+            {
+                return query.OrderByDescending(v => v.DollVariantID);
+            }
+
+            var desc = string.Equals(sortDir, "desc", StringComparison.OrdinalIgnoreCase);
+
+            return sortBy.ToLowerInvariant() switch
+            {
+                "name" => desc ? query.OrderByDescending(v => v.Name) : query.OrderBy(v => v.Name),
+                "price" => desc ? query.OrderByDescending(v => v.Price) : query.OrderBy(v => v.Price),
+                "color" => desc ? query.OrderByDescending(v => v.Color) : query.OrderBy(v => v.Color),
+                _ => query.ApplySort(sortBy, sortDir)
+            };
+        }
     }
 }
