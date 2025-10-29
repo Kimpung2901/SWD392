@@ -29,4 +29,6 @@ public partial class User
     public bool IsDeleted { get; set; }
 
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }

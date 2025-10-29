@@ -1,41 +1,95 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using BLL.Services;
+using System.Threading;
 using System.Threading.Tasks;
+using BLL.DTO.NotificationDto;
+using BLL.IService;
+using Microsoft.AspNetCore.Mvc;
 
-namespace API.Controllers
+namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/notifications")]
     public class NotificationController : ControllerBase
     {
-        private readonly NotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
-        public NotificationController(NotificationService notificationService)
+        public NotificationController(INotificationService notificationService)
         {
             _notificationService = notificationService;
         }
 
-        // POST: /api/notification/send
         [HttpPost("send")]
-        public async Task<IActionResult> Send([FromBody] NotificationRequest request)
+        public async Task<IActionResult> SendAsync(
+            [FromBody] SendNotificationDto request,
+            CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(request.Token))
-                return BadRequest(new { error = "Missing FCM token" });
+            if (!ModelState.IsValid)
+            {
+                return ValidationProblem(ModelState);
+            }
 
-            var messageId = await _notificationService.SendNotificationAsync(
-                request.Title,
-                request.Body,
-                request.Token
-            );
+            if (string.IsNullOrWhiteSpace(request.DeviceToken) && string.IsNullOrWhiteSpace(request.Topic))
+            {
+                return BadRequest(new { error = "Device token or topic must be provided." });
+            }
 
-            return Ok(new { messageId });
+            var result = await _notificationService.SendAsync(request, cancellationToken);
+
+            return Ok(new
+            {
+                messageId = result.MessageId,
+                notification = result.Notification
+            });
         }
-    }
 
-    public class NotificationRequest
-    {
-        public string Token { get; set; } = ""; // FCM token từ Flutter
-        public string Title { get; set; } = "";
-        public string Body { get; set; } = "";
+        [HttpGet]
+        public async Task<IActionResult> GetUserNotifications(
+            [FromQuery] int userId,
+            [FromQuery] bool onlyUnread = false,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            CancellationToken cancellationToken = default)
+        {
+            if (userId <= 0)
+            {
+                return BadRequest(new { error = "userId must be greater than zero." });
+            }
+
+            var result = await _notificationService.GetUserNotificationsAsync(
+                userId,
+                page,
+                pageSize,
+                onlyUnread,
+                cancellationToken);
+
+            return Ok(new
+            {
+                items = result.Items,
+                pagination = new
+                {
+                    result.Page,
+                    result.PageSize,
+                    result.Total,
+                    result.TotalPages,
+                    result.HasPreviousPage,
+                    result.HasNextPage
+                }
+            });
+        }
+
+        [HttpPatch("{notificationId:int}/read")]
+        public async Task<IActionResult> MarkAsRead(
+            int notificationId,
+            [FromQuery] int userId,
+            CancellationToken cancellationToken)
+        {
+            if (userId <= 0)
+            {
+                return BadRequest(new { error = "userId must be greater than zero." });
+            }
+
+            var updated = await _notificationService.MarkAsReadAsync(notificationId, userId, cancellationToken);
+
+            return updated ? NoContent() : NotFound();
+        }
     }
 }
