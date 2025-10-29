@@ -12,6 +12,7 @@ namespace BLL.IService
             string? sortDir,
             int page,
             int pageSize);
+        Task<List<DollVariantDto>> GetByDollModelIdAsync(int dollModelId);
         Task<DollVariantDto?> GetByIdAsync(int id);
         Task<DollVariantDto> CreateAsync(CreateDollVariantDto dto);
         Task<DollVariantDto?> UpdatePartialAsync(int id, UpdateDollVariantDto dto);

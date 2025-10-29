@@ -9,12 +9,12 @@ namespace WebNameProjectOfSWD.Controllers;
 [ApiController]
 [Route("api/doll-orders")]
 //[Authorize]
-public class OrderController : ControllerBase
+public class DollOrdersController : ControllerBase
 {
     private readonly IOrderService _service;
-    private readonly ILogger<OrderController> _logger;
+    private readonly ILogger<DollOrdersController> _logger;
 
-    public OrderController(IOrderService service, ILogger<OrderController> logger)
+    public DollOrdersController(IOrderService service, ILogger<DollOrdersController> logger)
     {
         _service = service;
         _logger = logger;

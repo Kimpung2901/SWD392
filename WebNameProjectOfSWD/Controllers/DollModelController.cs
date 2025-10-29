@@ -47,6 +47,14 @@ namespace WebNameProjectOfSWD.Controllers
             });
         }
 
+        [HttpGet("doll-type-id/{dollTypeId:int}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByDollTypeId(int dollTypeId)
+        {
+            var models = await _svc.GetByDollTypeIdAsync(dollTypeId);
+            return Ok(models);
+        }
+
         [HttpGet("{id:int}")]
         [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)

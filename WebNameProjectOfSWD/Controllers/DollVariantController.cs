@@ -1,4 +1,4 @@
-using BLL.DTO.DollVariantDTO;
+﻿using BLL.DTO.DollVariantDTO;
 using BLL.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +41,14 @@ namespace WebNameProjectOfSWD.Controllers
                     result.HasNextPage
                 }
             });
+        }
+
+        [HttpGet("doll-model-id/{dollModelId:int}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetByDollModelId(int dollModelId)
+        {
+            var variants = await _service.GetByDollModelIdAsync(dollModelId);
+            return Ok(variants);
         }
 
         [HttpGet("{id:int}")]

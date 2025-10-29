@@ -59,6 +59,12 @@ namespace BLL.Services
             };
         }
 
+        public async Task<List<DollModelDto>> GetByDollTypeIdAsync(int dollTypeId)
+        {
+            var models = await _repo.GetByTypeIdAsync(dollTypeId);
+            return _mapper.Map<List<DollModelDto>>(models);
+        }
+
         public async Task<DollModelDto?> GetByIdAsync(int id)
         {
             var m = await _repo.GetByIdAsync(id);
