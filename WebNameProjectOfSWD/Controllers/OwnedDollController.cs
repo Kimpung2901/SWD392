@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/owned-dolls")]
     public class OwnedDollController : ControllerBase
     {
         private readonly IOwnedDollService _service;
@@ -24,7 +24,7 @@ namespace WebNameProjectOfSWD.Controllers
             return Ok(new { message = "Lấy danh sách búp bê sở hữu thành công", data = result });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
@@ -33,21 +33,21 @@ namespace WebNameProjectOfSWD.Controllers
                 : Ok(new { message = "Lấy thông tin búp bê sở hữu thành công", data = result });
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet("users/{userId:int}")]
         public async Task<IActionResult> GetByUserId(int userId)
         {
             var result = await _service.GetByUserIdAsync(userId);
             return Ok(new { message = $"Lấy danh sách búp bê của user #{userId} thành công", data = result });
         }
 
-        [HttpGet("variant/{dollVariantId}")]
+        [HttpGet("variants/{dollVariantId:int}")]
         public async Task<IActionResult> GetByDollVariantId(int dollVariantId)
         {
             var result = await _service.GetByDollVariantIdAsync(dollVariantId);
             return Ok(new { message = $"Lấy danh sách búp bê variant #{dollVariantId} thành công", data = result });
         }
 
-        [HttpGet("serial/{serialCode}")]
+        [HttpGet("serial-code/{serialCode}")]
         public async Task<IActionResult> GetBySerialCode(string serialCode)
         {
             var result = await _service.GetBySerialCodeAsync(serialCode);
@@ -78,7 +78,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateOwnedDollDto dto)
         {
             _logger.LogInformation("PATCH Request - ID: {Id}, DTO: {@Dto}", id, dto);
@@ -100,7 +100,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);

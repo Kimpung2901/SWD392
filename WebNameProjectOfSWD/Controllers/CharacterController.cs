@@ -1,12 +1,14 @@
 ﻿using BLL.DTO.CharacterDTO;
 using BLL.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebNameProjectOfSWD.Controllers
 {
-    [ApiController]
-    [Route("api/characters")]
-    public class CharacterController : ControllerBase
+[ApiController]
+[Route("api/characters")]
+[Authorize]
+public class CharacterController : ControllerBase
     {
         private readonly ICharacterService _service;
         private readonly ILogger<CharacterController> _logger;
@@ -18,6 +20,7 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetCharacters(
             [FromQuery] string? search,
             [FromQuery] string? sortBy,
@@ -51,6 +54,7 @@ namespace WebNameProjectOfSWD.Controllers
 
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);

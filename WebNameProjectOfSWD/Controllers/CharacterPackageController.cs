@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/character-packages")]
     public class CharacterPackageController : ControllerBase
     {
         private readonly ICharacterPackageService _service;
@@ -26,7 +26,7 @@ namespace WebNameProjectOfSWD.Controllers
             return Ok(new { message = "Lấy danh sách package thành công", data = result });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
@@ -35,7 +35,7 @@ namespace WebNameProjectOfSWD.Controllers
                 : Ok(new { message = "Lấy thông tin package thành công", data = result });
         }
 
-        [HttpGet("character/{characterId}")]
+        [HttpGet("characters/{characterId:int}")]
         public async Task<IActionResult> GetByCharacterId(int characterId)
         {
             var result = await _service.GetByCharacterIdAsync(characterId);
@@ -64,7 +64,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateCharacterPackageDto dto)
         {
             _logger.LogInformation("PATCH Request - ID: {Id}, DTO: {@Dto}", id, dto);
@@ -86,7 +86,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpDelete("soft/{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> SoftDelete(int id)
         {
             var result = await _service.SoftDeleteAsync(id);
@@ -95,7 +95,7 @@ namespace WebNameProjectOfSWD.Controllers
                 : NotFound(new { message = $"Không tìm thấy package #{id}" });
         }
 
-        [HttpDelete("hard/{id}")]
+        [HttpDelete("{id:int}/hard")]
         public async Task<IActionResult> HardDelete(int id)
         {
             var result = await _service.HardDeleteAsync(id);

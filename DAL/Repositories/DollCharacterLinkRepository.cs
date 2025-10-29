@@ -8,8 +8,13 @@ namespace DAL.Repositories;
 public class DollCharacterLinkRepository : IDollCharacterLinkRepository
 {
     private readonly DollDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public DollCharacterLinkRepository(DollDbContext db) => _db = db;
+    public DollCharacterLinkRepository(DollDbContext db, IUnitOfWork unitOfWork)
+    {
+        _db = db;
+        _unitOfWork = unitOfWork;
+    }
 
     public async Task<List<DollCharacterLink>> GetAllAsync()
     {
@@ -63,7 +68,7 @@ public class DollCharacterLinkRepository : IDollCharacterLinkRepository
     public async Task AddAsync(DollCharacterLink entity)
     {
         _db.DollCharacterLinks.Add(entity);
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(DollCharacterLink entity)
@@ -74,7 +79,7 @@ public class DollCharacterLinkRepository : IDollCharacterLinkRepository
         }
 
         _db.Entry(entity).State = EntityState.Modified;
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
@@ -83,12 +88,12 @@ public class DollCharacterLinkRepository : IDollCharacterLinkRepository
         if (entity != null)
         {
             _db.DollCharacterLinks.Remove(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 
     public async Task<bool> SaveChangesAsync()
     {
-        return await _db.SaveChangesAsync() > 0;
+        return await _unitOfWork.SaveChangesAsync() > 0;
     }
 }

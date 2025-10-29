@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/order-items")]
     public class OrderItemController : ControllerBase
     {
         private readonly IOrderItemService _service;
@@ -24,7 +24,7 @@ namespace WebNameProjectOfSWD.Controllers
             return Ok(new { message = "Lấy danh sách order items thành công", data = result });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
@@ -33,14 +33,14 @@ namespace WebNameProjectOfSWD.Controllers
                 : Ok(new { message = "Lấy thông tin order item thành công", data = result });
         }
 
-        [HttpGet("order/{orderId}")]
+        [HttpGet("orders/{orderId:int}")]
         public async Task<IActionResult> GetByOrderId(int orderId)
         {
             var result = await _service.GetByOrderIdAsync(orderId);
             return Ok(new { message = $"Lấy items của order #{orderId} thành công", data = result });
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateOrderItemDto dto)
         {
             if (!ModelState.IsValid)
@@ -52,7 +52,7 @@ namespace WebNameProjectOfSWD.Controllers
                 : Ok(new { message = "Cập nhật order item thành công", data = result });
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);

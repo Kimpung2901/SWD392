@@ -9,7 +9,12 @@ namespace DAL.Repositories
     public class DollTypeRepository : IDollTypeRepository
     {
         private readonly DollDbContext _db;
-        public DollTypeRepository(DollDbContext db) => _db = db;
+        private readonly IUnitOfWork _unitOfWork;
+        public DollTypeRepository(DollDbContext db, IUnitOfWork unitOfWork)
+        {
+            _db = db;
+            _unitOfWork = unitOfWork;
+        }
 
         public async Task<List<DollType>> GetAllAsync()
             => await _db.DollTypes
@@ -25,7 +30,7 @@ namespace DAL.Repositories
         public async Task AddAsync(DollType entity)
         {
             _db.DollTypes.Add(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<DollType?> UpdateAsync(DollType entity)
@@ -35,7 +40,7 @@ namespace DAL.Repositories
                 return null;
 
             _db.Entry(existing).CurrentValues.SetValues(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return existing;
         }
 
@@ -45,7 +50,7 @@ namespace DAL.Repositories
             var entity = await _db.DollTypes.FindAsync(id);
             if (entity == null) return false;
             entity.IsDeleted = true;
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
 
@@ -54,7 +59,7 @@ namespace DAL.Repositories
             var entity = await _db.DollTypes.FindAsync(id);
             if (entity == null) return false;
             _db.DollTypes.Remove(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
 

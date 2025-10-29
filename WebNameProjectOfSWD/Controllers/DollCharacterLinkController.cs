@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebNameProjectOfSWD.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/doll-character-links")]
 public class DollCharacterLinkController : ControllerBase
 {
     private readonly IDollCharacterLinkService _service;
@@ -32,7 +32,7 @@ public class DollCharacterLinkController : ControllerBase
     /// <summary>
     /// Lấy link theo ID
     /// </summary>
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
         var result = await _service.GetByIdAsync(id);
@@ -44,7 +44,7 @@ public class DollCharacterLinkController : ControllerBase
     /// <summary>
     /// Lấy links theo OwnedDollID
     /// </summary>
-    [HttpGet("owneddoll/{ownedDollId}")]
+    [HttpGet("owned-dolls/{ownedDollId:int}")]
     public async Task<IActionResult> GetByOwnedDollId(int ownedDollId)
     {
         var result = await _service.GetByOwnedDollIdAsync(ownedDollId);
@@ -54,7 +54,7 @@ public class DollCharacterLinkController : ControllerBase
     /// <summary>
     /// Lấy links theo UserCharacterID
     /// </summary>
-    [HttpGet("usercharacter/{userCharacterId}")]
+    [HttpGet("user-characters/{userCharacterId:int}")]
     public async Task<IActionResult> GetByUserCharacterId(int userCharacterId)
     {
         var result = await _service.GetByUserCharacterIdAsync(userCharacterId);
@@ -74,7 +74,7 @@ public class DollCharacterLinkController : ControllerBase
     /// <summary>
     /// Bind character với doll (tạo mới link)
     /// </summary>
-    [HttpPost("bind")]
+    [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateDollCharacterLinkDto dto)
     {
         if (!ModelState.IsValid)
@@ -99,7 +99,7 @@ public class DollCharacterLinkController : ControllerBase
     /// <summary>
     /// Cập nhật thông tin link
     /// </summary>
-    [HttpPatch("{id}")]
+    [HttpPatch("{id:int}")]
     public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateDollCharacterLinkDto dto)
     {
         _logger.LogInformation("PATCH Request - ID: {Id}, DTO: {@Dto}", id, dto);
@@ -124,7 +124,7 @@ public class DollCharacterLinkController : ControllerBase
     /// <summary>
     /// Unbind character khỏi doll
     /// </summary>
-    [HttpPost("{id}/unbind")]
+    [HttpPost("{id:int}/unbind")]
     public async Task<IActionResult> Unbind(int id)
     {
         try
@@ -144,7 +144,7 @@ public class DollCharacterLinkController : ControllerBase
     /// <summary>
     /// Xóa link
     /// </summary>
-    [HttpDelete("{id}")]
+    [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
         var result = await _service.DeleteAsync(id);

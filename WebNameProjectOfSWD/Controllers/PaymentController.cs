@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace WebNameProjectOfSWD.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/payments")]
 public class PaymentController : ControllerBase
 {
     private readonly IPaymentService _paymentService;
@@ -20,7 +20,7 @@ public class PaymentController : ControllerBase
     }
 
     // FE gọi -> nhận payUrl (MoMo) -> FE redirect => người dùng thấy QR trên MoMo
-    [HttpPost("create")]
+    [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest req, CancellationToken ct)
     {
@@ -54,8 +54,8 @@ public class PaymentController : ControllerBase
     }
 
     // FE poll trạng thái
-    [HttpGet("status")]
-    public async Task<IActionResult> GetStatus([FromQuery] int paymentId)
+    [HttpGet("{paymentId:int}")]
+    public async Task<IActionResult> GetStatus(int paymentId)
     {
         var p = await _repo.GetByIdAsync(paymentId);
         if (p == null) return NotFound();

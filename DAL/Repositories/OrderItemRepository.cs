@@ -7,8 +7,13 @@ namespace DAL.Repositories
     public class OrderItemRepository : IOrderItemRepository
     {
         private readonly DollDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public OrderItemRepository(DollDbContext db) => _db = db;
+        public OrderItemRepository(DollDbContext db, IUnitOfWork unitOfWork)
+        {
+            _db = db;
+            _unitOfWork = unitOfWork;
+        }
 
         public async Task<List<OrderItem>> GetAllAsync()
         {
@@ -34,13 +39,13 @@ namespace DAL.Repositories
         public async Task AddAsync(OrderItem entity)
         {
             _db.OrderItems.Add(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task AddRangeAsync(List<OrderItem> entities)
         {
             _db.OrderItems.AddRange(entities);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(OrderItem entity)
@@ -51,7 +56,7 @@ namespace DAL.Repositories
             }
 
             _db.Entry(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -60,13 +65,13 @@ namespace DAL.Repositories
             if (entity != null)
             {
                 _db.OrderItems.Remove(entity);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
         public async Task<bool> SaveChangesAsync()
         {
-            return await _db.SaveChangesAsync() > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

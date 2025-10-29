@@ -1,15 +1,18 @@
 using BLL.DTO.DollTypeDTO;
 using BLL.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/doll-types")]
+[Authorize]
 public class DollTypeController : ControllerBase
 {
     private readonly IDollTypeService _service;
     public DollTypeController(IDollTypeService service) => _service = service;
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> GetDollTypes(
         [FromQuery] string? search,
         [FromQuery] string? sortBy,
@@ -34,6 +37,7 @@ public class DollTypeController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     public async Task<IActionResult> Get(int id)
     {
         var result = await _service.GetByIdAsync(id);

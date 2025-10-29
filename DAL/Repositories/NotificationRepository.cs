@@ -10,10 +10,12 @@ namespace DAL.Repositories
     public class NotificationRepository : INotificationRepository
     {
         private readonly DollDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public NotificationRepository(DollDbContext db)
+        public NotificationRepository(DollDbContext db, IUnitOfWork unitOfWork)
         {
             _db = db;
+            _unitOfWork = unitOfWork;
         }
 
         public IQueryable<Notification> Query()
@@ -30,14 +32,14 @@ namespace DAL.Repositories
         public async Task<Notification> AddAsync(Notification notification, CancellationToken cancellationToken = default)
         {
             await _db.Notifications.AddAsync(notification, cancellationToken);
-            await _db.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return notification;
         }
 
         public async Task UpdateAsync(Notification notification, CancellationToken cancellationToken = default)
         {
             _db.Notifications.Update(notification);
-            await _db.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

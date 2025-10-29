@@ -1,3 +1,4 @@
+using AutoMapper;
 using BLL.DTO.Common;
 using BLL.DTO.DollVariantDTO;
 using BLL.Helper;
@@ -11,10 +12,12 @@ namespace BLL.Services
     public class DollVariantService : IDollVariantService
     {
         private readonly IDollVariantRepository _repo;
+        private readonly IMapper _mapper;
 
-        public DollVariantService(IDollVariantRepository repo)
+        public DollVariantService(IDollVariantRepository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         public async Task<PagedResult<DollVariantDto>> GetAsync(
@@ -50,7 +53,7 @@ namespace BLL.Services
 
             return new PagedResult<DollVariantDto>
             {
-                Items = items.Select(Map).ToList(),
+                Items = _mapper.Map<List<DollVariantDto>>(items),
                 Total = total,
                 Page = page,
                 PageSize = pageSize
@@ -60,25 +63,17 @@ namespace BLL.Services
         public async Task<DollVariantDto?> GetByIdAsync(int id)
         {
             var variant = await _repo.GetByIdAsync(id);
-            return variant == null ? null : Map(variant);
+            return variant == null ? null : _mapper.Map<DollVariantDto>(variant);
         }
 
         public async Task<DollVariantDto> CreateAsync(CreateDollVariantDto dto)
         {
-            var entity = new DollVariant
-            {
-                DollModelID = dto.DollModelID,
-                Name = dto.Name,
-                Price = dto.Price,
-                Color = dto.Color,
-                Size = dto.Size,
-                Image = dto.Image,
-                IsActive = true
-            };
+            var entity = _mapper.Map<DollVariant>(dto);
 
             await _repo.AddAsync(entity);
 
-            return Map(await _repo.GetByIdAsync(entity.DollVariantID) ?? entity);
+            var saved = await _repo.GetByIdAsync(entity.DollVariantID) ?? entity;
+            return _mapper.Map<DollVariantDto>(saved);
         }
 
         public async Task<DollVariantDto?> UpdatePartialAsync(int id, UpdateDollVariantDto dto)
@@ -86,16 +81,12 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-            if (!string.IsNullOrWhiteSpace(dto.Name)) entity.Name = dto.Name;
-            if (dto.Price.HasValue && dto.Price.Value > 0) entity.Price = dto.Price.Value;
-            if (!string.IsNullOrWhiteSpace(dto.Color)) entity.Color = dto.Color;
-            if (!string.IsNullOrWhiteSpace(dto.Size)) entity.Size = dto.Size;
-            if (!string.IsNullOrWhiteSpace(dto.Image)) entity.Image = dto.Image;
-            if (dto.IsActive.HasValue) entity.IsActive = dto.IsActive.Value;
+            _mapper.Map(dto, entity);
 
             await _repo.UpdateAsync(entity);
 
-            return Map(await _repo.GetByIdAsync(id) ?? entity);
+            var saved = await _repo.GetByIdAsync(id) ?? entity;
+            return _mapper.Map<DollVariantDto>(saved);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -103,19 +94,6 @@ namespace BLL.Services
             await _repo.DeleteAsync(id);
             return true;
         }
-
-        private static DollVariantDto Map(DollVariant v) => new()
-        {
-            DollVariantID = v.DollVariantID,
-            DollModelID = v.DollModelID,
-            DollModelName = v.DollModel?.Name ?? string.Empty,
-            Name = v.Name,
-            Price = v.Price,
-            Color = v.Color,
-            Size = v.Size,
-            Image = v.Image,
-            IsActive = v.IsActive
-        };
 
         private static IQueryable<DollVariant> ApplySorting(
             IQueryable<DollVariant> query,

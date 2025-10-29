@@ -8,8 +8,13 @@ namespace DAL.Repositories
     public class CharacterOrderRepository : ICharacterOrderRepository
     {
         private readonly DollDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CharacterOrderRepository(DollDbContext db) => _db = db;
+        public CharacterOrderRepository(DollDbContext db, IUnitOfWork unitOfWork)
+        {
+            _db = db;
+            _unitOfWork = unitOfWork;
+        }
 
         public async Task<List<CharacterOrder>> GetAllAsync()
         {
@@ -73,7 +78,7 @@ namespace DAL.Repositories
         public async Task AddAsync(CharacterOrder entity)
         {
             _db.CharacterOrders.Add(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(CharacterOrder entity)
@@ -84,7 +89,7 @@ namespace DAL.Repositories
             }
 
             _db.Entry(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -93,13 +98,13 @@ namespace DAL.Repositories
             if (entity != null)
             {
                 _db.CharacterOrders.Remove(entity);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
         public async Task<bool> SaveChangesAsync()
         {
-            return await _db.SaveChangesAsync() > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

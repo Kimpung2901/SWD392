@@ -1,4 +1,5 @@
-﻿using BLL.DTO.CharacterDTO;
+﻿using AutoMapper;
+using BLL.DTO.CharacterDTO;
 using BLL.DTO.Common;
 using BLL.Helper;
 using BLL.IService;
@@ -11,10 +12,12 @@ namespace BLL.Services
     public class CharacterService : ICharacterService
     {
         private readonly ICharacterRepository _repo;
+        private readonly IMapper _mapper;
 
-        public CharacterService(ICharacterRepository repo)
+        public CharacterService(ICharacterRepository repo, IMapper mapper)
         {
             _repo = repo;
+            _mapper = mapper;
         }
 
         public async Task<PagedResult<CharacterDto>> GetAsync(
@@ -44,7 +47,7 @@ namespace BLL.Services
 
             return new PagedResult<CharacterDto>
             {
-                Items = items.Select(Map).ToList(),
+                Items = _mapper.Map<List<CharacterDto>>(items),
                 Total = total,
                 Page = page,
                 PageSize = pageSize
@@ -54,25 +57,21 @@ namespace BLL.Services
         public async Task<CharacterDto?> GetByIdAsync(int id)
         {
             var character = await _repo.GetByIdAsync(id);
-            return character == null ? null : Map(character);
+            return character == null ? null : _mapper.Map<CharacterDto>(character);
         }
 
         public async Task<CharacterDto> CreateAsync(CreateCharacterDto dto)
         {
-            var entity = new Character
-            {
-                Name = dto.Name,
-                Image = dto.Image,
-                AgeRange = dto.AgeRange,
-                Personality = dto.Personality,
-                Description = dto.Description ?? string.Empty,
-                AIUrl = dto.AIUrl,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-            };
+            var entity = _mapper.Map<Character>(dto);
+            entity.Name = entity.Name.Trim();
+            entity.Image = entity.Image.Trim();
+            entity.Personality = entity.Personality?.Trim() ?? string.Empty;
+            entity.Description = entity.Description?.Trim() ?? string.Empty;
+            entity.AIUrl = Clean(entity.AIUrl) ?? entity.AIUrl;
 
             await _repo.AddAsync(entity);
-            return await GetByIdAsync(entity.CharacterId) ?? throw new Exception("Failed to create Character");
+            var saved = await _repo.GetByIdAsync(entity.CharacterId) ?? entity;
+            return _mapper.Map<CharacterDto>(saved);
         }
 
         public async Task<CharacterDto?> UpdatePartialAsync(int id, UpdateCharacterDto dto)
@@ -80,36 +79,36 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-            static string? Clean(string? s)
-            {
-                if (string.IsNullOrWhiteSpace(s)) return null;
-                var t = s.Trim();
-                if (string.Equals(t, "string", StringComparison.OrdinalIgnoreCase)) return null;
-                return t;
-            }
+            var originalName = entity.Name;
+            var originalImage = entity.Image;
+            var originalPersonality = entity.Personality;
+            var originalDescription = entity.Description;
+            var originalAiUrl = entity.AIUrl;
 
-            var name = Clean(dto.Name);
-            if (name != null) entity.Name = name;
+            _mapper.Map(dto, entity);
 
-            var image = Clean(dto.Image);
-            if (image != null) entity.Image = image;
+            var cleanedName = Clean(entity.Name);
+            entity.Name = cleanedName ?? originalName;
+
+            var cleanedImage = Clean(entity.Image);
+            entity.Image = cleanedImage ?? originalImage;
 
             if (dto.AgeRange.HasValue) entity.AgeRange = dto.AgeRange.Value;
 
-            var personality = Clean(dto.Personality);
-            if (personality != null) entity.Personality = personality;
+            var cleanedPersonality = Clean(entity.Personality);
+            entity.Personality = cleanedPersonality ?? originalPersonality;
 
-            var description = Clean(dto.Description);
-            if (description != null) entity.Description = description;
+            var cleanedDescription = Clean(entity.Description);
+            entity.Description = cleanedDescription ?? originalDescription;
 
-            // ✅ THÊM MỚI: Cập nhật AI Model URL
-            var aiModelUrl = Clean(dto.AIUrl);
-            if (aiModelUrl != null) entity.AIUrl = aiModelUrl;
+            var cleanedAiUrl = Clean(entity.AIUrl);
+            entity.AIUrl = cleanedAiUrl ?? originalAiUrl;
 
             if (dto.IsActive.HasValue) entity.IsActive = dto.IsActive.Value;
 
             await _repo.UpdateAsync(entity);
-            return await GetByIdAsync(entity.CharacterId);
+            var saved = await _repo.GetByIdAsync(entity.CharacterId) ?? entity;
+            return _mapper.Map<CharacterDto>(saved);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -118,18 +117,12 @@ namespace BLL.Services
             return true;
         }
 
-        private static CharacterDto Map(Character c) => new()
+        private static string? Clean(string? value)
         {
-            CharacterId = c.CharacterId,
-            Name = c.Name,
-            Image = c.Image,
-            AgeRange = c.AgeRange,
-            Personality = c.Personality,
-            Description = c.Description,
-            AIUrl = c.AIUrl, 
-            IsActive = c.IsActive,
-            CreatedAt = c.CreatedAt
-        };
+            if (string.IsNullOrWhiteSpace(value)) return null;
+            var trimmed = value.Trim();
+            return string.Equals(trimmed, "string", StringComparison.OrdinalIgnoreCase) ? null : trimmed;
+        }
 
         private static IQueryable<Character> ApplySorting(
             IQueryable<Character> query,
@@ -159,3 +152,7 @@ namespace BLL.Services
         }
     }
 }
+
+
+
+

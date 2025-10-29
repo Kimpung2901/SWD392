@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/character-orders")]
     public class CharacterOrderController : ControllerBase
     {
         private readonly ICharacterOrderService _service;
@@ -26,7 +26,7 @@ namespace WebNameProjectOfSWD.Controllers
             return Ok(new { message = "Lấy danh sách character order thành công", data = result });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
@@ -35,28 +35,28 @@ namespace WebNameProjectOfSWD.Controllers
                 : Ok(new { message = "Lấy thông tin character order thành công", data = result });
         }
 
-        [HttpGet("usercharacter/{userCharacterId}")]
+        [HttpGet("user-characters/{userCharacterId:int}")]
         public async Task<IActionResult> GetByUserCharacterId(int userCharacterId)
         {
             var result = await _service.GetByUserCharacterIdAsync(userCharacterId);
             return Ok(new { message = $"Lấy danh sách order của user character #{userCharacterId} thành công", data = result });
         }
 
-        [HttpGet("character/{characterId}")]
+        [HttpGet("characters/{characterId:int}")]
         public async Task<IActionResult> GetByCharacterId(int characterId)
         {
             var result = await _service.GetByCharacterIdAsync(characterId);
             return Ok(new { message = $"Lấy danh sách order của character #{characterId} thành công", data = result });
         }
 
-        [HttpGet("package/{packageId}")]
+        [HttpGet("packages/{packageId:int}")]
         public async Task<IActionResult> GetByPackageId(int packageId)
         {
             var result = await _service.GetByPackageIdAsync(packageId);
             return Ok(new { message = $"Lấy danh sách order của package #{packageId} thành công", data = result });
         }
 
-        [HttpGet("pending")]
+        [HttpGet("status/pending")]
         public async Task<IActionResult> GetPendingOrders()
         {
             var result = await _service.GetPendingOrdersAsync();
@@ -96,7 +96,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateCharacterOrderDto dto)
         {
             _logger.LogInformation("PATCH Request - ID: {Id}, DTO: {@Dto}", id, dto);
@@ -118,7 +118,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPost("{id}/complete")]
+        [HttpPost("{id:int}/complete")]
         public async Task<IActionResult> CompleteOrder(int id)
         {
             try
@@ -135,7 +135,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPost("{id}/cancel")]
+        [HttpPost("{id:int}/cancel")]
         public async Task<IActionResult> CancelOrder(int id)
         {
             try
@@ -152,7 +152,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);

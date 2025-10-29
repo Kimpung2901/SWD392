@@ -4,7 +4,7 @@ using BLL.IService;
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/user-characters")]
     public class UserCharacterController : ControllerBase
     {
         private readonly IUserCharacterService _service;
@@ -23,7 +23,7 @@ namespace WebNameProjectOfSWD.Controllers
             return Ok(new { message = "Lấy danh sách user character thành công", data = result });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
@@ -32,28 +32,28 @@ namespace WebNameProjectOfSWD.Controllers
                 : Ok(new { message = "Lấy thông tin user character thành công", data = result });
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet("users/{userId:int}")]
         public async Task<IActionResult> GetByUserId(int userId)
         {
             var result = await _service.GetByUserIdAsync(userId);
             return Ok(new { message = $"Lấy danh sách character của user #{userId} thành công", data = result });
         }
 
-        [HttpGet("user/{userId}/active")]
+        [HttpGet("users/{userId:int}/active")]
         public async Task<IActionResult> GetActiveSubscriptions(int userId)
         {
             var result = await _service.GetActiveSubscriptionsAsync(userId);
             return Ok(new { message = $"Lấy danh sách subscription đang active của user #{userId} thành công", data = result });
         }
 
-        [HttpGet("character/{characterId}")]
+        [HttpGet("characters/{characterId:int}")]
         public async Task<IActionResult> GetByCharacterId(int characterId)
         {
             var result = await _service.GetByCharacterIdAsync(characterId);
             return Ok(new { message = $"Lấy danh sách user của character #{characterId} thành công", data = result });
         }
 
-        [HttpGet("package/{packageId}")]
+        [HttpGet("packages/{packageId:int}")]
         public async Task<IActionResult> GetByPackageId(int packageId)
         {
             var result = await _service.GetByPackageIdAsync(packageId);
@@ -82,7 +82,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id:int}")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateUserCharacterDto dto)
         {
             _logger.LogInformation("PATCH Request - ID: {Id}, DTO: {@Dto}", id, dto);
@@ -104,7 +104,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpPost("{id}/renew")]
+        [HttpPost("{id:int}/renew")]
         public async Task<IActionResult> RenewSubscription(int id)
         {
             try
@@ -121,7 +121,7 @@ namespace WebNameProjectOfSWD.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
