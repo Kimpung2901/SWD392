@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace BLL.DTO
@@ -8,6 +8,9 @@ namespace BLL.DTO
         [Required]
         [StringLength(50)]
         public string Username { get; set; } = null!;
+        [StringLength(255)]
+        public string? FullName { get; set; }
+
 
         [Required]
         [EmailAddress]
@@ -19,7 +22,7 @@ namespace BLL.DTO
 
         public string? Phones { get; set; }
 
-        [Range(1, 150, ErrorMessage = "Age phải từ 1 đến 150")]
+        [Range(1, 150, ErrorMessage = "Age ph?i t? 1 d?n 150")]
         public int? Age { get; set; }
     }
 }

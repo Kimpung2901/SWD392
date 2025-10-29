@@ -1,6 +1,7 @@
 using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace DAL.Repositories
 {
@@ -58,6 +59,13 @@ namespace DAL.Repositories
         public async Task<bool> SaveChangesAsync()
         {
             return await _db.SaveChangesAsync() > 0;
+        }
+
+        public IQueryable<DollVariant> Query()
+        {
+            return _db.DollVariants
+                .Include(v => v.DollModel)
+                .AsNoTracking();
         }
     }
 }

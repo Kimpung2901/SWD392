@@ -12,7 +12,8 @@ namespace BLL.IService
             string role = "customer",
             string? email = null,
             string? phone = null,
-            int? age = null);
+            int? age = null,
+            string? fullName = null);
 
         Task<bool> ChangePasswordAsync(int userId, string oldPassword, string newPassword);
         Task<bool> CanSendOtpAsync(string email);

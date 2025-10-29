@@ -1,6 +1,7 @@
-﻿using DAL.IRepo;
+using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace DAL.Repositories
 {
@@ -61,6 +62,13 @@ namespace DAL.Repositories
                 .Where(m => m.DollTypeID == dollTypeId && !m.IsDeleted)
                 .Include(m => m.DollType) 
                 .ToListAsync();
+        }
+
+        public IQueryable<DollModel> Query()
+        {
+            return _db.DollModels
+                .Include(m => m.DollType)
+                .AsNoTracking();
         }
     }
 }

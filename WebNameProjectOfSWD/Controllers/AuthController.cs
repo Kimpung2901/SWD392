@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using BLL.DTO;
 using BLL.DTO.OrderDTO;  
 using BLL.IService;
@@ -56,7 +56,7 @@ public class AuthController : ControllerBase
         var minutes = int.TryParse(_cfg["Jwt:AccessTokenMinutes"], out var m) ? m : 60;
         var accessToken = _jwt.CreateAccessToken(user, TimeSpan.FromMinutes(minutes));
 
-        // ✅ Tạo refresh token qua service
+        // ? T?o refresh token qua service
         var refreshToken = await _userService.CreateRefreshTokenAsync(
             user.UserID,
             HttpContext.Connection.RemoteIpAddress?.ToString()
@@ -67,9 +67,12 @@ public class AuthController : ControllerBase
             accessToken,
             expiresAt = DateTime.UtcNow.AddMinutes(minutes),
             refreshToken = refreshToken.Token,
+            userId = user.UserID,
             username = user.UserName,
+            fullName = user.FullName,
             role = user.Role
         });
+
     }
 
     [HttpPost("register")]
@@ -89,7 +92,8 @@ public class AuthController : ControllerBase
             "customer", 
             req.Email, 
             req.Phones,
-            req.Age);
+            req.Age,
+            req.FullName);
 
         return Ok(new
         {
@@ -98,6 +102,7 @@ public class AuthController : ControllerBase
             email = user.Email,
             phones = user.Phones,
             age = user.Age, 
+            fullName = user.FullName,
             role = user.Role,
             message = "Register successful"
         });
@@ -151,13 +156,13 @@ public class AuthController : ControllerBase
     {
         try
         {
-            // Kiểm tra Firebase có được khởi tạo không
+            // Ki?m tra Firebase c� du?c kh?i t?o kh�ng
             if (FirebaseApp.DefaultInstance == null)
             {
                 return StatusCode(503, new { message = "Google Login is not configured. Please contact administrator." });
             }
 
-            // Xác minh token từ Firebase
+            // X�c minh token t? Firebase
             FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(req.IdToken);
             string uid = decodedToken.Uid;
             string email = decodedToken.Claims.TryGetValue("email", out var emailObj) ? emailObj?.ToString() : null;
@@ -171,13 +176,15 @@ public class AuthController : ControllerBase
 
             if (user == null)
             {
-                // Tạo user mới qua RegisterAsync
+                // T?o user m?i qua RegisterAsync
                 user = await _auth.RegisterAsync(
                     username: name ?? email.Split('@')[0],
-                    rawPassword: Guid.NewGuid().ToString(), // Password ngẫu nhiên cho Google login
+                    rawPassword: Guid.NewGuid().ToString(), // Password ng?u nhi�n cho Google login
                     role: "customer",
                     email: email,
-                    phone: null
+                    phone: null,
+                    age: null,
+                    fullName: name
                 );
             }
             else if (user.IsDeleted || !string.Equals(user.Status.ToString(), "active", StringComparison.OrdinalIgnoreCase))
@@ -200,10 +207,14 @@ public class AuthController : ControllerBase
                 accessToken = jwt,
                 expiresAt = DateTime.UtcNow.AddMinutes(minutes),
                 refreshToken = refreshToken.Token,
+                userId = user.UserID,
+                username = user.UserName,
+                role = user.Role,
                 user = new
                 {
                     id = user.UserID,
                     username = user.UserName,
+                    fullName = user.FullName,
                     email = user.Email,
                     role = user.Role
                 }

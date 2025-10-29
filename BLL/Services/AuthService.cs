@@ -21,7 +21,9 @@ namespace BLL.Services
 
         public async Task<User?> AuthenticateAsync(string username, string password)
         {
-            var user = await _users.GetUserByUsernameAsync(username.Trim());
+            var uname = username.Trim();
+            var user = (await _users.GetAllAsync())
+                .FirstOrDefault(u => u.UserName.Equals(uname, StringComparison.OrdinalIgnoreCase));
             if (user == null || user.IsDeleted || user.Status != UserStatus.Active)
                 return null;
             return BCrypt.Net.BCrypt.Verify(password, user.Password) ? user : null;
@@ -33,10 +35,14 @@ namespace BLL.Services
             string role = "Customer", 
             string? email = null, 
             string? phone = null,
-            int? age = null) 
+            int? age = null,
+            string? fullName = null) 
         {
             var uname = username.Trim();
-            if (await _users.GetUserByUsernameAsync(uname) != null)
+            
+            var existingUser = (await _users.GetAllAsync())
+                .FirstOrDefault(u => u.UserName.Equals(uname, StringComparison.OrdinalIgnoreCase));
+            if (existingUser != null)
                 throw new InvalidOperationException("Username already exists");
 
           
@@ -50,6 +56,7 @@ namespace BLL.Services
             var user = new User
             {
                 UserName = uname,
+                FullName = fullName?.Trim(),
                 Email = email?.Trim(),
                 Phones = phone?.Trim(),
                 Password = BCrypt.Net.BCrypt.HashPassword(rawPassword),
@@ -61,7 +68,7 @@ namespace BLL.Services
             };
 
             await _users.AddAsync(user);
-            await _users.SaveChangesAsync(); 
+            await _auth.SaveChangesAsync(); 
             return user;
         }
 
@@ -77,7 +84,7 @@ namespace BLL.Services
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             await _users.UpdateAsync(user);
-            await _users.SaveChangesAsync();
+            await _auth.SaveChangesAsync();
             return true;
         }
 

@@ -1,4 +1,7 @@
-﻿using DAL.Models;
+using DAL.Models;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DAL.IRepo
 {
@@ -11,5 +14,6 @@ namespace DAL.IRepo
         Task UpdateAsync(DollModel entity);
         Task SoftDeleteAsync(int id);
         Task HardDeleteAsync(int id);
+        IQueryable<DollModel> Query();
     }
 }

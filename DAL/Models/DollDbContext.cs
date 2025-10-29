@@ -20,6 +20,7 @@ public partial class DollDbContext : DbContext
     public virtual DbSet<CharacterOrder> CharacterOrders { get; set; }
     public virtual DbSet<Payment> Payments { get; set; }
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -77,6 +78,10 @@ public partial class DollDbContext : DbContext
             entity.ToTable("User");
             entity.Property(e => e.UserName).HasMaxLength(255).IsRequired();
             entity.HasIndex(e => e.UserName).IsUnique();
+
+            entity.Property(e => e.FullName)
+                .HasMaxLength(255)
+                .IsRequired(false);
             
             entity.Property(e => e.Phones)
                 .HasColumnName("Phones")
@@ -267,7 +272,7 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.LinkID);
             entity.ToTable("DollCharacterLink");
             entity.Property(e => e.BoundAt).HasColumnType("datetime");
-            entity.Property(e => e.UnBoundAt).HasColumnType("datetime");
+            entity.Property(e => e.UnBoundAt).HasColumnType("datetime").IsRequired(false); // ✅ NULLABLE
             entity.Property(e => e.Note).HasMaxLength(255);
             entity.Property(e => e.Status)
                 .HasConversion<string>()
@@ -368,7 +373,28 @@ public partial class DollDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        
+        // Notification
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.NotificationID);
+            entity.ToTable("Notification");
+            entity.Property(e => e.Title).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Body).HasColumnType("nvarchar(max)").IsRequired();
+            entity.Property(e => e.Data).HasColumnType("nvarchar(max)");
+            entity.Property(e => e.Topic).HasMaxLength(150);
+            entity.Property(e => e.DeviceToken).HasMaxLength(255);
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime2")
+                .HasDefaultValueSql("SYSUTCDATETIME()");
+            entity.Property(e => e.ReadAt).HasColumnType("datetime2");
+            entity.Property(e => e.IsRead).HasDefaultValue(false);
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(e => e.UserID)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

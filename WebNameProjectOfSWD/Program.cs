@@ -1,4 +1,4 @@
-Ôªøusing BLL.Helper;
+using BLL.Helper;
 using BLL.IService;
 using BLL.Options;
 using BLL.Services;
@@ -17,41 +17,64 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Th√™m d·ªãch v·ª• CORS
+// 1. ThÍm d?ch v? CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
         policy =>
         {
             policy.WithOrigins("http://localhost:5173",
-           "https://doll-sales-system-fe.vercel.app")
+           "https://doll-sales-system-fe.vercel.app",
+           "http://localhost:5174"
+           )
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
 });
 
-// ===== Firebase Initialization =====
+        // Firebase is ready for push notifications
 try
 {
-    var firebaseCredPath = builder.Configuration["Firebase:CredentialPath"] ?? builder.Configuration["Firebase__CredentialPath"] ?? "firebase-adminsdk.json";
-    var fullPath = Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
-    
+    // Uu tiÍn l?y du?ng d?n t? appsettings.json: "Firebase": { "CredentialPath": "Configs/firebase-adminsdk.json" }
+    var firebaseCredPath =
+        builder.Configuration["Firebase:CredentialPath"] // d?ng Firebase:CredentialPath
+        ?? builder.Configuration["Firebase__CredentialPath"] // fallback d?ng bi?n env
+        ?? Path.Combine("Configs", "firebase-adminsdk.json"); // fallback m?c d?nh
+
+    // Chu?n ho· full path tuy?t d?i
+    var fullPath = Path.IsPathRooted(firebaseCredPath)
+        ? firebaseCredPath
+        : Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
+
     if (File.Exists(fullPath))
     {
-        var firebaseApp = FirebaseApp.Create(new AppOptions()
+        // N?u app chua t?o FirebaseApp thÏ m?i t?o
+        if (FirebaseApp.DefaultInstance == null)
         {
-            Credential = GoogleCredential.FromFile(fullPath)
-        });
-        Console.WriteLine("‚úÖ Firebase initialized successfully");
+            FirebaseApp.Create(new AppOptions
+            {
+                Credential = GoogleCredential.FromFile(fullPath)
+            });
+
+            Console.WriteLine("? Firebase initialized successfully with " + fullPath);
+        }
+        else
+        {
+            Console.WriteLine("?? Firebase already initialized, skipping.");
+        }
+
+        // Firebase is ready for push notifications
     }
     else
     {
-        Console.WriteLine($"‚ö†Ô∏è Warning: Firebase credential file not found at: {fullPath}");
+        Console.WriteLine("?? Firebase credential file NOT FOUND at: " + fullPath);
+        // V?n build app bÏnh thu?ng, ch? l‡ khÙng g?i noti du?c
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine($"‚ö†Ô∏è Firebase initialization failed: {ex.Message}");
+    Console.WriteLine("?? Firebase initialization failed: " + ex.Message);
+    // khÙng throw d? API v?n ch?y
 }
 
 // ===== Controllers & Swagger =====
@@ -60,6 +83,10 @@ builder.Services.AddControllers()
     {
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+
+        // ? TH M: C?u hÏnh DateTime format t? d?ng
+        // M?c d?nh .NET 8 d„ serialize DateTime theo ISO 8601
+        // Ch? c?n d?m b?o d˘ng DateTime.UtcNow trong code
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -96,7 +123,7 @@ builder.Services.AddDbContext<DollDbContext>(opt =>
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<JwtTokenService>();
 
-// ‚úÖ Th√™m AutoMapper
+// ? ThÍm AutoMapper
 builder.Services.AddAutoMapper(typeof(Mapping));
 
 // Doll services
@@ -125,7 +152,7 @@ builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IOrderItemService, OrderItemService>();
-// Th√™m v√†o ph·∫ßn DI registration
+// ThÍm v‡o ph?n DI registration
 builder.Services.AddScoped<IOwnedDollRepository, OwnedDollRepository>();
 builder.Services.AddScoped<IOwnedDollService, OwnedDollService>();
 // UserCharacter services
@@ -143,9 +170,12 @@ builder.Services.AddScoped<IDollCharacterLinkService, DollCharacterLinkService>(
 // MoMo Payment Services
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
 
 // Options
 builder.Services.Configure<PaymentRootOptions>(builder.Configuration.GetSection("Payment"));
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Smtp"));
 
 builder.Services.AddHttpClient<IPaymentProvider, MoMoProvider>();
 
@@ -170,7 +200,7 @@ builder.Services.AddAuthorization(o =>
 
 var app = builder.Build();
 
-// ===== Swagger - Lu√¥n b·∫≠t =====
+// ===== Swagger - LuÙn b?t =====
 var enableSwagger = app.Environment.IsDevelopment()
     || string.Equals(Environment.GetEnvironmentVariable("ENABLE_SWAGGER"), "true", StringComparison.OrdinalIgnoreCase);
 
@@ -180,16 +210,16 @@ if (enableSwagger)
     app.UseSwaggerUI();
 }
 
-// Redirect "/" v·ªÅ Swagger ƒë·ªÉ c√≥ c√°i hi·ªÉn th·ªã
+// Redirect "/" v? Swagger d? cÛ c·i hi?n th?
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
-// Ch·ªâ redirect HTTPS trong Development
+// Ch? redirect HTTPS trong Development
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-// 2. S·ª≠ d·ª•ng CORS middleware (ƒë·∫∑t tr∆∞·ªõc UseAuthorization)
+// 2. S? d?ng CORS middleware (d?t tru?c UseAuthorization)
 app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
@@ -198,3 +228,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+

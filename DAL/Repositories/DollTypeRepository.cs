@@ -1,6 +1,8 @@
-﻿using DAL.IRepo;
+using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
 
 namespace DAL.Repositories
 {
@@ -54,6 +56,12 @@ namespace DAL.Repositories
             _db.DollTypes.Remove(entity);
             await _db.SaveChangesAsync();
             return true;
+        }
+
+        public IQueryable<DollType> Query()
+        {
+            return _db.DollTypes
+                .AsNoTracking();
         }
     }
 }

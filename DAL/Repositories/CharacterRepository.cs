@@ -58,5 +58,10 @@ namespace DAL.Repositories
         {
             return await _db.SaveChangesAsync() > 0;
         }
+
+        public IQueryable<Character> Query()
+        {
+            return _db.Characters.AsNoTracking();
+        }
     }
 }

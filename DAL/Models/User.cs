@@ -10,6 +10,8 @@ public partial class User
 
     public string UserName { get; set; } = null!;
 
+    public string? FullName { get; set; }
+
     public string? Phones { get; set; }
 
     public string Email { get; set; } = null!;
@@ -27,4 +29,6 @@ public partial class User
     public bool IsDeleted { get; set; }
 
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+
+    public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 }
