@@ -1,11 +1,13 @@
 using BLL.DTO.DollVariantDTO;
 using BLL.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
     [Route("api/doll-variants")]
+    [Authorize]
     public class DollVariantController : ControllerBase
     {
         private readonly IDollVariantService _service;
@@ -16,6 +18,7 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetDollVariants(
             [FromQuery] int? dollModelId,
             [FromQuery] string? search,
@@ -41,6 +44,7 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);

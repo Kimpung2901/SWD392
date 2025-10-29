@@ -1,5 +1,6 @@
 using BLL.DTO.DollModelDTO;
 using BLL.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -8,6 +9,7 @@ namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
     [Route("api/doll-models")]
+    [Authorize]
     public class DollModelController : ControllerBase
     {
         private readonly IDollModelService _svc;
@@ -20,6 +22,7 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetDollModels(
             [FromQuery] int? dollTypeId,
             [FromQuery] string? search,
@@ -45,6 +48,7 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _svc.GetByIdAsync(id);

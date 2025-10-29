@@ -1,3 +1,4 @@
+using AutoMapper;
 using BLL.DTO.Common;
 using BLL.DTO.DollTypeDTO;
 using BLL.Helper;
@@ -11,7 +12,12 @@ namespace BLL.Services
     public class DollTypeService : IDollTypeService
     {
         private readonly IDollTypeRepository _repo;
-        public DollTypeService(IDollTypeRepository repo) => _repo = repo;
+        private readonly IMapper _mapper;
+        public DollTypeService(IDollTypeRepository repo, IMapper mapper)
+        {
+            _repo = repo;
+            _mapper = mapper;
+        }
 
         public async Task<PagedResult<DollTypeDto>> GetAsync(
             string? search,
@@ -39,7 +45,7 @@ namespace BLL.Services
 
             return new PagedResult<DollTypeDto>
             {
-                Items = items.Select(Map).ToList(),
+                Items = _mapper.Map<List<DollTypeDto>>(items),
                 Total = total,
                 Page = page,
                 PageSize = pageSize
@@ -49,22 +55,14 @@ namespace BLL.Services
         public async Task<DollTypeDto?> GetByIdAsync(int id)
         {
             var entity = await _repo.GetByIdAsync(id);
-            return entity == null ? null : Map(entity);
+            return entity == null ? null : _mapper.Map<DollTypeDto>(entity);
         }
 
         public async Task<DollTypeDto> CreateAsync(CreateDollTypeDto dto)
         {
-            var entity = new DollType
-            {
-                Name = dto.Name,
-                Description = dto.Description,
-                Image = dto.Image,
-                IsActive = true,
-                IsDeleted = false,
-                Create_at = DateTime.UtcNow
-            };
+            var entity = _mapper.Map<DollType>(dto);
             await _repo.AddAsync(entity);
-            return Map(entity);
+            return _mapper.Map<DollTypeDto>(entity);
         }
 
         public async Task<DollTypeDto?> UpdatePartialAsync(int id, UpdateDollTypeDto dto)
@@ -72,38 +70,17 @@ namespace BLL.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) return null;
 
-            if (!string.IsNullOrWhiteSpace(dto.Name))
-                entity.Name = dto.Name.Trim();
-
-            if (!string.IsNullOrWhiteSpace(dto.Description))
-                entity.Description = dto.Description.Trim();
-
-            if (!string.IsNullOrWhiteSpace(dto.Image))
-                entity.Image = dto.Image.Trim();
-
-            if (dto.IsActive.HasValue)
-                entity.IsActive = dto.IsActive.Value;
+            _mapper.Map(dto, entity);
 
             if (entity.Create_at < new DateTime(1753, 1, 1))
                 entity.Create_at = DateTime.UtcNow;
 
             await _repo.UpdateAsync(entity);
-            return Map(entity);
+            return _mapper.Map<DollTypeDto>(entity);
         }
 
         public Task<bool> SoftDeleteAsync(int id) => _repo.SoftDeleteAsync(id);
         public Task<bool> HardDeleteAsync(int id) => _repo.HardDeleteAsync(id);
-
-        private static DollTypeDto Map(DollType e) => new()
-        {
-            DollTypeID = e.DollTypeID,
-            Name = e.Name,
-            Description = e.Description,
-            Image = e.Image,
-            Create_at = e.Create_at,
-            IsActive = e.IsActive,
-            IsDeleted = e.IsDeleted
-        };
 
         private static IQueryable<DollType> ApplySorting(
             IQueryable<DollType> query,

@@ -7,8 +7,13 @@ namespace DAL.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly DollDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserRepository(DollDbContext db) => _db = db;
+    public UserRepository(DollDbContext db, IUnitOfWork unitOfWork)
+    {
+        _db = db;
+        _unitOfWork = unitOfWork;
+    }
 
     public async Task<List<User>> GetAllAsync()
     {
@@ -27,13 +32,13 @@ public class UserRepository : IUserRepository
     public async Task AddAsync(User entity)
     {
         _db.Users.Add(entity);
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(User entity)
     {
         _db.Users.Update(entity);
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task SoftDeleteAsync(int id)
@@ -42,7 +47,8 @@ public class UserRepository : IUserRepository
         if (user != null)
         {
             user.IsDeleted = true;
-            await UpdateAsync(user);
+            _db.Users.Update(user);
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 
@@ -52,7 +58,7 @@ public class UserRepository : IUserRepository
         if (user != null)
         {
             _db.Users.Remove(user);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 

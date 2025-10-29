@@ -7,8 +7,13 @@ namespace DAL.Repositories;
 public class OrderRepository : IOrderRepository
 {
     private readonly DollDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public OrderRepository(DollDbContext db) => _db = db;
+    public OrderRepository(DollDbContext db, IUnitOfWork unitOfWork)
+    {
+        _db = db;
+        _unitOfWork = unitOfWork;
+    }
 
     public async Task<List<Order>> GetAllAsync()
     {
@@ -18,7 +23,6 @@ public class OrderRepository : IOrderRepository
             .ToListAsync();
     }
 
-    // ✅ THÊM: Trả IQueryable
     public IQueryable<Order> GetQueryable()
     {
         return _db.Orders.AsQueryable();
@@ -49,7 +53,7 @@ public class OrderRepository : IOrderRepository
     public async Task AddAsync(Order entity)
     {
         _db.Orders.Add(entity);
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(Order entity)
@@ -60,7 +64,7 @@ public class OrderRepository : IOrderRepository
         }
 
         _db.Entry(entity).State = EntityState.Modified;
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
@@ -69,12 +73,12 @@ public class OrderRepository : IOrderRepository
         if (entity != null)
         {
             _db.Orders.Remove(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
     }
 
     public async Task<bool> SaveChangesAsync()
     {
-        return await _db.SaveChangesAsync() > 0;
+        return await _unitOfWork.SaveChangesAsync() > 0;
     }
 }

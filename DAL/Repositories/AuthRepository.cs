@@ -7,10 +7,12 @@ namespace DAL.Repo
     public class AuthRepository : IAuthRepository
     {
         private readonly DollDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AuthRepository(DollDbContext context)
+        public AuthRepository(DollDbContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         public DbSet<User> Users => _context.Users;
@@ -36,7 +38,7 @@ namespace DAL.Repo
 
         public async Task<bool> SaveChangesAsync()
         {
-            return await _context.SaveChangesAsync() > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

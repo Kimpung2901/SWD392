@@ -7,8 +7,13 @@ namespace DAL.Repositories
     public class OwnedDollRepository : IOwnedDollRepository
     {
         private readonly DollDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public OwnedDollRepository(DollDbContext db) => _db = db;
+        public OwnedDollRepository(DollDbContext db, IUnitOfWork unitOfWork)
+        {
+            _db = db;
+            _unitOfWork = unitOfWork;
+        }
 
         public async Task<List<OwnedDoll>> GetAllAsync()
         {
@@ -51,7 +56,7 @@ namespace DAL.Repositories
         public async Task AddAsync(OwnedDoll entity)
         {
             _db.OwnedDolls.Add(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(OwnedDoll entity)
@@ -62,7 +67,7 @@ namespace DAL.Repositories
             }
 
             _db.Entry(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -71,13 +76,13 @@ namespace DAL.Repositories
             if (entity != null)
             {
                 _db.OwnedDolls.Remove(entity);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
         public async Task<bool> SaveChangesAsync()
         {
-            return await _db.SaveChangesAsync() > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

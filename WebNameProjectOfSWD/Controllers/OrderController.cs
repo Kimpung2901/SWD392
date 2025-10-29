@@ -7,8 +7,8 @@ using System.Security.Claims;
 namespace WebNameProjectOfSWD.Controllers;
 
 [ApiController]
-[Route("api/orders")]
-[Authorize]
+[Route("api/doll-orders")]
+//[Authorize]
 public class OrderController : ControllerBase
 {
     private readonly IOrderService _service;
@@ -35,7 +35,7 @@ public class OrderController : ControllerBase
         return Ok(new
         {
             success = true,
-            message = "Lấy danh sách đơn hàng thành công",
+            message = "Retrieved orders successfully",
             data = result.Items,
             pagination = new
             {
@@ -50,32 +50,31 @@ public class OrderController : ControllerBase
     }
 
 
-    [HttpGet("my-orders")]
-    [Authorize]
-    public async Task<IActionResult> GetMyOrders(
-        [FromQuery] string? search,
-        [FromQuery] string? sortBy,
-        [FromQuery] string? sortDir,
-        [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10)
+    [HttpGet("user/{id:int}")]
+    [Authorize(Roles = "customer")]
+    public async Task<IActionResult> GetOrdersByUser(int id)
     {
-        var userId = GetCurrentUserId();
-        var result = await _service.GetOrdersByUserIdAsync(userId, search, sortBy, sortDir, page, pageSize);
+        var currentUserId = GetCurrentUserId();
+        if (currentUserId == 0)
+            return Unauthorized();
+
+        if (currentUserId != id)
+            return Forbid();
+
+        var result = await _service.GetOrdersByUserIdAsync(
+            id,
+            search: null,
+            sortBy: null,
+            sortDir: null,
+            page: 1,
+            pageSize: int.MaxValue);
 
         return Ok(new
         {
             success = true,
-            message = "Lấy orders của bạn thành công",
-            data = result.Items,
-            pagination = new
-            {
-                result.Page,
-                result.PageSize,
-                result.Total,
-                result.TotalPages,
-                result.HasPreviousPage,
-                result.HasNextPage
-            }
+            userId = id,
+            totalOrders = result.Total,
+            orders = result.Items
         });
     }
 
@@ -85,7 +84,7 @@ public class OrderController : ControllerBase
     {
         var order = await _service.GetByIdAsync(id);
         if (order == null)
-            return NotFound(new { success = false, message = $"Không tìm thấy đơn hàng #{id}" });
+            return NotFound(new { success = false, message = $"Order #{id} not found" });
 
         var userId = GetCurrentUserId();
         var isAdminOrManager = User.IsInRole("admin") || User.IsInRole("manager");
@@ -102,7 +101,7 @@ public class OrderController : ControllerBase
     {
         var order = await _service.GetByIdWithItemsAsync(id);
         if (order == null)
-            return NotFound(new { success = false, message = $"Không tìm thấy đơn hàng #{id}" });
+            return NotFound(new { success = false, message = $"Order #{id} not found" });
 
         var userId = GetCurrentUserId();
         var isAdminOrManager = User.IsInRole("admin") || User.IsInRole("manager");
@@ -131,12 +130,12 @@ public class OrderController : ControllerBase
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = created.OrderID },
-                new { success = true, message = "Tạo đơn hàng thành công", data = created }
+                new { success = true, message = "Order created successfully", data = created }
             );
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Lỗi khi tạo đơn hàng");
+            _logger.LogError(ex, "Error creating order");
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
@@ -153,12 +152,12 @@ public class OrderController : ControllerBase
         {
             var result = await _service.UpdatePartialAsync(id, dto);
             return result == null
-                ? NotFound(new { success = false, message = $"Không tìm thấy đơn hàng #{id}" })
-                : Ok(new { success = true, message = "Cập nhật đơn hàng thành công", data = result });
+                ? NotFound(new { success = false, message = $"Order #{id} not found" })
+                : Ok(new { success = true, message = "Order updated successfully", data = result });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Lỗi khi cập nhật đơn hàng #{Id}", id);
+            _logger.LogError(ex, "Error updating order #{Id}", id);
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
@@ -172,7 +171,7 @@ public class OrderController : ControllerBase
         {
             var order = await _service.GetByIdAsync(id);
             if (order == null)
-                return NotFound(new { success = false, message = $"Không tìm thấy đơn hàng #{id}" });
+                return NotFound(new { success = false, message = $"Order #{id} not found" });
 
             var userId = GetCurrentUserId();
             var isAdminOrManager = User.IsInRole("admin") || User.IsInRole("manager");
@@ -182,12 +181,12 @@ public class OrderController : ControllerBase
 
             var result = await _service.CancelOrderAsync(id);
             return result
-                ? Ok(new { success = true, message = "Đã hủy đơn hàng thành công" })
-                : BadRequest(new { success = false, message = "Không thể hủy đơn hàng" });
+                ? Ok(new { success = true, message = "Order cancelled successfully" })
+                : BadRequest(new { success = false, message = "Unable to cancel order" });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Lỗi khi hủy đơn hàng #{Id}", id);
+            _logger.LogError(ex, "Error cancelling order #{Id}", id);
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
@@ -199,8 +198,8 @@ public class OrderController : ControllerBase
     {
         var result = await _service.DeleteAsync(id);
         return result
-            ? Ok(new { success = true, message = "Đã xóa đơn hàng thành công" })
-            : NotFound(new { success = false, message = $"Không tìm thấy đơn hàng #{id}" });
+            ? Ok(new { success = true, message = "Order deleted successfully" })
+            : NotFound(new { success = false, message = $"Order #{id} not found" });
     }
 
     private int GetCurrentUserId()

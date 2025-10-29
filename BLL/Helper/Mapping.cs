@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
-using BLL.DTO.OwnedDollDTO;
-using BLL.DTO.UserCharacterDTO;
+using BLL.DTO.CharacterDTO;
 using BLL.DTO.CharacterOrderDTO;
 using BLL.DTO.DollCharacterLinkDTO;
+using BLL.DTO.DollModelDTO;
+using BLL.DTO.DollTypeDTO;
+using BLL.DTO.DollVariantDTO;
+using BLL.DTO.OwnedDollDTO;
+using BLL.DTO.UserCharacterDTO;
 using DAL.Models;
 
 namespace BLL.Helper
@@ -66,6 +70,47 @@ namespace BLL.Helper
                 .ForMember(dest => dest.Note, opt => opt.MapFrom(src => src.Note ?? string.Empty));
 
             CreateMap<UpdateDollCharacterLinkDto, DollCharacterLink>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // DollVariant mappings
+            CreateMap<DollVariant, DollVariantDto>()
+                .ForMember(dest => dest.DollModelName,
+                    opt => opt.MapFrom(src => src.DollModel != null ? src.DollModel.Name : string.Empty));
+
+            CreateMap<CreateDollVariantDto, DollVariant>()
+                .ForMember(dest => dest.DollVariantID, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true));
+
+            CreateMap<UpdateDollVariantDto, DollVariant>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // DollModel mappings
+            CreateMap<DollModel, DollModelDto>()
+                .ForMember(dest => dest.DollTypeName,
+                    opt => opt.MapFrom(src => src.DollType != null ? src.DollType.Name : string.Empty));
+
+            CreateMap<CreateDollModelDto, DollModel>()
+                .ForMember(dest => dest.DollModelID, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false));
+
+            CreateMap<UpdateDollModelDto, DollModel>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // DollType mappings
+            CreateMap<DollType, DollTypeDto>();
+            CreateMap<CreateDollTypeDto, DollType>()
+                .ForMember(dest => dest.DollTypeID, opt => opt.Ignore())
+                .ForMember(dest => dest.Create_at, opt => opt.MapFrom(_ => DateTime.UtcNow));
+            CreateMap<UpdateDollTypeDto, DollType>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+            // Character mappings
+            CreateMap<Character, CharacterDto>();
+            CreateMap<CreateCharacterDto, Character>()
+                .ForMember(dest => dest.CharacterId, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
+            CreateMap<UpdateCharacterDto, Character>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         }
     }

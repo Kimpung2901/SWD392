@@ -8,8 +8,13 @@ namespace DAL.Repositories
     public class CharacterPackageRepository : ICharacterPackageRepository
     {
         private readonly DollDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CharacterPackageRepository(DollDbContext db) => _db = db;
+        public CharacterPackageRepository(DollDbContext db, IUnitOfWork unitOfWork)
+        {
+            _db = db;
+            _unitOfWork = unitOfWork;
+        }
 
         public async Task<List<CharacterPackage>> GetAllAsync()
         {
@@ -38,7 +43,7 @@ namespace DAL.Repositories
         public async Task AddAsync(CharacterPackage entity)
         {
             _db.CharacterPackages.Add(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(CharacterPackage entity)
@@ -49,7 +54,7 @@ namespace DAL.Repositories
             }
 
             _db.Entry(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<bool> SoftDeleteAsync(int id)
@@ -59,7 +64,7 @@ namespace DAL.Repositories
             {
                 entity.IsActive = false;
                 entity.Status = CharacterPackageStatus.Archived;
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -71,7 +76,7 @@ namespace DAL.Repositories
             if (entity != null)
             {
                 _db.CharacterPackages.Remove(entity);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -79,7 +84,7 @@ namespace DAL.Repositories
 
         public async Task<bool> SaveChangesAsync()
         {
-            return await _db.SaveChangesAsync() > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

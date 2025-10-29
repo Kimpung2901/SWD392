@@ -8,7 +8,12 @@ namespace DAL.Repositories
     public class DollModelRepository : IDollModelRepository
     {
         private readonly DollDbContext _db;
-        public DollModelRepository(DollDbContext db) => _db = db;
+        private readonly IUnitOfWork _unitOfWork;
+        public DollModelRepository(DollDbContext db, IUnitOfWork unitOfWork)
+        {
+            _db = db;
+            _unitOfWork = unitOfWork;
+        }
 
         public async Task<List<DollModel>> GetAllAsync()
         {
@@ -27,13 +32,13 @@ namespace DAL.Repositories
         public async Task AddAsync(DollModel entity)
         {
             _db.DollModels.Add(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(DollModel entity)
         {
             _db.DollModels.Update(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task SoftDeleteAsync(int id)
@@ -42,7 +47,7 @@ namespace DAL.Repositories
             if (model != null)
             {
                 model.IsDeleted = true;
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
@@ -52,7 +57,7 @@ namespace DAL.Repositories
             if (model != null)
             {
                 _db.DollModels.Remove(model);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 

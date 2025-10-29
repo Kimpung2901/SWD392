@@ -1,6 +1,6 @@
 ﻿using DAL.IRepo;
 using DAL.Models;
-using DAL.Enum;  // ✅ THÊM DÒNG NÀY
+using DAL.Enum; 
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL.Repositories
@@ -8,15 +8,20 @@ namespace DAL.Repositories
     public class UserCharacterRepository : IUserCharacterRepository
     {
         private readonly DollDbContext _db;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UserCharacterRepository(DollDbContext db) => _db = db;
+        public UserCharacterRepository(DollDbContext db, IUnitOfWork unitOfWork)
+        {
+            _db = db;
+            _unitOfWork = unitOfWork;
+        }
 
         public async Task<List<UserCharacter>> GetAllAsync()
         {
             return await _db.UserCharacters
                 .Include(uc => uc.User)
                 .Include(uc => uc.Character)
-                .Include(uc => uc.Package)  // ✅ ĐỔI
+                .Include(uc => uc.Package)  
                 .OrderByDescending(uc => uc.CreatedAt)
                 .AsNoTracking()
                 .ToListAsync();
@@ -27,7 +32,7 @@ namespace DAL.Repositories
             return await _db.UserCharacters
                 .Include(uc => uc.User)
                 .Include(uc => uc.Character)
-                .Include(uc => uc.Package)  // ✅ ĐỔI
+                .Include(uc => uc.Package) 
                 .FirstOrDefaultAsync(uc => uc.UserCharacterID == id);
         }
 
@@ -35,7 +40,7 @@ namespace DAL.Repositories
         {
             return await _db.UserCharacters
                 .Include(uc => uc.Character)
-                .Include(uc => uc.Package)  // ✅ ĐỔI
+                .Include(uc => uc.Package)  
                 .Where(uc => uc.UserID == userId)
                 .OrderByDescending(uc => uc.CreatedAt)
                 .AsNoTracking()
@@ -46,7 +51,7 @@ namespace DAL.Repositories
         {
             return await _db.UserCharacters
                 .Include(uc => uc.User)
-                .Include(uc => uc.Package)  // ✅ ĐỔI
+                .Include(uc => uc.Package) 
                 .Where(uc => uc.CharacterID == characterId)
                 .OrderByDescending(uc => uc.CreatedAt)
                 .AsNoTracking()
@@ -69,7 +74,7 @@ namespace DAL.Repositories
             var now = DateTime.UtcNow;
             return await _db.UserCharacters
                 .Include(uc => uc.Character)
-                .Include(uc => uc.Package)  // ✅ ĐỔI
+                .Include(uc => uc.Package)
                 .Where(uc => uc.UserID == userId 
                     && uc.Status == UserCharacterStatus.Active 
                     && uc.EndAt > now)
@@ -81,7 +86,7 @@ namespace DAL.Repositories
         public async Task AddAsync(UserCharacter entity)
         {
             _db.UserCharacters.Add(entity);
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(UserCharacter entity)
@@ -92,7 +97,7 @@ namespace DAL.Repositories
             }
 
             _db.Entry(entity).State = EntityState.Modified;
-            await _db.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
@@ -101,13 +106,13 @@ namespace DAL.Repositories
             if (entity != null)
             {
                 _db.UserCharacters.Remove(entity);
-                await _db.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
             }
         }
 
         public async Task<bool> SaveChangesAsync()
         {
-            return await _db.SaveChangesAsync() > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

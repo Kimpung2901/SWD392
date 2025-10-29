@@ -1,13 +1,16 @@
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using BLL.DTO.NotificationDto;
 using BLL.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebNameProjectOfSWD.Controllers
 {
     [ApiController]
     [Route("api/notifications")]
+    [Authorize]
     public class NotificationController : ControllerBase
     {
         private readonly INotificationService _notificationService;
@@ -17,7 +20,7 @@ namespace WebNameProjectOfSWD.Controllers
             _notificationService = notificationService;
         }
 
-        [HttpPost("send")]
+        [HttpPost]
         public async Task<IActionResult> SendAsync(
             [FromBody] SendNotificationDto request,
             CancellationToken cancellationToken)
@@ -32,6 +35,21 @@ namespace WebNameProjectOfSWD.Controllers
                 return BadRequest(new { error = "Device token or topic must be provided." });
             }
 
+            var currentUserId = GetCurrentUserId();
+            if (!currentUserId.HasValue)
+            {
+                return Unauthorized();
+            }
+
+            if (request.UserId.HasValue &&
+                request.UserId.Value != currentUserId.Value &&
+                !IsPrivilegedUser())
+            {
+                return Forbid();
+            }
+
+            request.UserId ??= currentUserId.Value;
+
             var result = await _notificationService.SendAsync(request, cancellationToken);
 
             return Ok(new
@@ -43,19 +61,26 @@ namespace WebNameProjectOfSWD.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetUserNotifications(
-            [FromQuery] int userId,
             [FromQuery] bool onlyUnread = false,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20,
+            [FromQuery] int? userId = null,
             CancellationToken cancellationToken = default)
         {
-            if (userId <= 0)
+            var currentUserId = GetCurrentUserId();
+            if (!currentUserId.HasValue)
             {
-                return BadRequest(new { error = "userId must be greater than zero." });
+                return Unauthorized();
+            }
+
+            var targetUserId = ResolveTargetUserId(userId, currentUserId.Value);
+            if (!targetUserId.HasValue)
+            {
+                return Forbid();
             }
 
             var result = await _notificationService.GetUserNotificationsAsync(
-                userId,
+                targetUserId.Value,
                 page,
                 pageSize,
                 onlyUnread,
@@ -79,17 +104,55 @@ namespace WebNameProjectOfSWD.Controllers
         [HttpPatch("{notificationId:int}/read")]
         public async Task<IActionResult> MarkAsRead(
             int notificationId,
-            [FromQuery] int userId,
+            [FromQuery] int? userId,
             CancellationToken cancellationToken)
         {
-            if (userId <= 0)
+            var currentUserId = GetCurrentUserId();
+            if (!currentUserId.HasValue)
             {
-                return BadRequest(new { error = "userId must be greater than zero." });
+                return Unauthorized();
             }
 
-            var updated = await _notificationService.MarkAsReadAsync(notificationId, userId, cancellationToken);
+            var targetUserId = ResolveTargetUserId(userId, currentUserId.Value);
+            if (!targetUserId.HasValue)
+            {
+                return Forbid();
+            }
+
+            var updated = await _notificationService.MarkAsReadAsync(
+                notificationId,
+                targetUserId.Value,
+                cancellationToken);
 
             return updated ? NoContent() : NotFound();
+        }
+
+        private int? GetCurrentUserId()
+        {
+            var idValue = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                           ?? User.FindFirstValue("UserID");
+
+            return int.TryParse(idValue, out var id) ? id : (int?)null;
+        }
+
+        private bool IsPrivilegedUser()
+        {
+            return User.IsInRole("admin") || User.IsInRole("manager");
+        }
+
+        private int? ResolveTargetUserId(int? requestedUserId, int currentUserId)
+        {
+            if (!requestedUserId.HasValue)
+            {
+                return currentUserId;
+            }
+
+            if (requestedUserId.Value == currentUserId || IsPrivilegedUser())
+            {
+                return requestedUserId;
+            }
+
+            return null;
         }
     }
 }
