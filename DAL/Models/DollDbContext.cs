@@ -11,7 +11,6 @@ public partial class DollDbContext : DbContext
     public virtual DbSet<DollVariant> DollVariants { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Order> Orders { get; set; }
-    public virtual DbSet<OrderItem> OrderItems { get; set; }
     public virtual DbSet<OwnedDoll> OwnedDolls { get; set; }
     public virtual DbSet<Character> Characters { get; set; }
     public virtual DbSet<CharacterPackage> CharacterPackages { get; set; }
@@ -107,6 +106,9 @@ public partial class DollDbContext : DbContext
                 .HasColumnType("datetime2")
                 .HasDefaultValueSql("SYSUTCDATETIME()");
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+            entity.Property(e => e.DeviceToken)
+                .HasMaxLength(500)
+                .IsRequired(false);
         });
 
         // Order
@@ -127,38 +129,18 @@ public partial class DollDbContext : DbContext
                 .HasForeignKey(e => e.UserID)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Order_User");
+
+            entity.HasOne(e => e.DollVariant)
+                .WithMany()
+                .HasForeignKey(e => e.DollVariantID)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_Order_DollVariant");
             
             entity.HasOne<Payment>()
                 .WithMany()
                 .HasForeignKey(e => e.PaymentID)
                 .OnDelete(DeleteBehavior.NoAction)
                 .HasConstraintName("FK_Order_Payment");
-        });
-
-        // OrderItem
-        modelBuilder.Entity<OrderItem>(entity =>
-        {
-            entity.HasKey(e => e.OrderItemID);
-            entity.ToTable("OrderItem");
-            entity.Property(e => e.UnitPrice).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.LineTotal).HasColumnType("decimal(18,2)");
-            entity.Property(e => e.Status)
-                .HasConversion<string>()
-                .HasMaxLength(50)
-                .IsRequired();
-
-
-            entity.HasOne(e => e.Order)  
-                .WithMany(o => o.OrderItems)  
-                .HasForeignKey(e => e.OrderID)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_OrderItem_Order");
-            
-            entity.HasOne(e => e.DollVariant) 
-                .WithMany()  
-                .HasForeignKey(e => e.DollVariantID)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("FK_OrderItem_DollVariant");
         });
 
         // OwnedDoll

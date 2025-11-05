@@ -62,6 +62,7 @@ public class CharacterController : ControllerBase
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Create([FromBody] CreateCharacterDto dto)
         {
             if (!ModelState.IsValid)
@@ -83,6 +84,7 @@ public class CharacterController : ControllerBase
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateCharacterDto dto)
         {
             _logger.LogInformation("PATCH Request - ID: {Id}, DTO: {@Dto}", id, dto);
@@ -97,6 +99,7 @@ public class CharacterController : ControllerBase
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);

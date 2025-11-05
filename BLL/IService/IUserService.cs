@@ -26,4 +26,5 @@ public interface IUserService
     Task<bool> ResetPasswordAsync(string email, string newPassword);
     Task<RefreshToken> CreateRefreshTokenAsync(int userId, string? ipAddress);
     Task<UserDto?> UpdateStatusAsync(int id, UserStatus status);
+    Task<bool> UpdateDeviceTokenAsync(int userId, string deviceToken);
 }

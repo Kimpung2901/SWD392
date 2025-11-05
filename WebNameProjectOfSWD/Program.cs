@@ -1,4 +1,4 @@
-ï»¿using BLL.Helper;
+using BLL.Helper;
 using BLL.IService;
 using BLL.Options;
 using BLL.Services;
@@ -14,10 +14,11 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. ThÃªm d?ch v? CORS
+// 1. Thêm d?ch v? CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -35,20 +36,19 @@ builder.Services.AddCors(options =>
         // Firebase is ready for push notifications
 try
 {
-    // Uu tiÃªn l?y du?ng d?n t? appsettings.json: "Firebase": { "CredentialPath": "Configs/firebase-adminsdk.json" }
     var firebaseCredPath =
-        builder.Configuration["Firebase:CredentialPath"] // d?ng Firebase:CredentialPath
-        ?? builder.Configuration["Firebase__CredentialPath"] // fallback d?ng bi?n env
-        ?? Path.Combine("Configs", "firebase-adminsdk.json"); // fallback m?c d?nh
+        builder.Configuration["Firebase:CredentialPath"] 
+        ?? builder.Configuration["Firebase__CredentialPath"]
+        ?? Path.Combine("Configs", "firebase-adminsdk.json");
 
-    // Chu?n hoÃ¡ full path tuy?t d?i
+ 
     var fullPath = Path.IsPathRooted(firebaseCredPath)
         ? firebaseCredPath
         : Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
 
     if (File.Exists(fullPath))
     {
-        // N?u app chua t?o FirebaseApp thÃ¬ m?i t?o
+  
         if (FirebaseApp.DefaultInstance == null)
         {
             FirebaseApp.Create(new AppOptions
@@ -68,13 +68,13 @@ try
     else
     {
         Console.WriteLine("?? Firebase credential file NOT FOUND at: " + fullPath);
-        // V?n build app bÃ¬nh thu?ng, ch? lÃ  khÃ´ng g?i noti du?c
+        // V?n build app bình thu?ng, ch? là không g?i noti du?c
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine("?? Firebase initialization failed: " + ex.Message);
-    // khÃ´ng throw d? API v?n ch?y
+    Console.WriteLine("?? Firebase initialization failed: " + ex);
+    // không throw d? API v?n ch?y
 }
 
 // ===== Controllers & Swagger =====
@@ -84,9 +84,9 @@ builder.Services.AddControllers()
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
 
-        // ? THÃŠM: C?u hÃ¬nh DateTime format t? d?ng
-        // M?c d?nh .NET 8 dÃ£ serialize DateTime theo ISO 8601
-        // Ch? c?n d?m b?o dÃ¹ng DateTime.UtcNow trong code
+        // ? THÊM: C?u hình DateTime format t? d?ng
+        // M?c d?nh .NET 8 dã serialize DateTime theo ISO 8601
+        // Ch? c?n d?m b?o dùng DateTime.UtcNow trong code
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -113,6 +113,21 @@ builder.Services.AddSwaggerGen(c =>
             Array.Empty<string>()
         }
     });
+
+    c.TagActionsBy(api =>
+    {
+        if (api.ActionDescriptor is ControllerActionDescriptor cad)
+        {
+            if (string.Equals(cad.ControllerName, "Order", StringComparison.OrdinalIgnoreCase))
+            {
+                return new[] { "Doll Order" };
+            }
+
+            return new[] { cad.ControllerName };
+        }
+
+        return new[] { api.GroupName ?? api.RelativePath ?? "Endpoints" };
+    });
 });
 
 // ===== DbContext =====
@@ -124,7 +139,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// ? ThÃªm AutoMapper
+// ? Thêm AutoMapper
 builder.Services.AddAutoMapper(typeof(Mapping));
 
 // Doll services
@@ -151,9 +166,7 @@ builder.Services.AddScoped<ICharacterPackageService, CharacterPackageService>();
 // Order services
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
-builder.Services.AddScoped<IOrderItemService, OrderItemService>();
-// ThÃªm vÃ o ph?n DI registration
+// Thêm vào ph?n DI registration
 builder.Services.AddScoped<IOwnedDollRepository, OwnedDollRepository>();
 builder.Services.AddScoped<IOwnedDollService, OwnedDollService>();
 // UserCharacter services
@@ -202,7 +215,7 @@ builder.Services.AddAuthorization(o =>
 
 var app = builder.Build();
 
-// ===== Swagger - LuÃ´n b?t =====
+// ===== Swagger - Luôn b?t =====
 var enableSwagger = app.Environment.IsDevelopment()
     || string.Equals(Environment.GetEnvironmentVariable("ENABLE_SWAGGER"), "true", StringComparison.OrdinalIgnoreCase);
 
@@ -212,7 +225,7 @@ if (enableSwagger)
     app.UseSwaggerUI();
 }
 
-// Redirect "/" v? Swagger d? cÃ³ cÃ¡i hi?n th?
+// Redirect "/" v? Swagger d? có cái hi?n th?
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 // Ch? redirect HTTPS trong Development
@@ -230,6 +243,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
+
+
+
+
 
 
 

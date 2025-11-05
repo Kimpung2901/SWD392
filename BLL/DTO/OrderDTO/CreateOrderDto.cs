@@ -8,10 +8,13 @@ namespace BLL.DTO.OrderDTO
         public int UserID { get; set; }
 
         [Required]
+        public int DollVariantID { get; set; }
+
+        [Required]
         [StringLength(500)]
         public string ShippingAddress { get; set; } = null!;
 
         [Required]
-        public List<CreateOrderItemDto> OrderItems { get; set; } = new();
+        public decimal TotalAmount { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using DAL.IRepo;
+using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,13 +41,6 @@ public class OrderRepository : IOrderRepository
             .OrderByDescending(o => o.OrderDate)
             .AsNoTracking()
             .ToListAsync();
-    }
-
-    public async Task<Order?> GetByIdWithItemsAsync(int id)
-    {
-        return await _db.Orders
-            .Include(o => o.OrderItems)
-            .FirstOrDefaultAsync(o => o.OrderID == id);
     }
 
     public async Task AddAsync(Order entity)

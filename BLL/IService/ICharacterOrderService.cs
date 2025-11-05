@@ -1,4 +1,6 @@
 ﻿using BLL.DTO.CharacterOrderDTO;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace BLL.IService
 {
@@ -6,6 +8,7 @@ namespace BLL.IService
     {
         Task<List<CharacterOrderDto>> GetAllAsync();
         Task<CharacterOrderDto?> GetByIdAsync(int id);
+        Task<List<CharacterOrderDto>> GetByUserIdAsync(int userId);
         Task<List<CharacterOrderDto>> GetByUserCharacterIdAsync(int userCharacterId);
         Task<List<CharacterOrderDto>> GetByCharacterIdAsync(int characterId);
         Task<List<CharacterOrderDto>> GetByPackageIdAsync(int packageId);

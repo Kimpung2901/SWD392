@@ -1,10 +1,11 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using BLL.DTO.NotificationDto;
 using BLL.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace WebNameProjectOfSWD.Controllers
 {
@@ -14,10 +15,14 @@ namespace WebNameProjectOfSWD.Controllers
     public class NotificationController : ControllerBase
     {
         private readonly INotificationService _notificationService;
+        private readonly ILogger<NotificationController> _logger;
 
-        public NotificationController(INotificationService notificationService)
+        public NotificationController(
+            INotificationService notificationService,
+            ILogger<NotificationController> logger)
         {
             _notificationService = notificationService;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -50,13 +55,54 @@ namespace WebNameProjectOfSWD.Controllers
 
             request.UserId ??= currentUserId.Value;
 
-            var result = await _notificationService.SendAsync(request, cancellationToken);
-
-            return Ok(new
+            try
             {
-                messageId = result.MessageId,
-                notification = result.Notification
-            });
+                _logger.LogInformation("📤 Sending notification to user {UserId}", request.UserId);
+                
+                var result = await _notificationService.SendAsync(request, cancellationToken);
+
+                // ✅ Kiểm tra messageId
+                if (string.IsNullOrWhiteSpace(result.MessageId))
+                {
+                    _logger.LogWarning("⚠️ Notification saved to DB but FCM messageId is null");
+                    return Ok(new
+                    {
+                        success = false,
+                        messageId = result.MessageId,
+                        notification = result.Notification,
+                        warning = "Notification saved to database but push notification failed to send"
+                    });
+                }
+
+                _logger.LogInformation("✅ Notification sent successfully with messageId: {MessageId}", result.MessageId);
+
+                return Ok(new
+                {
+                    success = true,
+                    messageId = result.MessageId,
+                    notification = result.Notification
+                });
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogError(ex, "❌ Failed to send notification");
+                return StatusCode(500, new 
+                { 
+                    success = false,
+                    error = "Failed to send push notification",
+                    details = ex.Message 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "❌ Unexpected error sending notification");
+                return StatusCode(500, new 
+                { 
+                    success = false,
+                    error = "An unexpected error occurred",
+                    details = ex.Message 
+                });
+            }
         }
 
         [HttpGet]

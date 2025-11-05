@@ -1,4 +1,5 @@
 ﻿using BLL.DTO.CharacterOrderDTO;
+using BLL.Helper;
 using BLL.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,27 +21,83 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> GetAll(
+            [FromQuery] string? search,
+            [FromQuery] string? sortBy,
+            [FromQuery] string? sortDir,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var result = await _service.GetAllAsync();
-            return Ok(new { message = "Lấy danh sách character order thành công", data = result });
+            var data = await _service.GetAllAsync();
+            var query = data.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim().ToLowerInvariant();
+                query = query.Where(o =>
+                    o.CharacterOrderID.ToString().Contains(term) ||
+                    (o.PackageName ?? string.Empty).ToLowerInvariant().Contains(term) ||
+                    (o.CharacterName ?? string.Empty).ToLowerInvariant().Contains(term) ||
+                    o.StatusDisplay.ToLowerInvariant().Contains(term));
+            }
+
+            var total = query.Count();
+            query = string.IsNullOrWhiteSpace(sortBy)
+                ? query.OrderByDescending(o => o.CreatedAt)
+                : query.ApplySort(sortBy, sortDir);
+            query = query.ApplyPagination(page, pageSize);
+
+            var items = query.ToList();
+
+            return Ok(new
+            {
+                message = "L?y danh sch character order thnh cng",
+                items,
+                pagination = BuildPagination(total, page, pageSize)
+            });
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             return result == null
-                ? NotFound(new { message = $"Không tìm thấy character order #{id}" })
-                : Ok(new { message = "Lấy thông tin character order thành công", data = result });
+                ? NotFound(new { message = $"Khng tm th?y character order #{id}" })
+                : Ok(new { message = "L?y thng tin character order thnh cng", data = result });
         }
 
-        [HttpGet("user-characters/{userCharacterId:int}")]
-        public async Task<IActionResult> GetByUserCharacterId(int userCharacterId)
+        [HttpGet("user/{userId:int}")]
+        [Authorize]
+        public async Task<IActionResult> GetByUserId(int userId)
         {
-            var result = await _service.GetByUserCharacterIdAsync(userCharacterId);
-            return Ok(new { message = $"Lấy danh sách order của user character #{userCharacterId} thành công", data = result });
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                  ?? User.FindFirst("sub")?.Value
+                                  ?? User.FindFirst("userId")?.Value;
+            var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(currentUserIdClaim) || !int.TryParse(currentUserIdClaim, out int currentUserId))
+            {
+                return Unauthorized(new { message = "Cannot determine user from token." });
+            }
+
+            if (currentUserId != userId && currentUserRole != "Admin")
+            {
+                return Forbid();
+            }
+
+            var result = await _service.GetByUserIdAsync(userId);
+            return Ok(new { message = $"Successfully retrieved orders for user #{userId}", data = result });
         }
+
+        //[HttpGet("user-characters/{userCharacterId:int}")]
+        //[Authorize(Roles = "customer")]
+        //public async Task<IActionResult> GetByUserCharacterId(int userCharacterId)
+        //{
+        //    var result = await _service.GetByUserCharacterIdAsync(userCharacterId);
+        //    return Ok(new { message = $"Lấy danh sách order của user character #{userCharacterId} thành công", data = result });
+        //}
 
         [HttpGet("characters/{characterId:int}")]
         public async Task<IActionResult> GetByCharacterId(int characterId)
@@ -157,8 +214,26 @@ namespace WebNameProjectOfSWD.Controllers
         {
             var result = await _service.DeleteAsync(id);
             return result
-                ? Ok(new { message = "Xóa character order thành công" })
-                : NotFound(new { message = $"Không tìm thấy character order #{id}" });
+                ? Ok(new { message = "Xa character order thnh cng" })
+                : NotFound(new { message = $"Khng tm th?y character order #{id}" });
+        }
+
+        private static object BuildPagination(int total, int page, int pageSize)
+        {
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 10;
+            if (pageSize > 100) pageSize = 100;
+            var totalPages = (int)Math.Ceiling(total / (double)pageSize);
+
+            return new
+            {
+                page,
+                pageSize,
+                total,
+                totalPages,
+                hasPreviousPage = page > 1,
+                hasNextPage = page < totalPages
+            };
         }
     }
 }

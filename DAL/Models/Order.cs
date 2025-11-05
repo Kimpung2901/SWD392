@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using DAL.Enum;
 
 namespace DAL.Models;
@@ -12,15 +11,15 @@ public partial class Order
 
     public int? PaymentID { get; set; }
 
+    public int DollVariantID { get; set; }
+
     public DateTime OrderDate { get; set; }
 
     public decimal TotalAmount { get; set; }
 
     public string ShippingAddress { get; set; } = null!;
 
-    // ✅ Chuyển sang enum
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
-    
-    // Navigation property
-    public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+
+    public virtual DollVariant? DollVariant { get; set; }
 }
