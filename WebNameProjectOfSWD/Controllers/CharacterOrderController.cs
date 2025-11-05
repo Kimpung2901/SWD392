@@ -21,6 +21,7 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> GetAll(
             [FromQuery] string? search,
             [FromQuery] string? sortBy,
@@ -51,27 +52,52 @@ namespace WebNameProjectOfSWD.Controllers
 
             return Ok(new
             {
-                message = "L?y danh s�ch character order th�nh c�ng",
+                message = "L?y danh sch character order thnh cng",
                 items,
                 pagination = BuildPagination(total, page, pageSize)
             });
         }
 
         [HttpGet("{id:int}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _service.GetByIdAsync(id);
             return result == null
-                ? NotFound(new { message = $"Kh�ng t�m th?y character order #{id}" })
-                : Ok(new { message = "L?y th�ng tin character order th�nh c�ng", data = result });
+                ? NotFound(new { message = $"Khng tm th?y character order #{id}" })
+                : Ok(new { message = "L?y thng tin character order thnh cng", data = result });
         }
 
-        [HttpGet("user-characters/{userCharacterId:int}")]
-        public async Task<IActionResult> GetByUserCharacterId(int userCharacterId)
+        [HttpGet("user/{userId:int}")]
+        [Authorize]
+        public async Task<IActionResult> GetByUserId(int userId)
         {
-            var result = await _service.GetByUserCharacterIdAsync(userCharacterId);
-            return Ok(new { message = $"L?y danh s�ch order c?a user character #{userCharacterId} th�nh c�ng", data = result });
+            var currentUserIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                                  ?? User.FindFirst("sub")?.Value
+                                  ?? User.FindFirst("userId")?.Value;
+            var currentUserRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (string.IsNullOrEmpty(currentUserIdClaim) || !int.TryParse(currentUserIdClaim, out int currentUserId))
+            {
+                return Unauthorized(new { message = "Cannot determine user from token." });
+            }
+
+            if (currentUserId != userId && currentUserRole != "Admin")
+            {
+                return Forbid();
+            }
+
+            var result = await _service.GetByUserIdAsync(userId);
+            return Ok(new { message = $"Successfully retrieved orders for user #{userId}", data = result });
         }
+
+        //[HttpGet("user-characters/{userCharacterId:int}")]
+        //[Authorize(Roles = "customer")]
+        //public async Task<IActionResult> GetByUserCharacterId(int userCharacterId)
+        //{
+        //    var result = await _service.GetByUserCharacterIdAsync(userCharacterId);
+        //    return Ok(new { message = $"Lấy danh sách order của user character #{userCharacterId} thành công", data = result });
+        //}
 
         [HttpGet("characters/{characterId:int}")]
         public async Task<IActionResult> GetByCharacterId(int characterId)
@@ -187,8 +213,8 @@ namespace WebNameProjectOfSWD.Controllers
         {
             var result = await _service.DeleteAsync(id);
             return result
-                ? Ok(new { message = "X�a character order th�nh c�ng" })
-                : NotFound(new { message = $"Kh�ng t�m th?y character order #{id}" });
+                ? Ok(new { message = "Xa character order thnh cng" })
+                : NotFound(new { message = $"Khng tm th?y character order #{id}" });
         }
 
         private static object BuildPagination(int total, int page, int pageSize)

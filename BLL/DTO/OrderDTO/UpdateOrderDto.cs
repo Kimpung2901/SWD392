@@ -6,5 +6,6 @@ namespace BLL.DTO.OrderDTO
     {
         public string? ShippingAddress { get; set; }
         public OrderStatus? Status { get; set; }
+        public int? DollVariantID { get; set; }
     }
 }

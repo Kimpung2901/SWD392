@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -18,13 +18,16 @@ namespace BLL.Services
     public class NotificationService : INotificationService
     {
         private readonly INotificationRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly ILogger<NotificationService> _logger;
 
         public NotificationService(
             INotificationRepository repository,
+            IUserRepository userRepository,
             ILogger<NotificationService> logger)
         {
             _repository = repository;
+            _userRepository = userRepository; 
             _logger = logger;
         }
 
@@ -32,13 +35,28 @@ namespace BLL.Services
             SendNotificationDto dto,
             CancellationToken cancellationToken = default)
         {
+           
+            string? deviceToken = dto.DeviceToken;
+
+            if (string.IsNullOrWhiteSpace(deviceToken) && dto.UserId.HasValue)
+            {
+                var user = await _userRepository.GetByIdAsync(dto.UserId.Value);
+                deviceToken = user?.DeviceToken;
+
+                if (!string.IsNullOrWhiteSpace(deviceToken))
+                {
+                    _logger.LogInformation("✅ Using device token from User table for UserID {UserId}", dto.UserId);
+                }
+            }
+
+         
             var notification = new NotificationEntity
             {
                 UserID = dto.UserId,
                 Title = dto.Title,
                 Body = dto.Body,
                 Topic = dto.Topic,
-                DeviceToken = dto.DeviceToken,
+                DeviceToken = deviceToken, 
                 Data = dto.Data != null && dto.Data.Count > 0
                     ? JsonSerializer.Serialize(dto.Data)
                     : null,
@@ -47,10 +65,12 @@ namespace BLL.Services
             };
 
             notification = await _repository.AddAsync(notification, cancellationToken);
+            _logger.LogInformation("✅ Notification {NotificationId} saved to database", notification.NotificationID);
 
             string? messageId = null;
 
-            if (!string.IsNullOrWhiteSpace(dto.DeviceToken) || !string.IsNullOrWhiteSpace(dto.Topic))
+
+            if (!string.IsNullOrWhiteSpace(deviceToken) || !string.IsNullOrWhiteSpace(dto.Topic))
             {
                 var message = new Message
                 {
@@ -62,38 +82,53 @@ namespace BLL.Services
                     Data = dto.Data ?? new Dictionary<string, string>()
                 };
 
-                if (!string.IsNullOrWhiteSpace(dto.DeviceToken))
+                if (!string.IsNullOrWhiteSpace(deviceToken))
                 {
-                    message.Token = dto.DeviceToken;
+                    message.Token = deviceToken;
+                    _logger.LogInformation("📱 Sending to device token: {Token}",
+                        deviceToken.Substring(0, Math.Min(20, deviceToken.Length)) + "...");
                 }
                 else if (!string.IsNullOrWhiteSpace(dto.Topic))
                 {
                     message.Topic = dto.Topic;
+                    _logger.LogInformation("📢 Sending to topic: {Topic}", dto.Topic);
                 }
 
                 try
                 {
+                    if (FirebaseAdmin.FirebaseApp.DefaultInstance == null)
+                    {
+                        _logger.LogError("❌ Firebase is not initialized!");
+                        throw new InvalidOperationException(
+                            "Firebase messaging service is not available. Please check firebase-adminsdk.json configuration.");
+                    }
+
                     var messaging = FirebaseMessaging.DefaultInstance;
+                    _logger.LogInformation("🚀 Calling Firebase SendAsync...");
                     messageId = await messaging.SendAsync(message, cancellationToken);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    _logger.LogWarning(ex,
-                        "Firebase messaging is not available. Notification {NotificationId} stored without push delivery.",
-                        notification.NotificationID);
+                    _logger.LogInformation("✅ FCM message sent successfully! MessageId: {MessageId}", messageId);
                 }
                 catch (FirebaseMessagingException ex)
                 {
                     _logger.LogError(ex,
-                        "Firebase messaging failed for notification {NotificationId}.",
-                        notification.NotificationID);
+                        "❌ Firebase messaging failed for notification {NotificationId}. " +
+                        "ErrorCode: {ErrorCode}, MessagingErrorCode: {MessagingErrorCode}",
+                        notification.NotificationID,
+                        ex.ErrorCode,
+                        ex.MessagingErrorCode);
+
+                    throw new InvalidOperationException(
+                        $"Failed to send FCM notification: {ex.MessagingErrorCode} - {ex.Message}", ex);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex,
-                        "Unexpected error when sending notification {NotificationId}.",
-                        notification.NotificationID);
+                    _logger.LogError(ex, "❌ Unexpected error when sending notification {NotificationId}.", notification.NotificationID);
+                    throw new InvalidOperationException($"Unexpected error sending notification: {ex.Message}", ex);
                 }
+            }
+            else
+            {
+                _logger.LogWarning("⚠️ No device token or topic provided. Notification saved to DB only.");
             }
 
             return new NotificationSendResultDto

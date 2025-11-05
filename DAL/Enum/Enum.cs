@@ -1,83 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace DAL.Enum;
 
-namespace DAL.Enum
+public enum CharacterOrderStatus
 {
-    public enum CharacterOrderStatus
-        {
-            Pending = 0,      // Đang chờ xử lý
-            Active = 1,       // Đang hoạt động
-            Completed = 2,    // Đã hoàn thành
-            Cancelled = 3,    // Đã hủy
-        }
-    
-    public enum UserCharacterStatus
-    {
-        Inactive = 0,     // Không hoạt động
-        Active = 1,       // Đang hoạt động
-    }
-
-
-    public enum CharacterPackageStatus
-    {
-        Inactive = 0,     // Không hoạt động
-        Active = 1,       // Đang hoạt động
-        Archived = 2      // Đã lưu trữ
-    }
-
-
-
-
-    public enum PaymentStatus
-    {
-        Pending = 0,      // Đang chờ thanh toán
-        Completed = 1,    // Đã thanh toán thành công
-        Failed = 2,       // Thanh toán thất bại
-        Cancelled = 3,    // Đã hủy
-        Refunded = 4      // Đã hoàn tiền
-    }
-
-
-    public enum OrderStatus
-    {
-        Pending = 0,      // Đang chờ xử lý
-        Processing = 1,   // Đang xử lý
-        Shipped = 2,      // Đã giao cho vận chuyển
-        Completed = 3,    // Đã giao hàng thành công
-        Cancelled = 4,    // Đã hủy
-        Returned = 5      // Đã trả hàng
-    }
-
-    public enum OrderItemStatus
-    {
-        Pending = 0,      // Đang chờ xử lý
-        Processing = 1,   // Đang xử lý
-        Completed = 2,    // Đã hoàn thành
-        Cancelled = 3     // Đã hủy
-    }
-
-
-    public enum OwnedDollStatus
-    {
-        Inactive = 0,     // Không hoạt động
-        Active = 1,       // Đang hoạt động
-    }
-
-
-    public enum DollCharacterLinkStatus
-    {
-        Unbound = 0,      // Đã ngắt kết nối
-        Bound = 1         // ✅ Thêm alias cho Active (nếu cần tương thích với data cũ)
-    }
-
-
-    public enum UserStatus
-    {
-        Inactive = 0,     // Không hoạt động
-        Active = 1,       // Đang hoạt động
-    }
+    Pending = 0,
+    Active = 1,
+    Completed = 2,
+    Cancelled = 3,
 }
 
+public enum UserCharacterStatus
+{
+    Inactive = 0,
+    Active = 1,
+}
+
+public enum CharacterPackageStatus
+{
+    Inactive = 0,
+    Active = 1,
+    Archived = 2
+}
+
+public enum PaymentStatus
+{
+    Pending = 0,
+    Completed = 1,
+    Failed = 2,
+    Cancelled = 3,
+    Refunded = 4
+}
+
+public enum OrderStatus
+{
+    Pending = 0,
+    Processing = 1,
+    Shipped = 2,
+    Completed = 3,
+    Cancelled = 4,
+    Returned = 5
+}
+
+public enum OwnedDollStatus
+{
+    Inactive = 0,
+    Active = 1,
+}
+
+public enum DollCharacterLinkStatus
+{
+    Unbound = 0,
+    Bound = 1
+}
+
+public enum UserStatus
+{
+    Inactive = 0,
+    Active = 1,
+}

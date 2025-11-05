@@ -6,5 +6,6 @@ namespace BLL.DTO
     {
         [Required]
         public string IdToken { get; set; } = null!;
+        public string? DeviceToken { get; set; } 
     }
 }

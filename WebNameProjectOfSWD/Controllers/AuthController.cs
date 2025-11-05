@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using BLL.DTO;
-using BLL.DTO.OrderDTO;  
 using BLL.IService;
 using BLL.Services.Jwt;
 using DAL.Enum;
@@ -40,6 +39,7 @@ public class AuthController : ControllerBase
     {
         [Required] public string Username { get; set; } = null!;
         [Required] public string Password { get; set; } = null!;
+        public string? DeviceToken { get; set; } 
     }
 
     [HttpPost("login")]
@@ -53,10 +53,16 @@ public class AuthController : ControllerBase
         if (user == null)
             return Unauthorized(new { message = "Invalid username or password" });
 
+  
+        if (!string.IsNullOrWhiteSpace(req.DeviceToken))
+        {
+            await _userService.UpdateDeviceTokenAsync(user.UserID, req.DeviceToken);
+        }
+
         var minutes = int.TryParse(_cfg["Jwt:AccessTokenMinutes"], out var m) ? m : 60;
         var accessToken = _jwt.CreateAccessToken(user, TimeSpan.FromMinutes(minutes));
 
-        // ? T?o refresh token qua service
+        // Tạo refresh token qua service
         var refreshToken = await _userService.CreateRefreshTokenAsync(
             user.UserID,
             HttpContext.Connection.RemoteIpAddress?.ToString()
@@ -109,7 +115,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("change-password")]
-    [Authorize]
+    [Authorize(Roles = "customer")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest req)
     {
         var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -122,7 +128,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("forgot-password-otp")]
-    [AllowAnonymous]
+    [Authorize(Roles = "customer")]
     public async Task<IActionResult> ForgotPasswordOtp([FromBody] ForgotPasswordOtpRequest req)
     {
 
@@ -135,7 +141,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("reset-password-otp")]
-    [AllowAnonymous]
+    [Authorize(Roles = "customer")]
     public async Task<IActionResult> ResetPasswordOtp([FromBody] ResetPasswordOtpRequest req)
     {
         // validate OTP
@@ -156,13 +162,13 @@ public class AuthController : ControllerBase
     {
         try
         {
-            // Ki?m tra Firebase c� du?c kh?i t?o kh�ng
+            // Kiểm tra Firebase có được khởi tạo không
             if (FirebaseApp.DefaultInstance == null)
             {
                 return StatusCode(503, new { message = "Google Login is not configured. Please contact administrator." });
             }
 
-            // X�c minh token t? Firebase
+            // Xác minh token từ Firebase
             FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(req.IdToken);
             string uid = decodedToken.Uid;
             string email = decodedToken.Claims.TryGetValue("email", out var emailObj) ? emailObj?.ToString() : null;
@@ -176,10 +182,10 @@ public class AuthController : ControllerBase
 
             if (user == null)
             {
-                // T?o user m?i qua RegisterAsync
+                // Tạo user mới qua RegisterAsync
                 user = await _auth.RegisterAsync(
                     username: name ?? email.Split('@')[0],
-                    rawPassword: Guid.NewGuid().ToString(), // Password ng?u nhi�n cho Google login
+                    rawPassword: Guid.NewGuid().ToString(), // Password ngẫu nhiên cho Google login
                     role: "customer",
                     email: email,
                     phone: null,
@@ -190,6 +196,12 @@ public class AuthController : ControllerBase
             else if (user.IsDeleted || !string.Equals(user.Status.ToString(), "active", StringComparison.OrdinalIgnoreCase))
             {
                 return BadRequest(new { message = "Account is inactive or deleted" });
+            }
+
+
+            if (!string.IsNullOrWhiteSpace(req.DeviceToken))
+            {
+                await _userService.UpdateDeviceTokenAsync(user.UserID, req.DeviceToken);
             }
 
             var minutes = int.TryParse(_cfg["Jwt:AccessTokenMinutes"], out var m) ? m : 60;
@@ -232,6 +244,31 @@ public class AuthController : ControllerBase
         {
             return StatusCode(500, new { message = "Server error", error = ex.Message });
         }
+    }
+
+    public class UpdateDeviceTokenRequest
+    {
+        [Required]
+        [MaxLength(500)]
+        public string DeviceToken { get; set; } = null!;
+    }
+
+    [HttpPut("device-token")]
+    [Authorize] 
+    public async Task<IActionResult> UpdateDeviceToken([FromBody] UpdateDeviceTokenRequest req)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var idClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(idClaim, out var userId))
+            return Unauthorized();
+
+        var success = await _userService.UpdateDeviceTokenAsync(userId, req.DeviceToken);
+        
+        return success 
+            ? Ok(new { message = "Device token updated successfully" })
+            : NotFound(new { message = "User not found" });
     }
 }
 

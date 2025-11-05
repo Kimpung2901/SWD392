@@ -168,6 +168,15 @@ public class UserService : IUserService
 
         return refresh;
     }
+    public async Task<bool> UpdateDeviceTokenAsync(int userId, string deviceToken)
+    {
+        var user = await _repo.GetByIdAsync(userId);
+        if (user == null) return false;
+
+        user.DeviceToken = deviceToken?.Trim();
+        await _repo.UpdateAsync(user);
+        return true;
+    }
 
     // ✅ PRIVATE HELPER METHODS
 

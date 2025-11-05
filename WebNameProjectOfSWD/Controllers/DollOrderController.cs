@@ -9,12 +9,21 @@ namespace WebNameProjectOfSWD.Controllers;
 [ApiController]
 [Route("api/doll-orders")]
 //[Authorize]
+<<<<<<<< HEAD:WebNameProjectOfSWD/Controllers/DollOrdersController .cs
 public class DollOrdersController : ControllerBase
 {
     private readonly IOrderService _service;
     private readonly ILogger<DollOrdersController> _logger;
 
     public DollOrdersController(IOrderService service, ILogger<DollOrdersController> logger)
+========
+public class DollOrderController : ControllerBase
+{
+    private readonly IOrderService _service;
+    private readonly ILogger<DollOrderController> _logger;
+
+    public DollOrderController(IOrderService service, ILogger<DollOrderController> logger)
+>>>>>>>> kimpung:WebNameProjectOfSWD/Controllers/DollOrderController.cs
     {
         _service = service;
         _logger = logger;
@@ -83,23 +92,6 @@ public class DollOrdersController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var order = await _service.GetByIdAsync(id);
-        if (order == null)
-            return NotFound(new { success = false, message = $"Order #{id} not found" });
-
-        var userId = GetCurrentUserId();
-        var isAdminOrManager = User.IsInRole("admin") || User.IsInRole("manager");
-
-        if (!isAdminOrManager && order.UserID != userId)
-            return Forbid();
-
-        return Ok(new { success = true, data = order });
-    }
-
-
-    [HttpGet("{id}/details")]
-    public async Task<IActionResult> GetByIdWithItems(int id)
-    {
-        var order = await _service.GetByIdWithItemsAsync(id);
         if (order == null)
             return NotFound(new { success = false, message = $"Order #{id} not found" });
 
