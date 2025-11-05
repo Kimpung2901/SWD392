@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj": {}
+    "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj": {}
   },
   "projects": {
-    "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj": {
+    "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj",
+        "projectUniqueName": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj",
         "projectName": "DAL",
-        "projectPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\DAL.csproj",
+        "projectPath": "D:\\Documents\\SWD392\\DOLLAI\\DAL\\DAL.csproj",
         "packagesPath": "C:\\Users\\My ASUS\\.nuget\\packages\\",
         "outputPath": "D:\\Documents\\SWD392\\DollAi\\DAL\\obj\\",
         "projectStyle": "PackageReference",
