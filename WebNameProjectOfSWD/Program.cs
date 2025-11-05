@@ -1,4 +1,4 @@
-using BLL.Helper;
+﻿using BLL.Helper;
 using BLL.IService;
 using BLL.Options;
 using BLL.Services;
@@ -18,7 +18,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Th�m d?ch v? CORS
+// 1. Thêm d?ch v? CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp",
@@ -33,48 +33,56 @@ builder.Services.AddCors(options =>
         });
 });
 
-        // Firebase is ready for push notifications
+// Firebase is ready for push notifications
 try
 {
-    var firebaseCredPath =
-        builder.Configuration["Firebase:CredentialPath"] 
-        ?? builder.Configuration["Firebase__CredentialPath"]
-        ?? Path.Combine("Configs", "firebase-adminsdk.json");
+    GoogleCredential? credential = null;
 
- 
-    var fullPath = Path.IsPathRooted(firebaseCredPath)
-        ? firebaseCredPath
-        : Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
+    // Ưu tiên: đọc từ biến môi trường / App Settings (dùng cho Azure)
+    var firebaseJson = builder.Configuration["FIREBASE_CREDENTIALS"];
 
-    if (File.Exists(fullPath))
+    if (!string.IsNullOrEmpty(firebaseJson))
     {
-  
-        if (FirebaseApp.DefaultInstance == null)
-        {
-            FirebaseApp.Create(new AppOptions
-            {
-                Credential = GoogleCredential.FromFile(fullPath)
-            });
-
-            Console.WriteLine("? Firebase initialized successfully with " + fullPath);
-        }
-        else
-        {
-            Console.WriteLine("?? Firebase already initialized, skipping.");
-        }
-
-        // Firebase is ready for push notifications
+        credential = GoogleCredential.FromJson(firebaseJson);
+        Console.WriteLine("✅ Firebase: using credentials from FIREBASE_CREDENTIALS.");
     }
     else
     {
-        Console.WriteLine("?? Firebase credential file NOT FOUND at: " + fullPath);
-        // V?n build app b�nh thu?ng, ch? l� kh�ng g?i noti du?c
+        // Fallback: đọc từ file local (dùng khi dev trên máy)
+        var firebaseCredPath =
+            builder.Configuration["Firebase:CredentialPath"]
+            ?? builder.Configuration["Firebase__CredentialPath"]
+            ?? Path.Combine("Configs", "firebase-adminsdk.json");
+
+        var fullPath = Path.IsPathRooted(firebaseCredPath)
+            ? firebaseCredPath
+            : Path.Combine(builder.Environment.ContentRootPath, firebaseCredPath);
+
+        if (File.Exists(fullPath))
+        {
+            credential = GoogleCredential.FromFile(fullPath);
+            Console.WriteLine("✅ Firebase: using local file " + fullPath);
+        }
+        else
+        {
+            Console.WriteLine("⚠️ Firebase credential not found. File missing at: " + fullPath);
+        }
+    }
+
+    if (credential != null && FirebaseApp.DefaultInstance == null)
+    {
+        FirebaseApp.Create(new AppOptions
+        {
+            Credential = credential
+        });
+
+        Console.WriteLine("🚀 Firebase initialized successfully.");
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine("?? Firebase initialization failed: " + ex);
-    // kh�ng throw d? API v?n ch?y
+    Console.WriteLine("❌ Firebase initialization failed: " + ex);
+    // Không throw để API vẫn chạy bình thường
 }
 
 // ===== Controllers & Swagger =====
@@ -84,9 +92,9 @@ builder.Services.AddControllers()
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
 
-        // ? TH�M: C?u h�nh DateTime format t? d?ng
-        // M?c d?nh .NET 8 d� serialize DateTime theo ISO 8601
-        // Ch? c?n d?m b?o d�ng DateTime.UtcNow trong code
+        // ? THÊM: C?u hình DateTime format t? d?ng
+        // M?c d?nh .NET 8 dã serialize DateTime theo ISO 8601
+        // Ch? c?n d?m b?o dùng DateTime.UtcNow trong code
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -139,7 +147,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// ? Th�m AutoMapper
+// ? Thêm AutoMapper
 builder.Services.AddAutoMapper(typeof(Mapping));
 
 // Doll services
@@ -166,7 +174,7 @@ builder.Services.AddScoped<ICharacterPackageService, CharacterPackageService>();
 // Order services
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-// Th�m v�o ph?n DI registration
+// Thêm vào ph?n DI registration
 builder.Services.AddScoped<IOwnedDollRepository, OwnedDollRepository>();
 builder.Services.AddScoped<IOwnedDollService, OwnedDollService>();
 // UserCharacter services
@@ -215,7 +223,7 @@ builder.Services.AddAuthorization(o =>
 
 var app = builder.Build();
 
-// ===== Swagger - Lu�n b?t =====
+// ===== Swagger - Luôn b?t =====
 var enableSwagger = app.Environment.IsDevelopment()
     || string.Equals(Environment.GetEnvironmentVariable("ENABLE_SWAGGER"), "true", StringComparison.OrdinalIgnoreCase);
 
@@ -225,7 +233,7 @@ if (enableSwagger)
     app.UseSwaggerUI();
 }
 
-// Redirect "/" v? Swagger d? c� c�i hi?n th?
+// Redirect "/" v? Swagger d? có cái hi?n th?
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 // Ch? redirect HTTPS trong Development

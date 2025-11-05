@@ -37,3 +37,5 @@ BLL/obj/Debug/net8.0/BLL.AssemblyInfo.cs
 BLL/obj/Debug/net8.0/BLL.GeneratedMSBuildEditorConfig.editorconfig
 DAL/obj/Debug/net8.0/DAL.AssemblyInfo.cs
 DAL/obj/Debug/net8.0/DAL.AssemblyInfo.cs
+WebNameProjectOfSWD/firebase-adminsdk.json
+WebNameProjectOfSWD/publish/firebase-adminsdk.json
