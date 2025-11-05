@@ -8,22 +8,12 @@ namespace WebNameProjectOfSWD.Controllers;
 
 [ApiController]
 [Route("api/doll-orders")]
-//[Authorize]
-<<<<<<<< HEAD:WebNameProjectOfSWD/Controllers/DollOrdersController .cs
-public class DollOrdersController : ControllerBase
-{
-    private readonly IOrderService _service;
-    private readonly ILogger<DollOrdersController> _logger;
-
-    public DollOrdersController(IOrderService service, ILogger<DollOrdersController> logger)
-========
 public class DollOrderController : ControllerBase
 {
     private readonly IOrderService _service;
     private readonly ILogger<DollOrderController> _logger;
 
     public DollOrderController(IOrderService service, ILogger<DollOrderController> logger)
->>>>>>>> kimpung:WebNameProjectOfSWD/Controllers/DollOrderController.cs
     {
         _service = service;
         _logger = logger;
