@@ -1,4 +1,4 @@
-﻿using BLL.DTO;
+using BLL.DTO;
 using BLL.IService;
 using DAL.IRepo;
 using Microsoft.AspNetCore.Authorization;
@@ -19,18 +19,21 @@ public class PaymentController : ControllerBase
         _repo = repo;
     }
 
-    // FE gọi -> nhận payUrl (MoMo) -> FE redirect => người dùng thấy QR trên MoMo
+    // FE calls -> receives payUrl (MoMo) -> FE redirects user to MoMo QR page
     [HttpPost]
     [AllowAnonymous]
     public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest req, CancellationToken ct)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
         var result = await _paymentService.CreateMoMoPaymentAsync(
-            req.Amount, req.TargetType, req.TargetId, req.OrderId, req.CharacterOrderId, ct);
+            req.Amount,
+            req.OrderId,
+            req.CharacterOrderId,
+            ct);
 
         if (!result.Success) return BadRequest(new { success = false, message = result.Message });
 
-        // đảm bảo absolute url nếu provider trả path tương đối
+        // Ensure absolute URL when provider returns relative path
         var payUrl = result.PayUrl!;
         if (Uri.TryCreate(payUrl, UriKind.Relative, out _))
             payUrl = $"{Request.Scheme}://{Request.Host}{payUrl}";
@@ -38,13 +41,13 @@ public class PaymentController : ControllerBase
         return Ok(new { success = true, payUrl, paymentId = result.PaymentId });
     }
 
-    // Return URL từ MoMo (để UX), không chốt trạng thái ở đây
+    // Return URL from MoMo (for UX), do not finalize status here
     [HttpGet("momo/callback")]
     [AllowAnonymous]
     public IActionResult MoMoCallback([FromQuery] string orderId, [FromQuery] string? resultCode)
         => Redirect($"/pay-result?orderId={orderId}&resultCode={resultCode}");
 
-    // IPN: chốt trạng thái
+    // IPN: finalize payment status
     [HttpPost("momo/ipn")]
     [AllowAnonymous]
     public async Task<IActionResult> MoMoIpn(CancellationToken ct)
@@ -53,7 +56,7 @@ public class PaymentController : ControllerBase
         return Ok(new { resultCode = ok ? 0 : 1, message });
     }
 
-    // FE poll trạng thái
+    // FE polls payment status
     [HttpGet("{paymentId:int}")]
     public async Task<IActionResult> GetStatus(int paymentId)
     {
@@ -62,3 +65,4 @@ public class PaymentController : ControllerBase
         return Ok(new { status = p.Status, orderId = p.OrderId, amount = p.Amount, completedAt = p.CompletedAt });
     }
 }
+

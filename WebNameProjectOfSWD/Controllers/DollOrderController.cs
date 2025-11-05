@@ -1,6 +1,7 @@
-﻿using BLL.DTO.OrderDTO;
+using BLL.DTO.OrderDTO;
 using BLL.IService;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -11,14 +12,15 @@ namespace WebNameProjectOfSWD.Controllers;
 public class DollOrderController : ControllerBase
 {
     private readonly IOrderService _service;
+    private readonly IPaymentService _paymentService;
     private readonly ILogger<DollOrderController> _logger;
 
-    public DollOrderController(IOrderService service, ILogger<DollOrderController> logger)
+    public DollOrderController(IOrderService service, IPaymentService paymentService, ILogger<DollOrderController> logger)
     {
         _service = service;
+        _paymentService = paymentService;
         _logger = logger;
     }
-
 
     [HttpGet]
     [Authorize(Policy = "AdminOrManager")]
@@ -97,7 +99,7 @@ public class DollOrderController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> Create([FromBody] CreateOrderDto dto)
+    public async Task<IActionResult> Create([FromBody] CreateOrderDto dto, CancellationToken ct)
     {
         if (!ModelState.IsValid)
             return BadRequest(new { success = false, errors = ModelState });
@@ -109,11 +111,41 @@ public class DollOrderController : ControllerBase
                 return Forbid();
 
             var created = await _service.CreateAsync(dto);
+
+            var paymentResult = await _paymentService.CreateMoMoPaymentAsync(
+                created.TotalAmount,
+                created.OrderID,
+                null,
+                ct);
+
+            if (!paymentResult.Success)
+            {
+                _logger.LogError("Failed to create payment for order {OrderId}: {Message}", created.OrderID, paymentResult.Message);
+                return StatusCode(
+                    StatusCodes.Status502BadGateway,
+                    new
+                    {
+                        success = false,
+                        message = "Khong the tao thanh toan MoMo",
+                        order = created,
+                        paymentError = paymentResult.Message
+                    });
+            }
+
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = created.OrderID },
-                new { success = true, message = "Order created successfully", data = created }
-            );
+                new
+                {
+                    success = true,
+                    message = "Order created successfully",
+                    data = created,
+                    payment = new
+                    {
+                        paymentId = paymentResult.PaymentId,
+                        payUrl = paymentResult.PayUrl
+                    }
+                });
         }
         catch (Exception ex)
         {
@@ -121,7 +153,6 @@ public class DollOrderController : ControllerBase
             return BadRequest(new { success = false, message = ex.Message });
         }
     }
-
 
     [HttpPatch("{id}")]
     [Authorize(Policy = "AdminOrManager")]
@@ -193,3 +224,5 @@ public class DollOrderController : ControllerBase
         return claim != null && int.TryParse(claim.Value, out var userId) ? userId : 0;
     }
 }
+
+

@@ -1,4 +1,5 @@
-﻿using BLL.DTO;
+using System;
+using BLL.DTO;
 using BLL.IService;
 using DAL.Enum;
 using DAL.IRepo;
@@ -21,10 +22,25 @@ public class PaymentService : IPaymentService
         _momo = providers.First(p => p.Name == "MoMo");
     }
 
-    public async Task<PaymentStartResponse> CreateMoMoPaymentAsync(decimal amount, string targetType, int targetId, int? orderId, int? characterOrderId, CancellationToken ct = default)
+    public async Task<PaymentStartResponse> CreateMoMoPaymentAsync(decimal amount, int? orderId, int? characterOrderId, CancellationToken ct = default)
     {
         try
         {
+            var hasOrder = orderId.HasValue;
+            var hasCharacterOrder = characterOrderId.HasValue;
+
+            if (!hasOrder && !hasCharacterOrder)
+                throw new ArgumentException("Either orderId or characterOrderId must be provided.");
+
+            if (hasOrder && hasCharacterOrder)
+                throw new ArgumentException("Only one of orderId or characterOrderId can be set per payment.");
+
+            var targetType = hasOrder ? "Order" : "CharacterOrder";
+            var targetId = hasOrder ? orderId!.Value : characterOrderId!.Value;
+            var orderInfo = hasOrder
+                ? $"Thanh toan Order #{targetId}"
+                : $"Thanh toan CharacterOrder #{targetId}";
+
             var p = new Payment
             {
                 Provider = "MoMo",
@@ -35,11 +51,11 @@ public class PaymentService : IPaymentService
                 Target_Id = targetId,
                 OrderID = orderId,
                 CharacterOrderID = characterOrderId,
-                OrderInfo = $"Thanh toan {targetType} #{targetId}",
+                OrderInfo = orderInfo,
                 CreatedAt = DateTime.UtcNow
             };
 
-            await _repo.AddAsync(p);                    // có PaymentID ngay
+            await _repo.AddAsync(p);                    // instant PaymentID
             await _momo.CreatePaymentAsync(_db, p, ct); // fill PayUrl, OrderId, TransactionId
 
             return new PaymentStartResponse
