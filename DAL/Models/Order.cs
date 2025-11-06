@@ -11,7 +11,7 @@ public partial class Order
 
     public int? PaymentID { get; set; }
 
-    public int DollVariantID { get; set; }
+    public int? DollVariantID { get; set; }
 
     public DateTime OrderDate { get; set; }
 

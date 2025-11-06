@@ -7,7 +7,7 @@ namespace BLL.DTO.OrderDTO
         public int OrderID { get; set; }
         public int? UserID { get; set; }
         public int? PaymentID { get; set; }
-        public int DollVariantID { get; set; }
+        public int? DollVariantID { get; set; }
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
         public string ShippingAddress { get; set; } = null!;

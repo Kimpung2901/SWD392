@@ -91,6 +91,7 @@ builder.Services.AddControllers()
     {
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        opt.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
 
         // ? THÊM: C?u hình DateTime format t? d?ng
         // M?c d?nh .NET 8 dã serialize DateTime theo ISO 8601

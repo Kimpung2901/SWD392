@@ -33,7 +33,9 @@ public class OrderService : IOrderService
             var userName = order.UserID.HasValue
                 ? (await _userRepo.GetByIdAsync(order.UserID.Value))?.UserName
                 : null;
-            var variant = await _variantRepo.GetByIdAsync(order.DollVariantID);
+            var variant = order.DollVariantID.HasValue
+                ? await _variantRepo.GetByIdAsync(order.DollVariantID.Value)
+                : null;
 
             result.Add(MapToDto(order, userName, variant?.Name));
         }
@@ -52,10 +54,10 @@ public class OrderService : IOrderService
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var searchLower = search.ToLower().Trim();
+            var searchLower = search.Trim().ToLower();
             query = query.Where(o =>
                 o.OrderID.ToString().Contains(searchLower) ||
-                o.ShippingAddress.ToLower().Contains(searchLower) ||
+                (o.ShippingAddress != null && o.ShippingAddress.ToLower().Contains(searchLower)) ||
                 o.Status.ToString().ToLower().Contains(searchLower));
         }
 
@@ -73,7 +75,9 @@ public class OrderService : IOrderService
                 ? (await _userRepo.GetByIdAsync(order.UserID.Value))?.UserName
                 : null;
 
-            var variant = await _variantRepo.GetByIdAsync(order.DollVariantID);
+            var variant = order.DollVariantID.HasValue
+                ? await _variantRepo.GetByIdAsync(order.DollVariantID.Value)
+                : null;
 
             items.Add(MapToDto(order, userName, variant?.Name));
         }
@@ -99,10 +103,10 @@ public class OrderService : IOrderService
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            var searchLower = search.ToLower().Trim();
+            var searchLower = search.Trim().ToLower();
             query = query.Where(o =>
                 o.OrderID.ToString().Contains(searchLower) ||
-                o.ShippingAddress.ToLower().Contains(searchLower) ||
+                (o.ShippingAddress != null && o.ShippingAddress.ToLower().Contains(searchLower)) ||
                 o.Status.ToString().ToLower().Contains(searchLower));
         }
 
@@ -115,7 +119,9 @@ public class OrderService : IOrderService
         var items = new List<OrderDto>();
         foreach (var order in orders)
         {
-            var variant = await _variantRepo.GetByIdAsync(order.DollVariantID);
+            var variant = order.DollVariantID.HasValue
+                ? await _variantRepo.GetByIdAsync(order.DollVariantID.Value)
+                : null;
             items.Add(MapToDto(order, user?.UserName, variant?.Name));
         }
 
@@ -137,7 +143,9 @@ public class OrderService : IOrderService
         var userName = order.UserID.HasValue
             ? (await _userRepo.GetByIdAsync(order.UserID.Value))?.UserName
             : null;
-        var variant = await _variantRepo.GetByIdAsync(order.DollVariantID);
+        var variant = order.DollVariantID.HasValue
+            ? await _variantRepo.GetByIdAsync(order.DollVariantID.Value)
+            : null;
 
         return MapToDto(order, userName, variant?.Name);
     }
@@ -150,7 +158,9 @@ public class OrderService : IOrderService
 
         foreach (var order in orders)
         {
-            var variant = await _variantRepo.GetByIdAsync(order.DollVariantID);
+            var variant = order.DollVariantID.HasValue
+                ? await _variantRepo.GetByIdAsync(order.DollVariantID.Value)
+                : null;
             result.Add(MapToDto(order, user?.UserName, variant?.Name));
         }
 
@@ -223,7 +233,9 @@ public class OrderService : IOrderService
         var userName = entity.UserID.HasValue
             ? (await _userRepo.GetByIdAsync(entity.UserID.Value))?.UserName
             : null;
-        variantName ??= (await _variantRepo.GetByIdAsync(entity.DollVariantID))?.Name;
+        variantName ??= entity.DollVariantID.HasValue
+            ? (await _variantRepo.GetByIdAsync(entity.DollVariantID.Value))?.Name
+            : null;
 
         return MapToDto(entity, userName, variantName);
     }

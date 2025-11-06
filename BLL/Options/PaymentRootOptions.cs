@@ -2,7 +2,8 @@
 
 public sealed class PaymentRootOptions
 {
-    public string ReturnBaseUrl { get; set; } = "https://your-public-domain"; // phải PUBLIC để MoMo gọi IPN
+    public string ReturnBaseUrl { get; set; } = "https://dollaistore-api-dxdggjazgpckh2cc.japaneast-01.azurewebsites.net";
+    public string? FrontendReturnUrl { get; set; }   
     public MoMoOptions MoMo { get; set; } = new();
 }
 

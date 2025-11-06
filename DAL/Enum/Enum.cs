@@ -2,10 +2,10 @@ namespace DAL.Enum;
 
 public enum CharacterOrderStatus
 {
-    Pending = 0,
-    Active = 1,
-    Completed = 2,
-    Cancelled = 3,
+    Pending = 1,
+    Active = 2,
+    Completed = 3,
+    Cancelled = 4
 }
 
 public enum UserCharacterStatus
@@ -23,21 +23,20 @@ public enum CharacterPackageStatus
 
 public enum PaymentStatus
 {
-    Pending = 0,
-    Completed = 1,
-    Failed = 2,
-    Cancelled = 3,
-    Refunded = 4
+    Pending = 1,
+    Completed = 2,
+    Failed = 3,
+    Cancelled = 4,
+    Refunded = 5
 }
 
 public enum OrderStatus
 {
-    Pending = 0,
-    Processing = 1,
-    Shipped = 2,
-    Completed = 3,
-    Cancelled = 4,
-    Returned = 5
+    Pending = 1,
+    Processing = 2,
+    Shipped = 3,
+    Completed = 4,
+    Cancelled = 5,
 }
 
 public enum OwnedDollStatus
