@@ -1,4 +1,6 @@
 {
     "CodeGPT.apiKey": "OpenAI",
-      "github.copilot.chat.editing": "enabled"
+      "github.copilot.chat.editing": "enabled",
+      "github.copilot.nextEditSuggestions.enabled": true,
+      "github.copilot.chat.notebook.enhancedNextEditSuggestions.enabled": true
 }

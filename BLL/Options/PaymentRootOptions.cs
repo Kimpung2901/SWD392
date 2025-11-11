@@ -13,6 +13,6 @@ public sealed class MoMoOptions
     public string PartnerCode { get; set; } = "";
     public string AccessKey { get; set; } = "";
     public string SecretKey { get; set; } = "";
-    public string ReturnPath { get; set; } = "/api/payment/momo/callback";
-    public string IpnPath { get; set; } = "/api/payment/momo/ipn";
+    public string ReturnPath { get; set; } = "/api/payments/momo/callback";
+    public string IpnPath { get; set; } = "/api/payments/momo/ipn";
 }
