@@ -12,7 +12,6 @@ namespace BLL.DTO.OrderDTO
         public decimal TotalAmount { get; set; }
         public string ShippingAddress { get; set; } = null!;
         public OrderStatus Status { get; set; }
-        public string StatusDisplay { get; }
         public string UserName { get; set; }
         public string? DollVariantName { get; set; }
     }

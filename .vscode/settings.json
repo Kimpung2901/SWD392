@@ -1,4 +1,4 @@
 {
     "CodeGPT.apiKey": "OpenAI",
-    "github.copilot.chat.editing": "enabled"
+      "github.copilot.chat.editing": "enabled"
 }

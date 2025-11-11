@@ -13,7 +13,5 @@ namespace BLL.DTO.CharacterOrderDTO
         public decimal UnitPrice { get; set; }
         public DateTime CreatedAt { get; set; }
         public CharacterOrderStatus Status { get; set; }
-        
-        public string StatusDisplay => Status.ToString();
     }
 }

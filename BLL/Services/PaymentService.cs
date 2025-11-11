@@ -127,7 +127,7 @@ public class PaymentService : IPaymentService
                 {
                     if (order.Status == OrderStatus.Pending)
                     {
-                        order.Status = OrderStatus.Completed; 
+                        order.Status = OrderStatus.Processing;
                         changed = true;
                     }
                 }
@@ -135,9 +135,9 @@ public class PaymentService : IPaymentService
                          payment.Status == PaymentStatus.Cancelled ||
                          payment.Status == PaymentStatus.Refunded)
                 {
-                    if (order.Status == OrderStatus.Pending || order.Status == OrderStatus.Processing)
+                    if (order.Status == OrderStatus.Processing)
                     {
-                        order.Status = OrderStatus.Cancelled;
+                        order.Status = OrderStatus.Pending;
                         changed = true;
                     }
                 }
@@ -164,7 +164,7 @@ public class PaymentService : IPaymentService
                 {
                     if (characterOrder.Status == CharacterOrderStatus.Pending)
                     {
-                        characterOrder.Status = CharacterOrderStatus.Active;
+                        characterOrder.Status = CharacterOrderStatus.Completed;
                         changed = true;
                     }
                 }
@@ -172,10 +172,9 @@ public class PaymentService : IPaymentService
                          payment.Status == PaymentStatus.Cancelled ||
                          payment.Status == PaymentStatus.Refunded)
                 {
-                    if (characterOrder.Status == CharacterOrderStatus.Pending ||
-                        characterOrder.Status == CharacterOrderStatus.Active)
+                    if (characterOrder.Status == CharacterOrderStatus.Completed)
                     {
-                        characterOrder.Status = CharacterOrderStatus.Cancelled;
+                        characterOrder.Status = CharacterOrderStatus.Pending;
                         changed = true;
                     }
                 }

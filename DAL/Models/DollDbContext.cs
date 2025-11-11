@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using System;
+using Microsoft.EntityFrameworkCore;
+using DAL.Enum;
 
 namespace DAL.Models;
 
@@ -120,7 +122,9 @@ public partial class DollDbContext : DbContext
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.ShippingAddress).HasMaxLength(500).IsRequired();
             entity.Property(e => e.Status)
-                .HasConversion<string>()
+                .HasConversion(
+                    status => status.ToString(),
+                    value => ConvertOrderStatus(value))
                 .HasMaxLength(50)
                 .IsRequired();
 
@@ -150,7 +154,9 @@ public partial class DollDbContext : DbContext
             entity.ToTable("OwnedDoll");
             entity.Property(e => e.SerialCode).HasMaxLength(255).IsRequired();
             entity.Property(e => e.Status)
-                .HasConversion<string>()
+                .HasConversion(
+                    status => status.ToString(),
+                    value => ConvertOwnedDollStatus(value))
                 .HasMaxLength(50)
                 .IsRequired();
             entity.Property(e => e.Acquired_at).HasColumnType("datetime");
@@ -254,7 +260,7 @@ public partial class DollDbContext : DbContext
             entity.HasKey(e => e.LinkID);
             entity.ToTable("DollCharacterLink");
             entity.Property(e => e.BoundAt).HasColumnType("datetime");
-            entity.Property(e => e.UnBoundAt).HasColumnType("datetime").IsRequired(false); // ✅ NULLABLE
+            entity.Property(e => e.UnBoundAt).HasColumnType("datetime").IsRequired(false); // ? NULLABLE
             entity.Property(e => e.Note).HasMaxLength(255);
             entity.Property(e => e.Status)
                 .HasConversion<string>()
@@ -286,7 +292,7 @@ public partial class DollDbContext : DbContext
                 .IsRequired();
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             
-            // ✅ Chỉ định navigation properties rõ ràng
+            // ? Ch? d?nh navigation properties r� r�ng
             entity.HasOne(e => e.Character)
                 .WithMany()
                 .HasForeignKey(e => e.CharacterID)
@@ -382,4 +388,38 @@ public partial class DollDbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    private static OrderStatus ConvertOrderStatus(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return OrderStatus.Pending;
+
+        if (System.Enum.TryParse<OrderStatus>(value, true, out var parsed))
+            return parsed;
+
+        return value.Trim().ToLowerInvariant() switch
+        {
+            "pending" => OrderStatus.Pending,
+            "processing" => OrderStatus.Processing,
+            "shipping" or "shipped" => OrderStatus.Shipping,
+            "completed" => OrderStatus.Completed,
+            _ => OrderStatus.Pending
+        };
+    }
+
+    private static OwnedDollStatus ConvertOwnedDollStatus(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return OwnedDollStatus.Inactive;
+
+        if (System.Enum.TryParse<OwnedDollStatus>(value, true, out var parsed))
+            return parsed;
+
+        return value.Trim().ToLowerInvariant() switch
+        {
+            "active" => OwnedDollStatus.Active,
+            "inactive" => OwnedDollStatus.Inactive,
+            _ => OwnedDollStatus.Inactive
+        };
+    }
 }

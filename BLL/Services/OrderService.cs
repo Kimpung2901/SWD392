@@ -252,10 +252,10 @@ public class OrderService : IOrderService
         if (order == null)
             return false;
 
-        if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Shipped)
+        if (order.Status == OrderStatus.Completed || order.Status == OrderStatus.Shipping)
             throw new Exception("Cannot cancel an order that has been shipped or completed.");
 
-        order.Status = OrderStatus.Cancelled;
+        order.Status = OrderStatus.Pending;
         await _orderRepo.UpdateAsync(order);
 
         return true;

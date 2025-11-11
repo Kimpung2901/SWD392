@@ -39,7 +39,7 @@ namespace WebNameProjectOfSWD.Controllers
                     o.CharacterOrderID.ToString().Contains(term) ||
                     (o.PackageName ?? string.Empty).ToLowerInvariant().Contains(term) ||
                     (o.CharacterName ?? string.Empty).ToLowerInvariant().Contains(term) ||
-                    o.StatusDisplay.ToLowerInvariant().Contains(term));
+                    o.Status.ToString().ToLowerInvariant().Contains(term));
             }
 
             var total = query.Count();

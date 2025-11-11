@@ -3,9 +3,7 @@ namespace DAL.Enum;
 public enum CharacterOrderStatus
 {
     Pending = 1,
-    Active = 2,
-    Completed = 3,
-    Cancelled = 4
+    Completed = 3
 }
 
 public enum UserCharacterStatus
@@ -34,9 +32,8 @@ public enum OrderStatus
 {
     Pending = 1,
     Processing = 2,
-    Shipped = 3,
-    Completed = 4,
-    Cancelled = 5,
+    Shipping = 3,
+    Completed = 4
 }
 
 public enum OwnedDollStatus

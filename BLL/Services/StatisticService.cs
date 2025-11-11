@@ -25,7 +25,7 @@ public class StatisticService : IStatisticService
         var query = _orderRepository
             .GetQueryable()
             .Where(o => o.OrderDate.Month == month && o.OrderDate.Year == year)
-            .Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Shipped);
+            .Where(o => o.Status == OrderStatus.Completed || o.Status == OrderStatus.Shipping);
 
         var totalRevenue = await query.SumAsync(o => o.TotalAmount);
 

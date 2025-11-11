@@ -199,9 +199,6 @@ namespace BLL.Services
             if (entity.Status == CharacterOrderStatus.Completed) 
                 throw new InvalidOperationException("Order đã được hoàn thành");
 
-            if (entity.Status == CharacterOrderStatus.Cancelled)
-                throw new InvalidOperationException("Không thể hoàn thành order đã bị hủy");
-
             entity.Status = CharacterOrderStatus.Completed; 
             await _repo.UpdateAsync(entity);
             return true;
@@ -215,11 +212,12 @@ namespace BLL.Services
             if (entity.Status == CharacterOrderStatus.Completed)
                 throw new InvalidOperationException("Không thể hủy order đã hoàn thành");
 
-            if (entity.Status == CharacterOrderStatus.Cancelled)
-                throw new InvalidOperationException("Order đã bị hủy trước đó");
+            if (entity.Status != CharacterOrderStatus.Pending)
+            {
+                entity.Status = CharacterOrderStatus.Pending; 
+                await _repo.UpdateAsync(entity);
+            }
 
-            entity.Status = CharacterOrderStatus.Cancelled; 
-            await _repo.UpdateAsync(entity);
             return true;
         }
     }
