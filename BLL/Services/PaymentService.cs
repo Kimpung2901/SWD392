@@ -5,7 +5,6 @@ using BLL.IService;
 using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -76,15 +75,23 @@ public class PaymentService : IPaymentService
         }
     }
 
-    public async Task<(bool ok, string message)> HandleMoMoIpnAsync(IFormCollection form, CancellationToken ct = default)
+    public async Task<(bool ok, string message)> HandleMoMoIpnAsync(IDictionary<string, string> payload, CancellationToken ct = default)
     {
         try
         {
-            var dict = form.ToDictionary(k => k.Key, v => v.Value.ToString());
-            var ok = await _momo.HandleIpnAsync(_db, dict, ct);
+            if (payload == null || payload.Count == 0)
+            {
+                return (false, "IPN payload is empty");
+            }
+
+            var normalized = payload is Dictionary<string, string> existing
+                ? new Dictionary<string, string>(existing, StringComparer.OrdinalIgnoreCase)
+                : new Dictionary<string, string>(payload, StringComparer.OrdinalIgnoreCase);
+
+            var ok = await _momo.HandleIpnAsync(_db, normalized, ct);
             if (ok)
             {
-                var payment = await FindPaymentFromIpnAsync(dict, ct);
+                var payment = await FindPaymentFromIpnAsync(normalized, ct);
                 if (payment != null)
                 {
                     await SyncPaymentTargetAsync(payment, isFinalState: true, ct);

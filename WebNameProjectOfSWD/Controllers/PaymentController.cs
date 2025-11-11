@@ -1,8 +1,14 @@
-﻿using BLL.DTO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.Json;
+using BLL.DTO;
 using BLL.IService;
 using BLL.Options;
 using DAL.IRepo;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -77,7 +83,56 @@ public class PaymentController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> MoMoIpn(CancellationToken ct)
     {
-        var (ok, message) = await _paymentService.HandleMoMoIpnAsync(Request.Form, ct);
+        IDictionary<string, string> payload;
+
+        if (Request.HasFormContentType)
+        {
+            var form = await Request.ReadFormAsync(ct);
+            payload = form.ToDictionary(k => k.Key, v => v.Value.ToString());
+        }
+        else
+        {
+            Request.EnableBuffering();
+            using var reader = new StreamReader(Request.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
+            var body = await reader.ReadToEndAsync();
+            Request.Body.Position = 0;
+
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                return BadRequest(new { resultCode = 1, message = "IPN payload is empty" });
+            }
+
+            try
+            {
+                using var doc = JsonDocument.Parse(body);
+                var dict = new Dictionary<string, string>(System.StringComparer.OrdinalIgnoreCase);
+                foreach (var prop in doc.RootElement.EnumerateObject())
+                {
+                    dict[prop.Name] = prop.Value.ValueKind switch
+                    {
+                        JsonValueKind.String => prop.Value.GetString() ?? string.Empty,
+                        JsonValueKind.Number => prop.Value.GetRawText(),
+                        JsonValueKind.True => bool.TrueString.ToLowerInvariant(),
+                        JsonValueKind.False => bool.FalseString.ToLowerInvariant(),
+                        JsonValueKind.Null => string.Empty,
+                        _ => prop.Value.GetRawText()
+                    };
+                }
+
+                payload = dict;
+            }
+            catch (JsonException)
+            {
+                return BadRequest(new { resultCode = 1, message = "IPN payload is not valid JSON" });
+            }
+        }
+
+        if (payload.Count == 0)
+        {
+            return BadRequest(new { resultCode = 1, message = "IPN payload is empty" });
+        }
+
+        var (ok, message) = await _paymentService.HandleMoMoIpnAsync(payload, ct);
         return Ok(new { resultCode = ok ? 0 : 1, message });
     }
 
