@@ -193,7 +193,8 @@ public class UserService : IUserService
         Age = u.Age,
         Status = u.Status,
         Role = u.Role,
-        CreatedAt = u.CreatedAt
+        CreatedAt = u.CreatedAt,
+        DeviceToken = u.DeviceToken
     };
 
     /// <summary>

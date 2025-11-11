@@ -13,5 +13,6 @@ namespace BLL.DTO.UserDTO
         public UserStatus Status { get; set; } = UserStatus.Active;
         public string Role { get; set; } = null!;
         public DateTime CreatedAt { get; set; }
+        public string? DeviceToken { get; set; }
     }
 }
