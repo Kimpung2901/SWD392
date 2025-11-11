@@ -66,8 +66,8 @@ public class PaymentController : ControllerBase
             Console.WriteLine($"[MoMoCallback] Redirecting to: {redirectUrl}");
             return Redirect(redirectUrl);
         }
+        var fallbackUrl =$"https://doll-sales-system-fe.vercel.app/payment-result?orderId={orderId}&resultCode={resultCode}";
 
-        var fallbackUrl = $"https://doll-sales-system-fe.vercel.app/pay-result?orderId={orderId}&resultCode={resultCode}";
         Console.WriteLine($"[MoMoCallback] No FrontendReturnUrl, using fallback: {fallbackUrl}");
         return Redirect(fallbackUrl);
     }
