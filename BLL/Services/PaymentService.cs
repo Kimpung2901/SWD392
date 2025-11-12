@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BLL.DTO;
+using BLL.DTO.NotificationDto;
 using BLL.IService;
 using DAL.Enum;
 using DAL.IRepo;
@@ -19,7 +20,8 @@ public class PaymentService : IPaymentService
     private readonly DollDbContext _db;
     private readonly IPaymentProvider _momo;
     private readonly IOwnedDollManager _ownedDollManager;
-    private readonly IUserCharacterManager _userCharacterManager; // ✅ THÊM
+    private readonly IUserCharacterManager _userCharacterManager;
+    private readonly INotificationService _notificationService; // ✅ THÊM
     private readonly ILogger<PaymentService> _logger;
 
     public PaymentService(
@@ -27,13 +29,15 @@ public class PaymentService : IPaymentService
         DollDbContext db,
         IEnumerable<IPaymentProvider> providers,
         IOwnedDollManager ownedDollManager,
-        IUserCharacterManager userCharacterManager, // ✅ THÊM
+        IUserCharacterManager userCharacterManager,
+        INotificationService notificationService, // ✅ THÊM
         ILogger<PaymentService> logger)
     {
         _repo = repo;
         _db = db;
         _ownedDollManager = ownedDollManager;
-        _userCharacterManager = userCharacterManager; // ✅ THÊM
+        _userCharacterManager = userCharacterManager;
+        _notificationService = notificationService; // ✅ THÊM
         _logger = logger;
         _momo = providers.First(p => p.Name == "MoMo");
     }
@@ -170,7 +174,6 @@ public class PaymentService : IPaymentService
     {
         if (string.Equals(payment.Target_Type, "Order", StringComparison.OrdinalIgnoreCase) && payment.OrderID.HasValue)
         {
-            // ✅ DollOrder: Processing sau payment, Completed khi nhận hàng
             var order = await _db.Orders
                 .Include(o => o.DollVariant)
                 .FirstOrDefaultAsync(o => o.OrderID == payment.OrderID.Value, ct);
@@ -197,6 +200,9 @@ public class PaymentService : IPaymentService
                         order.Status = OrderStatus.Processing;
                         changed = true;
                         _logger.LogInformation("[Payment] Order #{OrderId} moved to Processing after payment", order.OrderID);
+                        
+                        // ✅ GỬI NOTIFICATION CHO DOLLORDER
+                        await SendOrderPaymentSuccessNotificationAsync(order, payment, ct);
                     }
                 }
                 else if (payment.Status == PaymentStatus.Failed ||
@@ -219,9 +225,9 @@ public class PaymentService : IPaymentService
         }
         else if (string.Equals(payment.Target_Type, "CharacterOrder", StringComparison.OrdinalIgnoreCase) && payment.CharacterOrderID.HasValue)
         {
-            // ✅ CharacterOrder: Completed ngay sau payment
             var characterOrder = await _db.CharacterOrders
                 .Include(co => co.Package)
+                .Include(co => co.Character)
                 .FirstOrDefaultAsync(co => co.CharacterOrderID == payment.CharacterOrderID.Value, ct);
                 
             if (characterOrder == null)
@@ -244,11 +250,13 @@ public class PaymentService : IPaymentService
                             characterOrder.CharacterOrderID);
                     }
 
-                    // ✅ Tạo UserCharacter ngay
                     var userCharCreated = await _userCharacterManager.EnsureUserCharacterForOrderAsync(
                         characterOrder,
                         "PaymentService.SyncPaymentTarget");
                     changed |= userCharCreated;
+                    
+                    // ✅ GỬI NOTIFICATION CHO CHARACTERORDER
+                    await SendCharacterOrderPaymentSuccessNotificationAsync(characterOrder, payment, ct);
                 }
                 else if (payment.Status == PaymentStatus.Failed ||
                          payment.Status == PaymentStatus.Cancelled ||
@@ -268,7 +276,113 @@ public class PaymentService : IPaymentService
             }
         }
     }
-    
+
+    // ✅ METHOD MỚI: Gửi notification cho DollOrder
+    private async Task SendOrderPaymentSuccessNotificationAsync(Order order, Payment payment, CancellationToken ct)
+    {
+        if (!order.UserID.HasValue)
+        {
+            _logger.LogWarning("[Notification] Order #{OrderId} has no UserID, skipping notification", order.OrderID);
+            return;
+        }
+
+        try
+        {
+            var variantName = order.DollVariant?.Name ?? "Doll";
+            
+            var notificationDto = new SendNotificationDto
+            {
+                UserId = order.UserID.Value,
+                Title = "🎉 Thanh toán thành công!",
+                Body = $"Đơn hàng #{order.OrderID} ({variantName}) đã được thanh toán. Chúng tôi sẽ xử lý và giao hàng sớm nhất!",
+                Data = new Dictionary<string, string>
+                {
+                    { "type", "order_payment_success" },
+                    { "orderId", order.OrderID.ToString() },
+                    { "paymentId", payment.PaymentID.ToString() },
+                    { "amount", payment.Amount.ToString("N0") },
+                    { "status", "processing" }
+                }
+            };
+
+            var result = await _notificationService.SendAsync(notificationDto, ct);
+            
+            if (!string.IsNullOrEmpty(result.MessageId))
+            {
+                _logger.LogInformation(
+                    "[Notification] ✅ Sent payment success notification for Order #{OrderId} to User #{UserId}. MessageId: {MessageId}",
+                    order.OrderID, order.UserID.Value, result.MessageId);
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "[Notification] ⚠️ Notification saved to DB but push failed for Order #{OrderId}",
+                    order.OrderID);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, 
+                "[Notification] ❌ Failed to send notification for Order #{OrderId}", 
+                order.OrderID);
+            // Không throw exception để không ảnh hưởng đến flow chính
+        }
+    }
+
+    // ✅ METHOD MỚI: Gửi notification cho CharacterOrder
+    private async Task SendCharacterOrderPaymentSuccessNotificationAsync(CharacterOrder characterOrder, Payment payment, CancellationToken ct)
+    {
+        if (characterOrder.UserID <= 0)
+        {
+            _logger.LogWarning("[Notification] CharacterOrder #{OrderId} has no UserID, skipping notification", characterOrder.CharacterOrderID);
+            return;
+        }
+
+        try
+        {
+            var characterName = characterOrder.Character?.Name ?? "Character";
+            var packageName = characterOrder.Package?.Name ?? "Package";
+            
+            var notificationDto = new SendNotificationDto
+            {
+                UserId = characterOrder.UserID,
+                Title = "🎊 Mua character thành công!",
+                Body = $"Bạn đã sở hữu {characterName} ({packageName})! Hãy bắt đầu trò chuyện ngay!",
+                Data = new Dictionary<string, string>
+                {
+                    { "type", "character_payment_success" },
+                    { "characterOrderId", characterOrder.CharacterOrderID.ToString() },
+                    { "characterId", characterOrder.CharacterID.ToString() },
+                    { "packageId", characterOrder.PackageID.ToString() },
+                    { "paymentId", payment.PaymentID.ToString() },
+                    { "amount", payment.Amount.ToString("N0") }
+                }
+            };
+
+            var result = await _notificationService.SendAsync(notificationDto, ct);
+            
+            if (!string.IsNullOrEmpty(result.MessageId))
+            {
+                _logger.LogInformation(
+                    "[Notification] ✅ Sent payment success notification for CharacterOrder #{OrderId} to User #{UserId}. MessageId: {MessageId}",
+                    characterOrder.CharacterOrderID, characterOrder.UserID, result.MessageId);
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "[Notification] ⚠️ Notification saved to DB but push failed for CharacterOrder #{OrderId}",
+                    characterOrder.CharacterOrderID);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, 
+                "[Notification] ❌ Failed to send notification for CharacterOrder #{OrderId}", 
+                characterOrder.CharacterOrderID);
+            // Không throw exception
+        }
+    }
+
     private async Task<(bool ok, string message, Payment? payment)> UpdatePaymentStatusFromCallbackAsync(string orderId, int resultCode, string sourceTag, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(orderId))

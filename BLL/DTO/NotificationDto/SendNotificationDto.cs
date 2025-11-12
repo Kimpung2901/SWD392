@@ -7,17 +7,18 @@ namespace BLL.DTO.NotificationDto
     {
         public int? UserId { get; set; }
 
-        [Required]
-        [MaxLength(255)]
+        [Required(ErrorMessage = "Title is required")]
+        [StringLength(100, ErrorMessage = "Title cannot exceed 100 characters")]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Body is required")]
+        [StringLength(500, ErrorMessage = "Body cannot exceed 500 characters")]
         public string Body { get; set; } = string.Empty;
 
-        public string? DeviceToken { get; set; }
+        public Dictionary<string, string>? Data { get; set; }
 
         public string? Topic { get; set; }
 
-        public Dictionary<string, string>? Data { get; set; }
+        public string? DeviceToken { get; set; }
     }
 }
