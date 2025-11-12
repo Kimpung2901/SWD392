@@ -178,6 +178,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 // Thêm vào ph?n DI registration
 builder.Services.AddScoped<IOwnedDollRepository, OwnedDollRepository>();
 builder.Services.AddScoped<IOwnedDollService, OwnedDollService>();
+builder.Services.AddScoped<IOwnedDollManager, OwnedDollManager>();
 // UserCharacter services
 builder.Services.AddScoped<IUserCharacterRepository, UserCharacterRepository>();
 builder.Services.AddScoped<IUserCharacterService, UserCharacterService>();

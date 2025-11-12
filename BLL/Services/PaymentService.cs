@@ -18,11 +18,20 @@ public class PaymentService : IPaymentService
     private readonly IPaymentRepository _repo;
     private readonly DollDbContext _db;
     private readonly IPaymentProvider _momo;
+    private readonly IOwnedDollManager _ownedDollManager;
     private readonly ILogger<PaymentService> _logger;
 
-    public PaymentService(IPaymentRepository repo, DollDbContext db, IEnumerable<IPaymentProvider> providers, ILogger<PaymentService> logger)
+    public PaymentService(
+        IPaymentRepository repo,
+        DollDbContext db,
+        IEnumerable<IPaymentProvider> providers,
+        IOwnedDollManager ownedDollManager,
+        ILogger<PaymentService> logger)
     {
-        _repo = repo; _db = db; _logger = logger;
+        _repo = repo;
+        _db = db;
+        _ownedDollManager = ownedDollManager;
+        _logger = logger;
         _momo = providers.First(p => p.Name == "MoMo");
     }
 
@@ -176,11 +185,17 @@ public class PaymentService : IPaymentService
             {
                 if (payment.Status == PaymentStatus.Completed)
                 {
-                    if (order.Status == OrderStatus.Pending)
+                    if (order.Status != OrderStatus.Completed)
                     {
-                        order.Status = OrderStatus.Processing;
+                        order.Status = OrderStatus.Completed;
                         changed = true;
+                        _logger.LogInformation("[Payment] Order #{OrderId} marked as Completed", order.OrderID);
                     }
+
+                    var ownedDollCreated = await _ownedDollManager.EnsureOwnedDollForOrderAsync(
+                        order,
+                        "PaymentService.SyncPaymentTarget");
+                    changed |= ownedDollCreated;
                 }
                 else if (payment.Status == PaymentStatus.Failed ||
                          payment.Status == PaymentStatus.Cancelled ||

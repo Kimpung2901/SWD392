@@ -18,11 +18,14 @@ public partial class CharacterOrder
 
     public CharacterOrderStatus Status { get; set; } = CharacterOrderStatus.Pending;
 
-    // ✅ Navigation properties
+    public int UserID { get; set; } 
+
     [ForeignKey(nameof(PackageID))]
     public virtual CharacterPackage? Package { get; set; }
 
     [ForeignKey(nameof(CharacterID))]
     public virtual Character? Character { get; set; }
 
+    [ForeignKey(nameof(UserID))]
+    public virtual User? User { get; set; } 
 }

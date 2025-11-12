@@ -7,6 +7,7 @@ using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging; // ? THÊM DÒNG NÀY
 
 namespace BLL.Services;
 
@@ -15,12 +16,21 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepo;
     private readonly IUserRepository _userRepo;
     private readonly IDollVariantRepository _variantRepo;
+    private readonly IOwnedDollManager _ownedDollManager;
+    private readonly ILogger<OrderService> _logger;
 
-    public OrderService(IOrderRepository orderRepo, IUserRepository userRepo, IDollVariantRepository variantRepo)
+    public OrderService(
+        IOrderRepository orderRepo,
+        IUserRepository userRepo,
+        IDollVariantRepository variantRepo,
+        IOwnedDollManager ownedDollManager,
+        ILogger<OrderService> logger)
     {
         _orderRepo = orderRepo;
         _userRepo = userRepo;
         _variantRepo = variantRepo;
+        _ownedDollManager = ownedDollManager;
+        _logger = logger;
     }
 
     public async Task<List<OrderDto>> GetAllAsync()
@@ -207,6 +217,8 @@ public class OrderService : IOrderService
         if (entity == null)
             return null;
 
+        var oldStatus = entity.Status;
+
         if (!string.IsNullOrWhiteSpace(dto.ShippingAddress))
             entity.ShippingAddress = dto.ShippingAddress.Trim();
 
@@ -226,6 +238,13 @@ public class OrderService : IOrderService
             entity.DollVariantID = dto.DollVariantID.Value;
             entity.TotalAmount = variant.Price;
             variantName = variant.Name;
+        }
+
+        if (oldStatus != OrderStatus.Completed && entity.Status == OrderStatus.Completed)
+        {
+            await _ownedDollManager.EnsureOwnedDollForOrderAsync(
+                entity,
+                "OrderService.UpdatePartialAsync");
         }
 
         await _orderRepo.UpdateAsync(entity);
@@ -307,3 +326,5 @@ public class OrderService : IOrderService
         };
     }
 }
+
+

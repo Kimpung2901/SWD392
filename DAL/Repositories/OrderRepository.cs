@@ -1,4 +1,4 @@
-using DAL.IRepo;
+﻿using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,7 +57,7 @@ public class OrderRepository : IOrderRepository
         }
 
         _db.Entry(entity).State = EntityState.Modified;
-        await _unitOfWork.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync(); // ✅ Save cả Order + OwnedDoll (nếu có)
     }
 
     public async Task DeleteAsync(int id)
