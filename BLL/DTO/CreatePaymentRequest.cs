@@ -1,11 +1,12 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BLL.DTO;
 
 public class CreatePaymentRequest : IValidatableObject
 {
-    [Required, Range(1000, double.MaxValue)]
+    [Range(typeof(decimal), "10000", "79228162514264337593543950335", 
+        ErrorMessage = "Số tiền phải từ 10,000 VND trở lên.")]
     public decimal Amount { get; set; }
 
     public int? OrderId { get; set; }
@@ -15,12 +16,13 @@ public class CreatePaymentRequest : IValidatableObject
     {
         if (!OrderId.HasValue && !CharacterOrderId.HasValue)
             yield return new ValidationResult(
-                "Phai cung cap OrderId hoac CharacterOrderId.",
+                "Phải cung cấp OrderId hoặc CharacterOrderId.",
                 new[] { nameof(OrderId), nameof(CharacterOrderId) });
 
         if (OrderId.HasValue && CharacterOrderId.HasValue)
             yield return new ValidationResult(
-                "Chi duoc chon mot trong OrderId hoac CharacterOrderId.",
+                "Chỉ được chọn một trong OrderId hoặc CharacterOrderId.",
                 new[] { nameof(OrderId), nameof(CharacterOrderId) });
     }
 }
+
