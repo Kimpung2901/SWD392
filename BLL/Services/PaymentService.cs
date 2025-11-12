@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using BLL.DTO;
+﻿using BLL.DTO;
 using BLL.DTO.NotificationDto;
+using BLL.Helper;
 using BLL.IService;
 using DAL.Enum;
 using DAL.IRepo;
@@ -21,7 +17,7 @@ public class PaymentService : IPaymentService
     private readonly IPaymentProvider _momo;
     private readonly IOwnedDollManager _ownedDollManager;
     private readonly IUserCharacterManager _userCharacterManager;
-    private readonly INotificationService _notificationService; // ✅ THÊM
+    private readonly INotificationService _notificationService;
     private readonly ILogger<PaymentService> _logger;
 
     public PaymentService(
@@ -30,14 +26,14 @@ public class PaymentService : IPaymentService
         IEnumerable<IPaymentProvider> providers,
         IOwnedDollManager ownedDollManager,
         IUserCharacterManager userCharacterManager,
-        INotificationService notificationService, // ✅ THÊM
+        INotificationService notificationService,
         ILogger<PaymentService> logger)
     {
         _repo = repo;
         _db = db;
         _ownedDollManager = ownedDollManager;
         _userCharacterManager = userCharacterManager;
-        _notificationService = notificationService; // ✅ THÊM
+        _notificationService = notificationService;
         _logger = logger;
         _momo = providers.First(p => p.Name == "MoMo");
     }
@@ -72,11 +68,11 @@ public class PaymentService : IPaymentService
                 OrderID = orderId,
                 CharacterOrderID = characterOrderId,
                 OrderInfo = orderInfo,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTimeHelper.GetVietnamTime()  
             };
 
-            await _repo.AddAsync(p);                    // instant PaymentID
-            await _momo.CreatePaymentAsync(_db, p, ct); // fill PayUrl, OrderId, TransactionId
+            await _repo.AddAsync(p);
+            await _momo.CreatePaymentAsync(_db, p, ct);
             await SyncPaymentTargetAsync(p, isFinalState: false, ct);
 
             return new PaymentStartResponse
@@ -201,7 +197,6 @@ public class PaymentService : IPaymentService
                         changed = true;
                         _logger.LogInformation("[Payment] Order #{OrderId} moved to Processing after payment", order.OrderID);
                         
-                        // ✅ GỬI NOTIFICATION CHO DOLLORDER
                         await SendOrderPaymentSuccessNotificationAsync(order, payment, ct);
                     }
                 }
@@ -246,16 +241,18 @@ public class PaymentService : IPaymentService
                     {
                         characterOrder.Status = CharacterOrderStatus.Completed;
                         changed = true;
-                        _logger.LogInformation("[Payment] CharacterOrder #{OrderId} marked as Completed", 
-                            characterOrder.CharacterOrderID);
+                        _logger.LogInformation(
+                            "[Payment] ✅ CharacterOrder #{OrderId} marked as Completed at {Time} (Vietnam Time)", 
+                            characterOrder.CharacterOrderID,
+                            DateTimeHelper.GetVietnamTime().ToString("yyyy-MM-dd HH:mm:ss"));
                     }
 
+                    
                     var userCharCreated = await _userCharacterManager.EnsureUserCharacterForOrderAsync(
                         characterOrder,
                         "PaymentService.SyncPaymentTarget");
                     changed |= userCharCreated;
                     
-                    // ✅ GỬI NOTIFICATION CHO CHARACTERORDER
                     await SendCharacterOrderPaymentSuccessNotificationAsync(characterOrder, payment, ct);
                 }
                 else if (payment.Status == PaymentStatus.Failed ||
@@ -277,7 +274,6 @@ public class PaymentService : IPaymentService
         }
     }
 
-    // ✅ METHOD MỚI: Gửi notification cho DollOrder
     private async Task SendOrderPaymentSuccessNotificationAsync(Order order, Payment payment, CancellationToken ct)
     {
         if (!order.UserID.HasValue)
@@ -325,11 +321,9 @@ public class PaymentService : IPaymentService
             _logger.LogError(ex, 
                 "[Notification] ❌ Failed to send notification for Order #{OrderId}", 
                 order.OrderID);
-            // Không throw exception để không ảnh hưởng đến flow chính
         }
     }
 
-    // ✅ METHOD MỚI: Gửi notification cho CharacterOrder
     private async Task SendCharacterOrderPaymentSuccessNotificationAsync(CharacterOrder characterOrder, Payment payment, CancellationToken ct)
     {
         if (characterOrder.UserID <= 0)
@@ -342,12 +336,13 @@ public class PaymentService : IPaymentService
         {
             var characterName = characterOrder.Character?.Name ?? "Character";
             var packageName = characterOrder.Package?.Name ?? "Package";
+            var durationDays = characterOrder.Package?.DurationDays ?? 0;
             
             var notificationDto = new SendNotificationDto
             {
                 UserId = characterOrder.UserID,
                 Title = "🎊 Mua character thành công!",
-                Body = $"Bạn đã sở hữu {characterName} ({packageName})! Hãy bắt đầu trò chuyện ngay!",
+                Body = $"Bạn đã sở hữu {characterName} ({packageName} - {durationDays} ngày)! Thời gian sử dụng bắt đầu từ bây giờ!",
                 Data = new Dictionary<string, string>
                 {
                     { "type", "character_payment_success" },
@@ -355,7 +350,8 @@ public class PaymentService : IPaymentService
                     { "characterId", characterOrder.CharacterID.ToString() },
                     { "packageId", characterOrder.PackageID.ToString() },
                     { "paymentId", payment.PaymentID.ToString() },
-                    { "amount", payment.Amount.ToString("N0") }
+                    { "amount", payment.Amount.ToString("N0") },
+                    { "durationDays", durationDays.ToString() }
                 }
             };
 
@@ -379,7 +375,6 @@ public class PaymentService : IPaymentService
             _logger.LogError(ex, 
                 "[Notification] ❌ Failed to send notification for CharacterOrder #{OrderId}", 
                 characterOrder.CharacterOrderID);
-            // Không throw exception
         }
     }
 
@@ -405,13 +400,19 @@ public class PaymentService : IPaymentService
         payment.Status = resultCode == 0 ? PaymentStatus.Completed : PaymentStatus.Failed;
         if (payment.Status == PaymentStatus.Completed)
         {
-            payment.CompletedAt = DateTime.UtcNow;
+            payment.CompletedAt = DateTimeHelper.GetVietnamTime();  // ✅ Sử dụng giờ Việt Nam
         }
 
         payment.RawResponse = $"{sourceTag}:orderId={orderId}&resultCode={resultCode}";
         await _db.SaveChangesAsync(ct);
 
-        _logger.LogWarning("[{Source}] Payment #{PaymentId} updated to {Status}", sourceTag, payment.PaymentID, payment.Status);
+        _logger.LogWarning(
+            "[{Source}] Payment #{PaymentId} updated to {Status} at {Time} (Vietnam Time)", 
+            sourceTag, 
+            payment.PaymentID, 
+            payment.Status,
+            payment.CompletedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A");
+        
         return (true, "Payment status updated", payment);
     }
 

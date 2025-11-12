@@ -18,6 +18,9 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ✅ CẤU HÌNH TIMEZONE CHO VIỆT NAM (UTC+7)
+TimeZoneInfo vietnamTimeZone = TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+
 // 1. Thêm d?ch v? CORS
 builder.Services.AddCors(options =>
 {
@@ -92,10 +95,6 @@ builder.Services.AddControllers()
         opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         opt.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
         opt.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-
-        // ? THÊM: C?u hình DateTime format t? d?ng
-        // M?c d?nh .NET 8 dã serialize DateTime theo ISO 8601
-        // Ch? c?n d?m b?o dùng DateTime.UtcNow trong code
     });
 
 builder.Services.AddEndpointsApiExplorer();

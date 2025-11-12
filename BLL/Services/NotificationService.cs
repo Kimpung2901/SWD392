@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BLL.DTO.Common;
 using BLL.DTO.NotificationDto;
+using BLL.Helper;
 using BLL.IService;
 using DAL.IRepo;
 using FirebaseAdmin.Messaging;
@@ -49,6 +50,8 @@ namespace BLL.Services
                 }
             }
 
+            // ✅ Sử dụng giờ Việt Nam thay vì UTC
+            var vietnamNow = DateTimeHelper.GetVietnamTime();
          
             var notification = new NotificationEntity
             {
@@ -60,15 +63,15 @@ namespace BLL.Services
                 Data = dto.Data != null && dto.Data.Count > 0
                     ? JsonSerializer.Serialize(dto.Data)
                     : null,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = vietnamNow, // ✅ Thay đổi từ DateTime.UtcNow
                 IsRead = false
             };
 
             notification = await _repository.AddAsync(notification, cancellationToken);
-            _logger.LogInformation("✅ Notification {NotificationId} saved to database", notification.NotificationID);
+            _logger.LogInformation("✅ Notification {NotificationId} saved to database at {Time}", 
+                notification.NotificationID, vietnamNow);
 
             string? messageId = null;
-
 
             if (!string.IsNullOrWhiteSpace(deviceToken) || !string.IsNullOrWhiteSpace(dto.Topic))
             {
@@ -197,7 +200,7 @@ namespace BLL.Services
             }
 
             notification.IsRead = true;
-            notification.ReadAt = DateTime.UtcNow;
+            notification.ReadAt = DateTimeHelper.GetVietnamTime(); // ✅ Sử dụng giờ Việt Nam
 
             await _repository.UpdateAsync(notification, cancellationToken);
             return true;

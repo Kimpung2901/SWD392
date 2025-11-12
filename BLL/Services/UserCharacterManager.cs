@@ -1,4 +1,5 @@
-﻿using BLL.IService;
+﻿using BLL.Helper;
+using BLL.IService;
 using DAL.Enum;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
@@ -48,49 +49,35 @@ public class UserCharacterManager : IUserCharacterManager
             return false;
         }
 
-        // ❌ XÓA TOÀN BỘ PHẦN CHECK TRÙNG NÀY
-        // var existingUserChar = await _db.UserCharacters
-        //     .FirstOrDefaultAsync(uc =>
-        //         uc.UserID == characterOrder.UserID &&
-        //         uc.CharacterID == characterOrder.CharacterID &&
-        //         uc.PackageId == characterOrder.PackageID &&
-        //         uc.Status == UserCharacterStatus.Active &&
-        //         uc.EndAt > DateTime.UtcNow);
 
-        // if (existingUserChar != null)
-        // {
-        //     _logger.LogInformation(
-        //         "[{Tag}] UserCharacter already exists for User #{UserId}, Character #{CharId}, Package #{PkgId}",
-        //         tag,
-        //         characterOrder.UserID,
-        //         characterOrder.CharacterID,
-        //         characterOrder.PackageID);
-        //     return false;
-        // }
-
-        // ✅ TẠO UserCharacter MỚI NGAY (KHÔNG CHECK TRÙNG)
-        var now = DateTime.UtcNow;
+        var vietnamNow = DateTimeHelper.GetVietnamTime();
+        
         var userCharacter = new UserCharacter
         {
             UserID = characterOrder.UserID,
             CharacterID = characterOrder.CharacterID,
             PackageId = characterOrder.PackageID,
-            StartAt = now,
-            EndAt = now.AddDays(package.DurationDays),
+            StartAt = vietnamNow,  
+            EndAt = vietnamNow.AddDays(package.DurationDays),  
             AutoRenew = false,
             Status = UserCharacterStatus.Active,
-            CreatedAt = now
+            CreatedAt = vietnamNow
         };
 
         _db.UserCharacters.Add(userCharacter);
 
         _logger.LogInformation(
-            "[{Tag}] Created UserCharacter for User #{UserId}, Character #{CharId}, Package #{PkgId} (Valid until {EndAt}, Duplicate allowed)",
+            "[{Tag}] ✅ Created UserCharacter for User #{UserId}, Character #{CharId}, Package #{PkgId}" +
+            "\n   📅 Start: {StartAt} (Vietnam Time)" +
+            "\n   📅 End: {EndAt} (Vietnam Time)" +
+            "\n   ⏱️ Duration: {Days} days",
             tag,
             userCharacter.UserID,
             userCharacter.CharacterID,
             userCharacter.PackageId,
-            userCharacter.EndAt);
+            userCharacter.StartAt.ToString("yyyy-MM-dd HH:mm:ss"),
+            userCharacter.EndAt.ToString("yyyy-MM-dd HH:mm:ss"),
+            package.DurationDays);
 
         return true;
     }
