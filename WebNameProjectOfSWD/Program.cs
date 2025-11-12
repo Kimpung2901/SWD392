@@ -220,6 +220,7 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy("ManagerOnly", p => p.RequireRole("manager"));
     o.AddPolicy("CustomerOnly", p => p.RequireRole("customer"));
     o.AddPolicy("AdminOrManager", p => p.RequireRole("admin", "manager"));
+    o.AddPolicy("AdminOrCustomer", p => p.RequireRole("admin", "customer"));
 });
 
 var app = builder.Build();

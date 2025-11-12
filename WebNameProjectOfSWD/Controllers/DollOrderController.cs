@@ -1,4 +1,4 @@
-using BLL.DTO.OrderDTO;
+﻿using BLL.DTO.OrderDTO;
 using BLL.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -155,7 +155,7 @@ public class DollOrderController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    [Authorize(Policy = "AdminOrManager")]
+    [Authorize(Policy = "AllowEdit")] 
     public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateOrderDto dto)
     {
         if (!ModelState.IsValid)
@@ -163,10 +163,18 @@ public class DollOrderController : ControllerBase
 
         try
         {
+            var order = await _service.GetByIdAsync(id);
+            if (order == null)
+                return NotFound(new { success = false, message = $"Order #{id} not found" });
+
+            var userId = GetCurrentUserId();
+            var isAdmin = User.IsInRole("admin");
+
+            if (!isAdmin && order.UserID != userId)
+                return Forbid();
+
             var result = await _service.UpdatePartialAsync(id, dto);
-            return result == null
-                ? NotFound(new { success = false, message = $"Order #{id} not found" })
-                : Ok(new { success = true, message = "Order updated successfully", data = result });
+            return Ok(new { success = true, message = "Order updated successfully", data = result });
         }
         catch (Exception ex)
         {
