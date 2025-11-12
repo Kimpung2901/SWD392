@@ -24,7 +24,7 @@ public interface IOrderService
 
     Task<OrderDto?> GetByIdAsync(int id);
     Task<List<OrderDto>> GetByUserIdAsync(int userId);
-    Task<OrderDto> CreateAsync(CreateOrderDto dto);
+    Task<OrderDto> CreateAsync(CreateOrderDto dto, int userId);
     Task<OrderDto?> UpdatePartialAsync(int id, UpdateOrderDto dto);
     Task<bool> DeleteAsync(int id);
     Task<bool> CancelOrderAsync(int id);

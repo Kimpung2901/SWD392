@@ -21,7 +21,7 @@ public class UserCharacterManager : IUserCharacterManager
     {
         var tag = string.IsNullOrWhiteSpace(contextTag) ? nameof(UserCharacterManager) : contextTag;
 
-        // ✅ FIX 1: Validate required fields - Kiểm tra UserID > 0 (vì là int, không nullable)
+        // Validate required fields
         if (characterOrder.UserID <= 0 || characterOrder.CharacterID <= 0 || characterOrder.PackageID <= 0)
         {
             _logger.LogWarning(
@@ -48,27 +48,27 @@ public class UserCharacterManager : IUserCharacterManager
             return false;
         }
 
-        // Check if UserCharacter already exists (active and not expired)
-        var existingUserChar = await _db.UserCharacters
-            .FirstOrDefaultAsync(uc =>
-                uc.UserID == characterOrder.UserID &&
-                uc.CharacterID == characterOrder.CharacterID &&
-                uc.PackageId == characterOrder.PackageID &&
-                uc.Status == UserCharacterStatus.Active &&
-                uc.EndAt > DateTime.UtcNow);
+        // ❌ XÓA TOÀN BỘ PHẦN CHECK TRÙNG NÀY
+        // var existingUserChar = await _db.UserCharacters
+        //     .FirstOrDefaultAsync(uc =>
+        //         uc.UserID == characterOrder.UserID &&
+        //         uc.CharacterID == characterOrder.CharacterID &&
+        //         uc.PackageId == characterOrder.PackageID &&
+        //         uc.Status == UserCharacterStatus.Active &&
+        //         uc.EndAt > DateTime.UtcNow);
 
-        if (existingUserChar != null)
-        {
-            _logger.LogInformation(
-                "[{Tag}] UserCharacter already exists for User #{UserId}, Character #{CharId}, Package #{PkgId}",
-                tag,
-                characterOrder.UserID,
-                characterOrder.CharacterID,
-                characterOrder.PackageID);
-            return false;
-        }
+        // if (existingUserChar != null)
+        // {
+        //     _logger.LogInformation(
+        //         "[{Tag}] UserCharacter already exists for User #{UserId}, Character #{CharId}, Package #{PkgId}",
+        //         tag,
+        //         characterOrder.UserID,
+        //         characterOrder.CharacterID,
+        //         characterOrder.PackageID);
+        //     return false;
+        // }
 
-        // Create new UserCharacter
+        // ✅ TẠO UserCharacter MỚI NGAY (KHÔNG CHECK TRÙNG)
         var now = DateTime.UtcNow;
         var userCharacter = new UserCharacter
         {
@@ -82,19 +82,16 @@ public class UserCharacterManager : IUserCharacterManager
             CreatedAt = now
         };
 
-        // ✅ FIX 2: Add là synchronous, KHÔNG cần await
-        // Nhưng CẦN return true để caller biết cần SaveChanges
         _db.UserCharacters.Add(userCharacter);
 
         _logger.LogInformation(
-            "[{Tag}] Created UserCharacter for User #{UserId}, Character #{CharId}, Package #{PkgId} (Valid until {EndAt})",
+            "[{Tag}] Created UserCharacter for User #{UserId}, Character #{CharId}, Package #{PkgId} (Valid until {EndAt}, Duplicate allowed)",
             tag,
             userCharacter.UserID,
             userCharacter.CharacterID,
             userCharacter.PackageId,
             userCharacter.EndAt);
 
-        // ✅ Return true để PaymentService biết cần call SaveChangesAsync
         return true;
     }
 }

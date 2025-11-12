@@ -106,12 +106,20 @@ public class DollOrderController : ControllerBase
 
         try
         {
-            var userId = GetCurrentUserId();
-            if (dto.UserID != userId && !User.IsInRole("admin"))
-                return Forbid();
+           
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? User.FindFirst("sub")?.Value
+                ?? User.FindFirst("userId")?.Value;
 
-            var created = await _service.CreateAsync(dto);
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "Không thể xác định user từ token" });
+            }
 
+        
+            var created = await _service.CreateAsync(dto, userId);
+
+         
             var paymentResult = await _paymentService.CreateMoMoPaymentAsync(
                 created.TotalAmount,
                 created.OrderID,
@@ -120,13 +128,15 @@ public class DollOrderController : ControllerBase
 
             if (!paymentResult.Success)
             {
-                _logger.LogError("Failed to create payment for order {OrderId}: {Message}", created.OrderID, paymentResult.Message);
+                _logger.LogError("Failed to create payment for order {OrderId}: {Message}", 
+                    created.OrderID, paymentResult.Message);
+                
                 return StatusCode(
                     StatusCodes.Status502BadGateway,
                     new
                     {
                         success = false,
-                        message = "Khong the tao thanh toan MoMo",
+                        message = "Không thể tạo thanh toán MoMo",
                         order = created,
                         paymentError = paymentResult.Message
                     });

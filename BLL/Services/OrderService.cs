@@ -180,11 +180,13 @@ public class OrderService : IOrderService
         return result;
     }
 
-    public async Task<OrderDto> CreateAsync(CreateOrderDto dto)
+
+    public async Task<OrderDto> CreateAsync(CreateOrderDto dto, int userId)
     {
-        var user = await _userRepo.GetByIdAsync(dto.UserID);
+
+        var user = await _userRepo.GetByIdAsync(userId);
         if (user == null)
-            throw new Exception($"User with ID {dto.UserID} does not exist.");
+            throw new Exception($"User with ID {userId} does not exist.");
 
         var variant = await _variantRepo.GetByIdAsync(dto.DollVariantID);
         if (variant == null)
@@ -193,14 +195,12 @@ public class OrderService : IOrderService
         if (!variant.IsActive)
             throw new Exception($"Doll variant '{variant.Name}' is inactive.");
 
-        if (dto.TotalAmount < 0)
-            throw new Exception("Total amount must be non-negative.");
-
-        var totalAmount = dto.TotalAmount > 0 ? dto.TotalAmount : variant.Price;
+        // ✅ Tự động lấy giá từ variant
+        var totalAmount = variant.Price;
 
         var order = new Order
         {
-            UserID = dto.UserID,
+            UserID = userId,  // ✅ Dùng userId từ parameter
             PaymentID = null,
             DollVariantID = dto.DollVariantID,
             OrderDate = DateTime.UtcNow,
@@ -339,5 +339,6 @@ public class OrderService : IOrderService
         };
     }
 }
+
 
 

@@ -1,4 +1,4 @@
-using BLL.IService;
+﻿using BLL.IService;
 using DAL.Enum;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
@@ -32,22 +32,24 @@ public class OwnedDollManager : IOwnedDollManager
             return false;
         }
 
-        var exists = await _db.OwnedDolls
-            .FirstOrDefaultAsync(od =>
-                od.UserID == order.UserID.Value &&
-                od.DollVariantID == order.DollVariantID.Value &&
-                od.Status == OwnedDollStatus.Active);
+        // ❌ XÓA TOÀN BỘ PHẦN CHECK TRÙNG NÀY
+        // var exists = await _db.OwnedDolls
+        //     .FirstOrDefaultAsync(od =>
+        //         od.UserID == order.UserID.Value &&
+        //         od.DollVariantID == order.DollVariantID.Value &&
+        //         od.Status == OwnedDollStatus.Active);
 
-        if (exists != null)
-        {
-            _logger.LogInformation(
-                "[{Tag}] OwnedDoll already exists for User #{UserId}, Variant #{VariantId}",
-                tag,
-                order.UserID.Value,
-                order.DollVariantID.Value);
-            return false;
-        }
+        // if (exists != null)
+        // {
+        //     _logger.LogInformation(
+        //         "[{Tag}] OwnedDoll already exists for User #{UserId}, Variant #{VariantId}",
+        //         tag,
+        //         order.UserID.Value,
+        //         order.DollVariantID.Value);
+        //     return false;
+        // }
 
+        // ✅ TẠO OwnedDoll MỚI NGAY (KHÔNG CHECK TRÙNG)
         var now = DateTime.UtcNow;
         var serialCode = $"DOLL{now:yyyyMMddHHmmss}{order.OrderID:D6}";
 
@@ -64,7 +66,7 @@ public class OwnedDollManager : IOwnedDollManager
         _db.OwnedDolls.Add(ownedDoll);
 
         _logger.LogInformation(
-            "[{Tag}] Created OwnedDoll {SerialCode} for User #{UserId}, Variant #{VariantId}",
+            "[{Tag}] Created OwnedDoll {SerialCode} for User #{UserId}, Variant #{VariantId} (Duplicate allowed)",
             tag,
             serialCode,
             ownedDoll.UserID,
