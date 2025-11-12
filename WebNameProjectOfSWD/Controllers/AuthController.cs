@@ -88,9 +88,19 @@ public class AuthController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-   
+        // ✅ Sanitize input
+        req.Username = req.Username.Trim();
+        req.Email = req.Email.Trim().ToLower();
+        req.FullName = req.FullName?.Trim();
+        req.Phones = req.Phones?.Trim();
+
+        // ✅ Check duplicate
         if (await _userService.CheckUserExistsAsync(req.Username, req.Email))
-            return BadRequest(new { message = "Username or email already exists" });
+            return BadRequest(new { message = "Username hoặc Email đã tồn tại" });
+
+        // ✅ Additional business logic validation
+        if (req.Age.HasValue && req.Age.Value < 13)
+            return BadRequest(new { message = "Người dùng phải từ 13 tuổi trở lên" });
 
         var user = await _auth.RegisterAsync(
             req.Username, 
@@ -110,7 +120,7 @@ public class AuthController : ControllerBase
             age = user.Age, 
             fullName = user.FullName,
             role = user.Role,
-            message = "Register successful"
+            message = "Đăng ký thành công"
         });
     }
 
