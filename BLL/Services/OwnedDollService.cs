@@ -5,6 +5,7 @@ using DAL.IRepo;
 using DAL.Models;
 using DAL.Enum;
 using Microsoft.EntityFrameworkCore;
+using BLL.Helper;
 
 namespace BLL.Services
 {
@@ -79,14 +80,16 @@ namespace BLL.Services
             if (existing != null)
                 throw new InvalidOperationException($"SerialCode '{dto.SerialCode}' đã tồn tại");
 
+            var vietnamNow = DateTimeHelper.GetVietnamTime();  
+
             var entity = new OwnedDoll
             {
                 UserID = dto.UserID,
                 DollVariantID = dto.DollVariantID,
                 SerialCode = dto.SerialCode,
-                Status = OwnedDollStatus.Active, // ✅ Default enum value
-                Acquired_at = dto.Acquired_at ?? DateTime.UtcNow,
-                Expired_at = dto.Expired_at ?? DateTime.UtcNow.AddYears(1)
+                Status = OwnedDollStatus.Active,
+                Acquired_at = dto.Acquired_at ?? vietnamNow, 
+                Expired_at = dto.Expired_at ?? vietnamNow.AddYears(1)  
             };
 
             await _repo.AddAsync(entity);
@@ -108,7 +111,7 @@ namespace BLL.Services
                 entity.SerialCode = dto.SerialCode;
             }
 
-            if (dto.Status.HasValue) // ✅ Nullable enum
+            if (dto.Status.HasValue) 
                 entity.Status = dto.Status.Value;
 
             if (dto.Expired_at.HasValue)

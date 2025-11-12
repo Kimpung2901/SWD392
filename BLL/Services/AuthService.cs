@@ -1,4 +1,5 @@
-﻿using BLL.IService;
+﻿using BLL.Helper;
+using BLL.IService;
 using DAL.IRepo;
 using DAL.Models;
 using BLL.Services.MailService;
@@ -45,7 +46,6 @@ namespace BLL.Services
             if (existingUser != null)
                 throw new InvalidOperationException("Username already exists");
 
-          
             var validRoles = new[] { "Admin", "Manager", "Customer" };
             var normalizedRole = role.Trim();
             if (!validRoles.Contains(normalizedRole, StringComparer.OrdinalIgnoreCase))
@@ -53,17 +53,20 @@ namespace BLL.Services
                 normalizedRole = "Customer"; 
             }
 
+            // ✅ SỬ DỤNG GIỜ VIỆT NAM
+            var vietnamNow = DateTimeHelper.GetVietnamTime();
+
             var user = new User
             {
                 UserName = uname,
                 FullName = fullName?.Trim(),
-                Email = email?.Trim(),
+                Email = email?.Trim() ?? $"{uname}@temp.com",  // ✅ Đảm bảo Email không null
                 Phones = phone?.Trim(),
                 Password = BCrypt.Net.BCrypt.HashPassword(rawPassword),
                 Age = age, 
                 Role = normalizedRole,
                 Status = UserStatus.Active, 
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = vietnamNow,  // ✅ Thay đổi từ DateTime.UtcNow
                 IsDeleted = false
             };
 
@@ -96,7 +99,6 @@ namespace BLL.Services
         public async Task<bool> CanSendOtpAsync(string email)
         {
             var user = await _users.GetUserByEmailAsync(email.Trim());
-           
             return user != null && !user.IsDeleted && user.Status == UserStatus.Active; 
         }
     }

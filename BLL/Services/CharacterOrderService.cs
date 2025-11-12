@@ -6,6 +6,7 @@ using DAL.IRepo;
 using DAL.Models;
 using DAL.Enum;
 using Microsoft.EntityFrameworkCore;
+using BLL.Helper;
 
 namespace BLL.Services
 {
@@ -126,7 +127,7 @@ namespace BLL.Services
             if (package.CharacterId != dto.CharacterID)
                 throw new InvalidOperationException("Package không thuộc về Character đã chọn");
 
-            var now = DateTime.UtcNow;
+            var vietnamNow = DateTimeHelper.GetVietnamTime();
 
             var entity = new CharacterOrder
             {
@@ -135,7 +136,7 @@ namespace BLL.Services
                 CharacterID = dto.CharacterID,
                 UnitPrice = package.Price,
                 Status = CharacterOrderStatus.Pending,
-                CreatedAt = now
+                CreatedAt = vietnamNow
             };
 
             await _repo.AddAsync(entity);

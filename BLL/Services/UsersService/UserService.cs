@@ -26,7 +26,6 @@ public class UserService : IUserService
         return users.Select(MapToDto).ToList();
     }
 
-
     public async Task<PagedResult<UserDto>> GetAsync(
         string? search,
         string? sortBy,
@@ -34,9 +33,7 @@ public class UserService : IUserService
         int page,
         int pageSize)
     {
-
         var query = _repo.GetQueryable();
-
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -48,16 +45,9 @@ public class UserService : IUserService
                 (u.Phones != null && u.Phones.ToLower().Contains(searchLower)));
         }
 
-
         var total = await query.CountAsync();
-
-
         query = ApplySorting(query, sortBy, sortDir);
-
-
         query = query.ApplyPagination(page, pageSize);
-
-
         var items = await query.ToListAsync();
 
         return new PagedResult<UserDto>
@@ -77,22 +67,31 @@ public class UserService : IUserService
 
     public async Task<UserDto> CreateAsync(CreateUserDto dto)
     {
+
+        var existsCheck = await _repo.CheckUserExistsAsync(dto.UserName.Trim(), dto.Email.Trim());
+        if (existsCheck)
+        {
+            throw new InvalidOperationException("Username hoặc Email đã tồn tại trong hệ thống");
+        }
+
+        var vietnamNow = DateTimeHelper.GetVietnamTime();
+
         var entity = new User
         {
-            UserName = dto.UserName,
+            UserName = dto.UserName.Trim(),
             FullName = dto.FullName?.Trim(),
-            Phones = dto.Phones,
-            Email = dto.Email,
+            Phones = dto.Phones?.Trim(),
+            Email = dto.Email.Trim(),
             Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
             Age = dto.Age,
             Status = UserStatus.Active,
-            Role = dto.Role,
-            CreatedAt = DateTime.UtcNow,
+            Role = dto.Role?.Trim() ?? "customer",
+            CreatedAt = vietnamNow,  
             IsDeleted = false
         };
 
         await _repo.AddAsync(entity);
-        return await GetByIdAsync(entity.UserID) ?? throw new Exception("Create failed");
+        return await GetByIdAsync(entity.UserID) ?? throw new Exception("Tạo user thất bại");
     }
 
     public async Task<UserDto?> UpdatePartialAsync(int id, UpdateUserDto dto)
@@ -101,8 +100,18 @@ public class UserService : IUserService
         if (entity == null) return null;
 
         if (dto.FullName != null) entity.FullName = dto.FullName.Trim();
-        if (dto.Phones != null) entity.Phones = dto.Phones;
-        if (dto.Email != null) entity.Email = dto.Email;
+        if (dto.Phones != null) entity.Phones = dto.Phones.Trim();
+        if (dto.Email != null)
+        {
+
+            var emailExists = await _context.Users
+                .AnyAsync(u => u.Email == dto.Email.Trim() && u.UserID != id);
+            if (emailExists)
+            {
+                throw new InvalidOperationException("Email đã được sử dụng bởi user khác");
+            }
+            entity.Email = dto.Email.Trim();
+        }
         if (dto.Age.HasValue) entity.Age = dto.Age.Value;
 
         await _repo.UpdateAsync(entity);
@@ -154,12 +163,15 @@ public class UserService : IUserService
 
     public async Task<RefreshToken> CreateRefreshTokenAsync(int userId, string? ipAddress)
     {
+
+        var vietnamNow = DateTimeHelper.GetVietnamTime();
+
         var refresh = new RefreshToken
         {
             UserID = userId,
             Token = Guid.NewGuid().ToString("N"),
-            Expires = DateTime.UtcNow.AddDays(7),
-            Created = DateTime.UtcNow,
+            Expires = vietnamNow.AddDays(7), 
+            Created = vietnamNow,             
             CreatedByIp = ipAddress
         };
 
@@ -168,6 +180,7 @@ public class UserService : IUserService
 
         return refresh;
     }
+
     public async Task<bool> UpdateDeviceTokenAsync(int userId, string deviceToken)
     {
         var user = await _repo.GetByIdAsync(userId);
@@ -178,11 +191,7 @@ public class UserService : IUserService
         return true;
     }
 
-    // ✅ PRIVATE HELPER METHODS
 
-    /// <summary>
-    /// Map User entity sang UserDto
-    /// </summary>
     private static UserDto MapToDto(User u) => new()
     {
         UserID = u.UserID,
@@ -197,20 +206,16 @@ public class UserService : IUserService
         DeviceToken = u.DeviceToken
     };
 
-    /// <summary>
-    /// Apply sorting cho User query
-    /// </summary>
     private static IQueryable<User> ApplySorting(
         IQueryable<User> query,
         string? sortBy,
         string? sortDir)
     {
         if (string.IsNullOrWhiteSpace(sortBy))
-            return query.OrderByDescending(u => u.UserID); // Default sort
+            return query.OrderByDescending(u => u.UserID);
 
         var isDescending = string.Equals(sortDir, "desc", StringComparison.OrdinalIgnoreCase);
 
-        // ✅ Switch-case cho các field phổ biến (performance tốt hơn reflection)
         return sortBy.ToLower() switch
         {
             "userid" => isDescending
@@ -241,7 +246,6 @@ public class UserService : IUserService
                 ? query.OrderByDescending(u => u.Status)
                 : query.OrderBy(u => u.Status),
 
-            // ✅ Fallback: Dùng dynamic sorting cho các field khác
             _ => query.ApplySort(sortBy, sortDir)
         };
     }

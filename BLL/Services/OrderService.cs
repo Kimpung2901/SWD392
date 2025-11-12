@@ -195,15 +195,14 @@ public class OrderService : IOrderService
         if (!variant.IsActive)
             throw new Exception($"Doll variant '{variant.Name}' is inactive.");
 
-        // ✅ Tự động lấy giá từ variant
         var totalAmount = variant.Price;
 
         var order = new Order
         {
-            UserID = userId,  // ✅ Dùng userId từ parameter
+            UserID = userId,  
             PaymentID = null,
             DollVariantID = dto.DollVariantID,
-            OrderDate = DateTime.UtcNow,
+            OrderDate = DateTimeHelper.GetVietnamTime(),  
             TotalAmount = totalAmount,
             ShippingAddress = dto.ShippingAddress,
             Status = OrderStatus.Pending
@@ -243,10 +242,9 @@ public class OrderService : IOrderService
             variantName = variant.Name;
         }
 
-        // ✅ TẠO OwnedDoll KHI ADMIN CHUYỂN SANG COMPLETED
         if (oldStatus != OrderStatus.Completed && entity.Status == OrderStatus.Completed)
         {
-            // ✅ SỬ DỤNG OwnedDollManager thay vì trực tiếp query _db
+           
             var ownedDollCreated = await _ownedDollManager.EnsureOwnedDollForOrderAsync(
                 entity, 
                 "OrderService.UpdatePartialAsync");
@@ -259,7 +257,6 @@ public class OrderService : IOrderService
             }
         }
 
-        // ✅ UpdateAsync sẽ save tất cả
         await _orderRepo.UpdateAsync(entity);
 
         var userName = entity.UserID.HasValue
@@ -339,6 +336,7 @@ public class OrderService : IOrderService
         };
     }
 }
+
 
 
 

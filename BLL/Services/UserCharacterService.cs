@@ -6,6 +6,7 @@ using DAL.IRepo;
 using DAL.Models;
 using DAL.Enum;
 using Microsoft.EntityFrameworkCore;
+using BLL.Helper;
 
 namespace BLL.Services
 {
@@ -96,13 +97,13 @@ namespace BLL.Services
 
         public async Task<List<UserCharacterDto>> GetActiveSubscriptionsAsync(int userId)
         {
-            var now = DateTime.UtcNow;
+            var vietnamNow = DateTimeHelper.GetVietnamTime();
             return await _db.UserCharacters
                 .Include(uc => uc.Character)
                 .Include(uc => uc.Package)
                 .Where(uc => uc.UserID == userId 
                     && uc.Status == UserCharacterStatus.Active
-                    && uc.EndAt > now)
+                    && uc.EndAt > vietnamNow)
                 .OrderByDescending(uc => uc.EndAt)
                 .AsNoTracking()
                 .ProjectTo<UserCharacterDto>(_mapper.ConfigurationProvider)
@@ -129,17 +130,17 @@ namespace BLL.Services
             if (package.CharacterId != dto.CharacterID)
                 throw new InvalidOperationException("Package không thuộc về Character đã chọn");
 
-            var now = DateTime.UtcNow;
+            var vietnamNow = DateTimeHelper.GetVietnamTime();
             var entity = new UserCharacter
             {
                 UserID = dto.UserID,
                 CharacterID = dto.CharacterID,
                 PackageId = dto.PackageId,
-                StartAt = dto.StartAt ?? now,
-                EndAt = dto.EndAt ?? now.AddDays(package.DurationDays),
+                StartAt = dto.StartAt ?? vietnamNow,
+                EndAt = dto.EndAt ?? vietnamNow.AddDays(package.DurationDays),
                 AutoRenew = dto.AutoRenew,
                 Status = dto.Status,
-                CreatedAt = now
+                CreatedAt = vietnamNow
             };
 
             await _repo.AddAsync(entity);
@@ -184,12 +185,12 @@ namespace BLL.Services
                 throw new InvalidOperationException("Package không tồn tại");
 
             // Extend subscription
-            var now = DateTime.UtcNow;
-            if (entity.EndAt < now)
+            var vietnamNow = DateTimeHelper.GetVietnamTime();
+            if (entity.EndAt < vietnamNow)
             {
                 // Expired - start from now
-                entity.StartAt = now;
-                entity.EndAt = now.AddDays(package.DurationDays);
+                entity.StartAt = vietnamNow;
+                entity.EndAt = vietnamNow.AddDays(package.DurationDays);
             }
             else
             {

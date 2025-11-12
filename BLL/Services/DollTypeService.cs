@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using BLL.DTO.Common;
 using BLL.DTO.DollTypeDTO;
 using BLL.Helper;
@@ -73,7 +73,7 @@ namespace BLL.Services
             _mapper.Map(dto, entity);
 
             if (entity.Create_at < new DateTime(1753, 1, 1))
-                entity.Create_at = DateTime.UtcNow;
+                entity.Create_at = DateTimeHelper.GetVietnamTime();  // ✅ Đã fix
 
             await _repo.UpdateAsync(entity);
             return _mapper.Map<DollTypeDto>(entity);
