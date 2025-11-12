@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using BLL.DTO;
 using BLL.IService;
 using DAL.Enum;
@@ -88,26 +91,67 @@ public class PaymentService : IPaymentService
                 ? new Dictionary<string, string>(existing, StringComparer.OrdinalIgnoreCase)
                 : new Dictionary<string, string>(payload, StringComparer.OrdinalIgnoreCase);
 
-            var ok = await _momo.HandleIpnAsync(_db, normalized, ct);
-            if (ok)
+            var hasSignature = normalized.ContainsKey("signature") && !string.IsNullOrEmpty(normalized["signature"]);
+            
+            Payment? payment = null;
+            bool ok;
+            string message;
+            
+            if (hasSignature)
             {
-                var payment = await FindPaymentFromIpnAsync(normalized, ct);
-                if (payment != null)
+                ok = await _momo.HandleIpnAsync(_db, normalized, ct);
+                message = ok ? "IPN processed successfully" : "Invalid signature";
+                if (ok)
                 {
-                    await SyncPaymentTargetAsync(payment, isFinalState: true, ct);
-                }
-                else
-                {
-                    _logger.LogWarning("Could not resolve payment from MoMo IPN payload");
+                    payment = await FindPaymentFromIpnAsync(normalized, ct);
                 }
             }
-            return (ok, ok ? "IPN processed successfully" : "Invalid signature");
+            else
+            {
+                _logger.LogWarning("[IPN] Processing callback simulation without signature verification");
+                
+                if (!normalized.TryGetValue("orderId", out var orderId))
+                    return (false, "Missing orderId");
+
+                var resultCode = NormalizeResultCode(normalized.TryGetValue("resultCode", out var rc) ? rc : null);
+                var helperResult = await UpdatePaymentStatusFromCallbackAsync(orderId, resultCode, "CallbackSimulation", ct);
+                ok = helperResult.ok;
+                message = helperResult.message;
+                payment = helperResult.payment;
+            }
+
+            if (ok && payment != null)
+            {
+                _logger.LogWarning("[IPN] Syncing payment target for payment #{PaymentId}", payment.PaymentID);
+                await SyncPaymentTargetAsync(payment, isFinalState: true, ct);
+            }
+            else if (ok)
+            {
+                _logger.LogWarning("Could not resolve payment from MoMo IPN payload");
+            }
+            
+            return (ok, message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "IPN error");
             return (false, ex.Message);
         }
+    }
+
+    public async Task<(bool ok, string message)> HandleMoMoCallbackAsync(string orderId, string? resultCode, CancellationToken ct = default)
+    {
+        var normalizedCode = NormalizeResultCode(resultCode);
+        _logger.LogWarning("[MoMoCallback] orderId: {OrderId}, resultCode: {ResultCode}", orderId, normalizedCode);
+
+        var helperResult = await UpdatePaymentStatusFromCallbackAsync(orderId, normalizedCode, "Callback", ct);
+        if (helperResult.ok && helperResult.payment != null)
+        {
+            _logger.LogWarning("[MoMoCallback] Syncing payment target for payment #{PaymentId}", helperResult.payment.PaymentID);
+            await SyncPaymentTargetAsync(helperResult.payment, isFinalState: true, ct);
+        }
+
+        return (helperResult.ok, helperResult.message);
     }
 
     private async Task SyncPaymentTargetAsync(Payment payment, bool isFinalState, CancellationToken ct)
@@ -193,6 +237,43 @@ public class PaymentService : IPaymentService
             }
         }
     }
+    
+    private async Task<(bool ok, string message, Payment? payment)> UpdatePaymentStatusFromCallbackAsync(string orderId, int resultCode, string sourceTag, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(orderId))
+        {
+            return (false, "Missing orderId", null);
+        }
+
+        var payment = await _db.Payments.FirstOrDefaultAsync(p => p.OrderId == orderId, ct);
+        if (payment == null)
+        {
+            return (false, $"Payment not found for orderId: {orderId}", null);
+        }
+
+        if (payment.Status == PaymentStatus.Completed || payment.Status == PaymentStatus.Failed)
+        {
+            _logger.LogWarning("[{Source}] Payment #{PaymentId} already finalized with status {Status}", sourceTag, payment.PaymentID, payment.Status);
+            return (true, "Payment already finalized", payment);
+        }
+
+        payment.Status = resultCode == 0 ? PaymentStatus.Completed : PaymentStatus.Failed;
+        if (payment.Status == PaymentStatus.Completed)
+        {
+            payment.CompletedAt = DateTime.UtcNow;
+        }
+
+        payment.RawResponse = $"{sourceTag}:orderId={orderId}&resultCode={resultCode}";
+        await _db.SaveChangesAsync(ct);
+
+        _logger.LogWarning("[{Source}] Payment #{PaymentId} updated to {Status}", sourceTag, payment.PaymentID, payment.Status);
+        return (true, "Payment status updated", payment);
+    }
+
+    private static int NormalizeResultCode(string? resultCode)
+    {
+        return int.TryParse(resultCode, out var code) ? code : -1;
+    }
 
     private async Task<Payment?> FindPaymentFromIpnAsync(IDictionary<string, string> payload, CancellationToken ct)
     {
@@ -217,3 +298,5 @@ public class PaymentService : IPaymentService
         return null;
     }
 }
+
+

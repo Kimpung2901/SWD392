@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using BLL.DTO;
 using BLL.IService;
 using BLL.Options;
 using DAL.IRepo;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace WebNameProjectOfSWD.Controllers;
@@ -19,18 +14,21 @@ namespace WebNameProjectOfSWD.Controllers;
 [Route("api/payments")]
 public class PaymentController : ControllerBase
 {
-        private readonly IPaymentService _paymentService;
+    private readonly IPaymentService _paymentService;
     private readonly IPaymentRepository _repo;
     private readonly PaymentRootOptions _paymentOptions;
+    private readonly ILogger<PaymentController> _logger;
 
     public PaymentController(
         IPaymentService paymentService,
         IPaymentRepository repo,
-        IOptions<PaymentRootOptions> paymentOptions)
+        IOptions<PaymentRootOptions> paymentOptions,
+        ILogger<PaymentController> logger)
     {
         _paymentService = paymentService;
         _repo = repo;
         _paymentOptions = paymentOptions.Value;
+        _logger = logger;
     }
 
 
@@ -56,26 +54,35 @@ public class PaymentController : ControllerBase
     }
 
 
-     [HttpGet("momo/callback")]
+    [HttpGet("momo/callback")]
     [AllowAnonymous]
-    public IActionResult MoMoCallback([FromQuery] string orderId, [FromQuery] string? resultCode)
+    public async Task<IActionResult> MoMoCallback(
+        [FromQuery] string orderId, 
+        [FromQuery] string? resultCode,
+        CancellationToken ct)
     {
-        var feReturn = _paymentOptions.FrontendReturnUrl?.Trim();
-        
+        _logger.LogWarning("[MoMoCallback] orderId: {OrderId}, resultCode: {ResultCode}", orderId, resultCode);
 
-        Console.WriteLine($"[MoMoCallback] FrontendReturnUrl: '{feReturn}'");
-        Console.WriteLine($"[MoMoCallback] orderId: {orderId}, resultCode: {resultCode}");
+        // ✅ Gọi method mới HandleMoMoCallbackAsync thay vì HandleMoMoIpnAsync
+        if (!string.IsNullOrEmpty(orderId))
+        {
+            var (ok, message) = await _paymentService.HandleMoMoCallbackAsync(orderId, resultCode, ct);
+            _logger.LogWarning("[MoMoCallback] Result: ok={Ok}, message={Message}", ok, message);
+        }
+
+        // Redirect về frontend
+        var feReturn = _paymentOptions.FrontendReturnUrl?.Trim();
         
         if (!string.IsNullOrEmpty(feReturn))
         {
             var separator = feReturn.Contains('?') ? '&' : '?';
             var redirectUrl = $"{feReturn}{separator}orderId={orderId}&resultCode={resultCode}";
-            Console.WriteLine($"[MoMoCallback] Redirecting to: {redirectUrl}");
+            _logger.LogInformation("[MoMoCallback] Redirecting to: {RedirectUrl}", redirectUrl);
             return Redirect(redirectUrl);
         }
-        var fallbackUrl =$"https://doll-sales-system-fe.vercel.app/payment-result?orderId={orderId}&resultCode={resultCode}";
-
-        Console.WriteLine($"[MoMoCallback] No FrontendReturnUrl, using fallback: {fallbackUrl}");
+        
+        var fallbackUrl = $"https://doll-sales-system-fe.vercel.app/payment-result?orderId={orderId}&resultCode={resultCode}";
+        _logger.LogInformation("[MoMoCallback] Using fallback: {FallbackUrl}", fallbackUrl);
         return Redirect(fallbackUrl);
     }
 
@@ -84,12 +91,17 @@ public class PaymentController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> MoMoIpn(CancellationToken ct)
     {
+        _logger.LogWarning("=== MoMo IPN received ===");
+        _logger.LogWarning("Content-Type: {ContentType}", Request.ContentType);
+        _logger.LogWarning("Has Form: {HasFormContentType}", Request.HasFormContentType);
+
         IDictionary<string, string> payload;
 
         if (Request.HasFormContentType)
         {
             var form = await Request.ReadFormAsync(ct);
             payload = form.ToDictionary(k => k.Key, v => v.Value.ToString());
+            _logger.LogWarning("Form payload: {Payload}", JsonSerializer.Serialize(payload));
         }
         else
         {
@@ -98,8 +110,11 @@ public class PaymentController : ControllerBase
             var body = await reader.ReadToEndAsync();
             Request.Body.Position = 0;
 
+            _logger.LogWarning("JSON Body: {Body}", body);
+
             if (string.IsNullOrWhiteSpace(body))
             {
+                _logger.LogError("IPN payload is empty");
                 return BadRequest(new { resultCode = 1, message = "IPN payload is empty" });
             }
 
@@ -122,18 +137,25 @@ public class PaymentController : ControllerBase
 
                 payload = dict;
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
+                _logger.LogError(ex, "IPN payload is not valid JSON");
                 return BadRequest(new { resultCode = 1, message = "IPN payload is not valid JSON" });
             }
         }
 
         if (payload.Count == 0)
         {
+            _logger.LogError("IPN payload is empty after parsing");
             return BadRequest(new { resultCode = 1, message = "IPN payload is empty" });
         }
 
+        _logger.LogWarning("Processing IPN for orderId: {OrderId}", payload.ContainsKey("orderId") ? payload["orderId"] : null);
+
         var (ok, message) = await _paymentService.HandleMoMoIpnAsync(payload, ct);
+
+        _logger.LogWarning("IPN result: ok={Ok}, message={Message}", ok, message);
+
         return Ok(new { resultCode = ok ? 0 : 1, message });
     }
 
@@ -146,4 +168,7 @@ public class PaymentController : ControllerBase
         return Ok(new { status = p.Status, orderId = p.OrderId, amount = p.Amount, completedAt = p.CompletedAt });
     }
 }
+
+
+
 
