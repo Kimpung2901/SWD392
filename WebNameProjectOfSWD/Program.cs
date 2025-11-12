@@ -221,6 +221,8 @@ builder.Services.AddAuthorization(o =>
     o.AddPolicy("CustomerOnly", p => p.RequireRole("customer"));
     o.AddPolicy("AdminOrManager", p => p.RequireRole("admin", "manager"));
     o.AddPolicy("AdminOrCustomer", p => p.RequireRole("admin", "customer"));
+    // ✅ THÊM policy mới
+    o.AddPolicy("AllowEdit", p => p.RequireRole("admin", "manager", "customer"));
 });
 
 var app = builder.Build();
@@ -253,6 +255,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
+
+
+
+
 
 
 

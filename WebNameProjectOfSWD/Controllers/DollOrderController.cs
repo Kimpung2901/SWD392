@@ -155,7 +155,7 @@ public class DollOrderController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    [Authorize(Policy = "AllowEdit")] 
+    [Authorize(Policy = "AllowEdit")] // ✅ Đúng
     public async Task<IActionResult> UpdatePartial(int id, [FromBody] UpdateOrderDto dto)
     {
         if (!ModelState.IsValid)
