@@ -58,20 +58,10 @@ namespace BLL.Services
 
         public async Task<List<CharacterOrderDto>> GetByUserIdAsync(int userId)
         {
-            // Lấy tất cả UserCharacter của user
-            var userCharacterIds = await _db.UserCharacters
-                .Where(uc => uc.UserID == userId)
-                .Select(uc => uc.UserCharacterID)
-                .ToListAsync();
-
-            // Lấy tất cả CharacterOrder liên quan đến các UserCharacter đó
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Where(co => _db.UserCharacters
-                    .Any(uc => uc.UserID == userId && 
-                               uc.CharacterID == co.CharacterID && 
-                               uc.PackageId == co.PackageID))
+                .Where(co => co.UserID == userId)
                 .OrderByDescending(co => co.CreatedAt)
                 .AsNoTracking()
                 .ProjectTo<CharacterOrderDto>(_mapper.ConfigurationProvider)
@@ -116,7 +106,7 @@ namespace BLL.Services
             return await _db.CharacterOrders
                 .Include(co => co.Package)
                 .Include(co => co.Character)
-                .Where(co => co.Status == CharacterOrderStatus.Pending) // ✅ Dùng enum
+                .Where(co => co.Status == CharacterOrderStatus.Pending)
                 .OrderBy(co => co.CreatedAt)
                 .AsNoTracking()
                 .ProjectTo<CharacterOrderDto>(_mapper.ConfigurationProvider)
@@ -125,12 +115,10 @@ namespace BLL.Services
 
         public async Task<CharacterOrderDto> CreateAsync(CreateCharacterOrderDto dto, int userId)
         {
-            // Validate character exists
             var character = await _characterRepo.GetByIdAsync(dto.CharacterID);
             if (character == null)
                 throw new InvalidOperationException($"Character với ID {dto.CharacterID} không tồn tại");
 
-            // Validate package exists and belongs to character
             var package = await _packageRepo.GetByIdAsync(dto.PackageID);
             if (package == null)
                 throw new InvalidOperationException($"Package với ID {dto.PackageID} không tồn tại");
@@ -139,36 +127,19 @@ namespace BLL.Services
                 throw new InvalidOperationException("Package không thuộc về Character đã chọn");
 
             var now = DateTime.UtcNow;
-            var startDate = now;
-            var endDate = startDate.AddDays(package.DurationDays);
-
-     
-            var userCharacter = new UserCharacter
-            {
-                UserID = userId,
-                CharacterID = dto.CharacterID,
-                PackageId = dto.PackageID,
-                StartAt = startDate,
-                EndAt = endDate,
-                AutoRenew = false,
-                Status = UserCharacterStatus.Active,
-                CreatedAt = now
-            };
-
-            await _userCharacterRepo.AddAsync(userCharacter);
-
-           
-            var quantityMonths = (int)Math.Ceiling(package.DurationDays / 30.0);
 
             var entity = new CharacterOrder
             {
+                UserID = userId,
                 PackageID = dto.PackageID,
                 CharacterID = dto.CharacterID,
                 UnitPrice = package.Price,
+                Status = CharacterOrderStatus.Pending,
                 CreatedAt = now
             };
 
             await _repo.AddAsync(entity);
+            
             return await GetByIdAsync(entity.CharacterOrderID) 
                 ?? throw new Exception("Không thể tạo CharacterOrder");
         }

@@ -12,11 +12,16 @@ namespace WebNameProjectOfSWD.Controllers
     public class CharacterOrderController : ControllerBase
     {
         private readonly ICharacterOrderService _service;
+        private readonly IPaymentService _paymentService; // ✅ THÊM
         private readonly ILogger<CharacterOrderController> _logger;
 
-        public CharacterOrderController(ICharacterOrderService service, ILogger<CharacterOrderController> logger)
+        public CharacterOrderController(
+            ICharacterOrderService service, 
+            IPaymentService paymentService, // ✅ THÊM
+            ILogger<CharacterOrderController> logger)
         {
             _service = service;
+            _paymentService = paymentService; // ✅ THÊM
             _logger = logger;
         }
 
@@ -41,7 +46,6 @@ namespace WebNameProjectOfSWD.Controllers
                     (o.CharacterName ?? string.Empty).ToLowerInvariant().Contains(term) ||
                     o.Status.ToString().ToLowerInvariant().Contains(term));
             }
-
             var total = query.Count();
             query = string.IsNullOrWhiteSpace(sortBy)
                 ? query.OrderByDescending(o => o.CreatedAt)
@@ -121,8 +125,8 @@ namespace WebNameProjectOfSWD.Controllers
         }
 
         [HttpPost]
-        [Authorize] // Y�u c?u dang nh?p
-        public async Task<IActionResult> Create([FromBody] CreateCharacterOrderDto dto)
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] CreateCharacterOrderDto dto, CancellationToken ct)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -135,19 +139,54 @@ namespace WebNameProjectOfSWD.Controllers
 
                 if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
                 {
-                    return Unauthorized(new { message = "Kh�ng th? x�c d?nh user t? token" });
+                    return Unauthorized(new { message = "Không thể xác định user từ token" });
                 }
 
+                // 1. Tạo CharacterOrder
                 var created = await _service.CreateAsync(dto, userId);
+
+                // 2. ✅ TỰ ĐỘNG TẠO PAYMENT (giống DollOrder)
+                var paymentResult = await _paymentService.CreateMoMoPaymentAsync(
+                    created.UnitPrice,
+                    orderId: null,              // ✅ DollOrder thì dùng orderId
+                    characterOrderId: created.CharacterOrderID, // ✅ CharacterOrder thì dùng characterOrderId
+                    ct);
+
+                if (!paymentResult.Success)
+                {
+                    _logger.LogError("Failed to create payment for CharacterOrder {OrderId}: {Message}", 
+                        created.CharacterOrderID, paymentResult.Message);
+                    
+                    return StatusCode(
+                        StatusCodes.Status502BadGateway,
+                        new
+                        {
+                            success = false,
+                            message = "Không thể tạo thanh toán MoMo",
+                            order = created,
+                            paymentError = paymentResult.Message
+                        });
+                }
+
+                // 3. ✅ TRẢ VỀ KẾT QUẢ (bao gồm payment URL)
                 return CreatedAtAction(
                     nameof(GetById),
                     new { id = created.CharacterOrderID },
-                    new { message = "T?o character order th�nh c�ng", data = created }
-                );
+                    new
+                    {
+                        success = true,
+                        message = "Tạo character order thành công",
+                        data = created,
+                        payment = new
+                        {
+                            paymentId = paymentResult.PaymentId,
+                            payUrl = paymentResult.PayUrl
+                        }
+                    });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "L?i khi t?o character order");
+                _logger.LogError(ex, "Lỗi khi tạo character order");
                 return BadRequest(new { message = ex.Message });
             }
         }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,6 +19,7 @@ public class PaymentService : IPaymentService
     private readonly DollDbContext _db;
     private readonly IPaymentProvider _momo;
     private readonly IOwnedDollManager _ownedDollManager;
+    private readonly IUserCharacterManager _userCharacterManager; // ✅ THÊM
     private readonly ILogger<PaymentService> _logger;
 
     public PaymentService(
@@ -26,11 +27,13 @@ public class PaymentService : IPaymentService
         DollDbContext db,
         IEnumerable<IPaymentProvider> providers,
         IOwnedDollManager ownedDollManager,
+        IUserCharacterManager userCharacterManager, // ✅ THÊM
         ILogger<PaymentService> logger)
     {
         _repo = repo;
         _db = db;
         _ownedDollManager = ownedDollManager;
+        _userCharacterManager = userCharacterManager; // ✅ THÊM
         _logger = logger;
         _momo = providers.First(p => p.Name == "MoMo");
     }
@@ -167,7 +170,11 @@ public class PaymentService : IPaymentService
     {
         if (string.Equals(payment.Target_Type, "Order", StringComparison.OrdinalIgnoreCase) && payment.OrderID.HasValue)
         {
-            var order = await _db.Orders.FirstOrDefaultAsync(o => o.OrderID == payment.OrderID.Value, ct);
+            // ✅ DollOrder: Processing sau payment, Completed khi nhận hàng
+            var order = await _db.Orders
+                .Include(o => o.DollVariant)
+                .FirstOrDefaultAsync(o => o.OrderID == payment.OrderID.Value, ct);
+                
             if (order == null)
             {
                 _logger.LogWarning("Order #{OrderId} not found when syncing payment #{PaymentId}", payment.OrderID, payment.PaymentID);
@@ -185,17 +192,12 @@ public class PaymentService : IPaymentService
             {
                 if (payment.Status == PaymentStatus.Completed)
                 {
-                    if (order.Status != OrderStatus.Completed)
+                    if (order.Status == OrderStatus.Pending)
                     {
-                        order.Status = OrderStatus.Completed;
+                        order.Status = OrderStatus.Processing;
                         changed = true;
-                        _logger.LogInformation("[Payment] Order #{OrderId} marked as Completed", order.OrderID);
+                        _logger.LogInformation("[Payment] Order #{OrderId} moved to Processing after payment", order.OrderID);
                     }
-
-                    var ownedDollCreated = await _ownedDollManager.EnsureOwnedDollForOrderAsync(
-                        order,
-                        "PaymentService.SyncPaymentTarget");
-                    changed |= ownedDollCreated;
                 }
                 else if (payment.Status == PaymentStatus.Failed ||
                          payment.Status == PaymentStatus.Cancelled ||
@@ -205,6 +207,7 @@ public class PaymentService : IPaymentService
                     {
                         order.Status = OrderStatus.Pending;
                         changed = true;
+                        _logger.LogInformation("[Payment] Order #{OrderId} reverted to Pending", order.OrderID);
                     }
                 }
             }
@@ -216,10 +219,15 @@ public class PaymentService : IPaymentService
         }
         else if (string.Equals(payment.Target_Type, "CharacterOrder", StringComparison.OrdinalIgnoreCase) && payment.CharacterOrderID.HasValue)
         {
-            var characterOrder = await _db.CharacterOrders.FirstOrDefaultAsync(co => co.CharacterOrderID == payment.CharacterOrderID.Value, ct);
+            // ✅ CharacterOrder: Completed ngay sau payment
+            var characterOrder = await _db.CharacterOrders
+                .Include(co => co.Package)
+                .FirstOrDefaultAsync(co => co.CharacterOrderID == payment.CharacterOrderID.Value, ct);
+                
             if (characterOrder == null)
             {
-                _logger.LogWarning("CharacterOrder #{CharacterOrderId} not found when syncing payment #{PaymentId}", payment.CharacterOrderID, payment.PaymentID);
+                _logger.LogWarning("CharacterOrder #{CharacterOrderId} not found when syncing payment #{PaymentId}", 
+                    payment.CharacterOrderID, payment.PaymentID);
                 return;
             }
 
@@ -228,11 +236,19 @@ public class PaymentService : IPaymentService
             {
                 if (payment.Status == PaymentStatus.Completed)
                 {
-                    if (characterOrder.Status == CharacterOrderStatus.Pending)
+                    if (characterOrder.Status != CharacterOrderStatus.Completed)
                     {
                         characterOrder.Status = CharacterOrderStatus.Completed;
                         changed = true;
+                        _logger.LogInformation("[Payment] CharacterOrder #{OrderId} marked as Completed", 
+                            characterOrder.CharacterOrderID);
                     }
+
+                    // ✅ Tạo UserCharacter ngay
+                    var userCharCreated = await _userCharacterManager.EnsureUserCharacterForOrderAsync(
+                        characterOrder,
+                        "PaymentService.SyncPaymentTarget");
+                    changed |= userCharCreated;
                 }
                 else if (payment.Status == PaymentStatus.Failed ||
                          payment.Status == PaymentStatus.Cancelled ||

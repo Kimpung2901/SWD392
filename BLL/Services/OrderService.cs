@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using BLL.DTO.Common;
 using BLL.DTO.OrderDTO;
 using BLL.Helper;
@@ -7,7 +7,7 @@ using DAL.Enum;
 using DAL.IRepo;
 using DAL.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging; // ? TH�M D�NG N�Y
+using Microsoft.Extensions.Logging;
 
 namespace BLL.Services;
 
@@ -16,6 +16,7 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepo;
     private readonly IUserRepository _userRepo;
     private readonly IDollVariantRepository _variantRepo;
+    private readonly DollDbContext _db; // ✅ FIX 1: Thêm field
     private readonly IOwnedDollManager _ownedDollManager;
     private readonly ILogger<OrderService> _logger;
 
@@ -23,12 +24,14 @@ public class OrderService : IOrderService
         IOrderRepository orderRepo,
         IUserRepository userRepo,
         IDollVariantRepository variantRepo,
+        DollDbContext db, // ✅ FIX 2: Thêm parameter
         IOwnedDollManager ownedDollManager,
         ILogger<OrderService> logger)
     {
         _orderRepo = orderRepo;
         _userRepo = userRepo;
         _variantRepo = variantRepo;
+        _db = db; // ✅ FIX 3: Gán giá trị
         _ownedDollManager = ownedDollManager;
         _logger = logger;
     }
@@ -240,13 +243,23 @@ public class OrderService : IOrderService
             variantName = variant.Name;
         }
 
+        // ✅ TẠO OwnedDoll KHI ADMIN CHUYỂN SANG COMPLETED
         if (oldStatus != OrderStatus.Completed && entity.Status == OrderStatus.Completed)
         {
-            await _ownedDollManager.EnsureOwnedDollForOrderAsync(
-                entity,
+            // ✅ SỬ DỤNG OwnedDollManager thay vì trực tiếp query _db
+            var ownedDollCreated = await _ownedDollManager.EnsureOwnedDollForOrderAsync(
+                entity, 
                 "OrderService.UpdatePartialAsync");
+            
+            if (ownedDollCreated)
+            {
+                _logger.LogInformation(
+                    "[Order] OwnedDoll created for Order #{OrderId} when marked as Completed",
+                    entity.OrderID);
+            }
         }
 
+        // ✅ UpdateAsync sẽ save tất cả
         await _orderRepo.UpdateAsync(entity);
 
         var userName = entity.UserID.HasValue

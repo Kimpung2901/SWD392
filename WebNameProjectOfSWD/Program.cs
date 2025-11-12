@@ -179,6 +179,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IOwnedDollRepository, OwnedDollRepository>();
 builder.Services.AddScoped<IOwnedDollService, OwnedDollService>();
 builder.Services.AddScoped<IOwnedDollManager, OwnedDollManager>();
+builder.Services.AddScoped<IUserCharacterManager, UserCharacterManager>();
 // UserCharacter services
 builder.Services.AddScoped<IUserCharacterRepository, UserCharacterRepository>();
 builder.Services.AddScoped<IUserCharacterService, UserCharacterService>();
@@ -256,6 +257,25 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
