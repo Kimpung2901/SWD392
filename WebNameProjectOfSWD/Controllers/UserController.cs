@@ -8,8 +8,8 @@ using System.Security.Claims;
 namespace WebNameProjectOfSWD.Controllers;
 
 [ApiController]
-[Route("api/users")] // ? RESTful route
-[Authorize] // ? Y�u c?u authentication
+[Route("api/users")] 
+[Authorize] 
 public class UserController : ControllerBase
 {
     private readonly IUserService _svc;
@@ -21,8 +21,8 @@ public class UserController : ControllerBase
         _config = config;
     }
 
-    [HttpGet]
-    [Authorize(Policy = "AdminOnly")] 
+[HttpGet]
+[Authorize(Policy = "AdminOrManager")]
     public async Task<IActionResult> GetAll(
         [FromQuery] string? search,
         [FromQuery] string? sortBy,
@@ -67,7 +67,7 @@ public class UserController : ControllerBase
 
 
     [HttpPost]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = "AdminOrManager")]
     public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
     {
         if (!ModelState.IsValid)
@@ -123,7 +123,7 @@ public class UserController : ControllerBase
 
 
     [HttpDelete("{id}")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = "AdminOrManager")]
     public async Task<IActionResult> SoftDelete(int id)
     {
         await _svc.SoftDeleteAsync(id);
@@ -132,7 +132,7 @@ public class UserController : ControllerBase
 
 
     [HttpDelete("{id}/permanent")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = "AdminOrManager")]
     public async Task<IActionResult> HardDelete(int id)
     {
         await _svc.HardDeleteAsync(id);
